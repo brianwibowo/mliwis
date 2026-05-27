@@ -2785,5 +2785,18 @@ input, select, textarea, button {
     font-size: 8px;
     padding: 1px 2px;
   }
+
+  /* Auth Split Layout Mobile Collapsing */
+  .auth-container {
+    grid-template-columns: 1fr;
+  }
+  .auth-left-panel {
+    display: none !important;
+  }
+  .auth-right-panel {
+    width: 100%;
+    min-height: 100vh;
+    padding: var(--space-6);
+  }
 }
 

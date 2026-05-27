@@ -57,11 +57,11 @@ export default function Home() {
         </nav>
 
         <div className="landing-nav-actions" id="nav-actions">
-          <Link 
-            href="/login" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="btn btn-outline btn-sm navbar-admin-btn" 
+          <Link
+            href="/login"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-outline btn-sm navbar-admin-btn"
             id="btn-login-admin"
           >
             <LogIn size={14} />
@@ -75,8 +75,8 @@ export default function Home() {
         {/* Background Image Slideshow Carousel */}
         <div className="landing-hero-carousel" id="hero-carousel">
           {CAROUSEL_IMAGES.map((img, idx) => (
-            <div 
-              key={img} 
+            <div
+              key={img}
               className={`carousel-slide ${idx === currentSlide ? 'active' : ''}`}
               style={{ backgroundImage: `url(${img})` }}
             />
@@ -91,24 +91,24 @@ export default function Home() {
               <Waves size={14} />
               <span>Surga Tersembunyi di Kebumen</span>
             </div>
-            
+
             <h1 className="landing-hero-title-centered" id="main-hero-title">
               Pesona Alam Asri <br />
               <span className="text-gradient-sand">Pantai Mliwis</span>
             </h1>
-            
+
             <p className="landing-hero-desc-centered" id="hero-description">
-              Rasakan kesegaran angin samudra berpadu dengan keteduhan hutan cemara udang yang eksotis. Terletak di pesisir Ambal, Kebumen, Pantai Mliwis menawarkan keindahan pantai pasir lembut yang luas, sangat ideal untuk rekreasi keluarga, kegiatan tim, hingga momen sakral pernikahan Anda.
+              Rasakan kesegaran angin samudra berpadu dengan keteduhan hutan cemara udang yang eksotis. Terletak di pesisir Ambal, Kebumen, Pantai Mliwis menawarkan keindahan pantai pasir lembut yang luas, sangat ideal untuk rekreasi keluarga, kegiatan tim, hingga pernikahan Anda.
             </p>
-            
+
             <div className="landing-hero-buttons-centered" id="hero-actions">
               <a href="#booking-calendar" className="btn btn-primary btn-lg" id="btn-cta-calendar">
                 <span>Lihat Jadwal</span>
                 <ArrowRight size={18} />
               </a>
-              <Link 
-                href="/booking" 
-                className="btn btn-outline-white btn-lg" 
+              <Link
+                href="/booking"
+                className="btn btn-outline-white btn-lg"
                 id="btn-cta-booking"
               >
                 <span>Booking Tempat</span>
