@@ -2742,8 +2742,15 @@ input, select, textarea, button {
   .landing-navbar {
     padding: 0 var(--space-4);
   }
-  .landing-nav-links {
-    display: none; /* Hide standard nav on mobile for simplicity, or we let them access details by scrolling */
+  .landing-navbar .landing-nav-links {
+    display: none !important; /* Corrected specificity to force hide desktop menu on mobile viewports */
+  }
+  .landing-navbar .navbar-admin-btn {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-xs);
+  }
+  .landing-container {
+    padding: 0 var(--space-4);
   }
   .landing-hero {
     padding-top: 100px;
@@ -2758,6 +2765,14 @@ input, select, textarea, button {
   .landing-footer-grid {
     grid-template-columns: 1fr;
     gap: var(--space-6);
+  }
+  .calendar-body-grid {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth iOS swipe support */
+  }
+  .calendar-weekdays,
+  .calendar-days {
+    min-width: 620px; /* Prevents squishing and clipping of dates */
   }
   .calendar-day {
     min-height: 60px;
