@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
-import { Waves, Search, CalendarCheck, Phone, CheckCircle, XCircle, Clock } from 'lucide-react'
+import { Waves, Search, CalendarCheck, Phone, CheckCircle, XCircle, Clock, ArrowLeft } from 'lucide-react'
 import { checkBookingStatus } from '../actions'
 import { formatTanggal } from '@/lib/format'
 
@@ -35,15 +35,25 @@ export default function BookingStatusPage() {
   const cfg = result ? statusConfig[result.status as keyof typeof statusConfig] : null
 
   return (
-    <div>
+    <div style={{ background: 'var(--color-surface-alt)', minHeight: '100vh' }}>
+      <header style={{ height: '60px', padding: '0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 0, zIndex: 100 }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 800, color: 'var(--color-primary-900)', textDecoration: 'none' }}>
+          <ArrowLeft size={16} className="text-primary" />
+          <span>Kembali ke Beranda</span>
+        </Link>
+      </header>
+
       <div className="booking-hero">
         <Waves size={48} style={{ marginBottom: 16, opacity: 0.8 }} />
         <h1>Cek Status Booking</h1>
         <p>Masukkan kode booking untuk melihat status</p>
       </div>
-      <div className="booking-container">
-        <div className="card mb-6" style={{ animation: 'slideUp 0.4s ease-out' }}>
+      <div className="booking-status-container">
+        <div className="card mb-4" style={{ animation: 'slideUp 0.4s ease-out', border: '1px solid var(--color-border)' }}>
           <div className="card-body" style={{ padding: 32 }}>
+            <label className="form-label" style={{ fontWeight: 700, fontSize: 'var(--text-sm)', marginBottom: 12, display: 'block', color: 'var(--color-primary-900)' }}>
+              Input/Tambahkan Kode Booking Anda
+            </label>
             <div className="flex gap-3">
               <input className="form-input" placeholder="Contoh: BK-A1B2C3D4" value={kode} onChange={(e) => setKode(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleCheck()} style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', letterSpacing: '0.05em' }} />
               <button className="btn btn-primary" onClick={handleCheck} disabled={isPending || !kode.trim()}>{isPending ? <span className="spinner spinner-sm spinner-white" /> : <><Search size={18} /> Cek</>}</button>
@@ -51,16 +61,20 @@ export default function BookingStatusPage() {
             {error && <div className="alert alert-danger mt-4">{error}</div>}
           </div>
         </div>
-
+        <div className="text-center mb-6">
+          <Link href="/booking" className="text-primary text-sm font-semibold" style={{ textDecoration: 'none' }}>
+            ← Buat booking baru
+          </Link>
+        </div>
         {result && cfg && (
-          <div className="card" style={{ animation: 'slideUp 0.4s ease-out' }}>
+          <div className="card" style={{ animation: 'slideUp 0.4s ease-out', border: '1px solid var(--color-border)' }}>
             <div className="card-body" style={{ padding: 32 }}>
               <div className="text-center mb-6">
                 <div style={{ color: cfg.color, marginBottom: 12 }}>{cfg.icon}</div>
                 <h2 style={{ color: cfg.color }}>{cfg.label}</h2>
                 <p className="text-muted">{cfg.desc}</p>
               </div>
-              <div style={{ background: 'var(--color-surface-alt)', borderRadius: 'var(--radius-xl)', padding: 24 }}>
+              <div style={{ background: 'var(--color-surface-alt)', borderRadius: 'var(--radius-xl)', padding: 24, border: '1px solid var(--color-border)' }}>
                 <div className="grid-2 gap-4">
                   <div><p className="text-xs text-muted">Kode Booking</p><p className="font-bold font-mono">{result.kodeBooking}</p></div>
                   <div><p className="text-xs text-muted">Status</p><span className={`badge badge-${result.status}`}>{result.status}</span></div>
@@ -75,7 +89,6 @@ export default function BookingStatusPage() {
             </div>
           </div>
         )}
-        <div className="text-center mt-4"><Link href="/booking" className="text-primary text-sm">← Buat booking baru</Link></div>
       </div>
     </div>
   )

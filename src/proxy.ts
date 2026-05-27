@@ -31,14 +31,6 @@ export default async function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
   }
 
-  // Redirect root ke dashboard atau login
-  if (path === '/') {
-    if (session) {
-      return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
-    }
-    return NextResponse.redirect(new URL('/login', req.nextUrl))
-  }
-
   return NextResponse.next()
 }
 

@@ -12,12 +12,10 @@ const rupiahFormatter = new Intl.NumberFormat('id-ID', {
   maximumFractionDigits: 0,
 });
 
-/**
- * Format angka ke string Rupiah: `Rp 1.000.000`
- */
 export function formatRupiah(amount: number | DecimalLike): string {
   const value = typeof amount === 'number' ? amount : Number(amount);
-  return rupiahFormatter.format(value);
+  // Remove all spaces and non-breaking spaces (\u00A0) to prevent server/client hydration mismatch
+  return rupiahFormatter.format(value).replace(/\s| /g, '');
 }
 
 const tanggalFormatter = new Intl.DateTimeFormat('id-ID', {

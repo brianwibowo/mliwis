@@ -1,15 +1,17 @@
 import type { Metadata } from 'next'
-import { Plus_Jakarta_Sans, Inter } from 'next/font/google'
+import { Poppins } from 'next/font/google'
 import './globals.css'
 import { ToastProvider } from '@/hooks/useToast'
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const poppinsHeading = Poppins({
+  weight: ['600', '700', '800'],
   subsets: ['latin'],
   variable: '--font-heading',
   display: 'swap',
 })
 
-const inter = Inter({
+const poppinsBody = Poppins({
+  weight: ['300', '400', '500', '600'],
   subsets: ['latin'],
   variable: '--font-body',
   display: 'swap',
@@ -29,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="id" className={`${plusJakartaSans.variable} ${inter.variable}`}>
+    <html lang="id" className={`${poppinsHeading.variable} ${poppinsBody.variable}`}>
       <body>
         <ToastProvider>
           {children}
