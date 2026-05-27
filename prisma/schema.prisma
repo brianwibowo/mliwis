@@ -1,0 +1,182 @@
+// SI-Mliwis — Prisma Schema
+// Sistem Informasi Manajemen Pantai Mliwis, Kebumen
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// ==========================================
+// AUTENTIKASI & PENGGUNA
+// ==========================================
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  password     String   // bcrypt hashed
+  namaLengkap  String
+  role         String   @default("staff") // "admin" | "staff"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  suratMasuk  SuratMasuk[]
+  suratKeluar SuratKeluar[]
+  kasMasuk    KasMasuk[]
+  kasKeluar   KasKeluar[]
+  pengunjung  Pengunjung[]
+
+  @@map("users")
+}
+
+// ==========================================
+// ARSIP SURAT
+// ==========================================
+
+model SuratMasuk {
+  id           Int      @id @default(autoincrement())
+  nomorSurat   String
+  tanggalSurat DateTime
+  pengirim     String
+  tujuan       String
+  perihal      String   @db.Text
+  filePath     String?
+  namaFile     String?
+  userId       Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([tanggalSurat])
+  @@index([nomorSurat])
+  @@map("surat_masuk")
+}
+
+model SuratKeluar {
+  id           Int      @id @default(autoincrement())
+  nomorSurat   String
+  tanggalSurat DateTime
+  pengirim     String
+  tujuan       String
+  perihal      String   @db.Text
+  filePath     String?
+  namaFile     String?
+  userId       Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([tanggalSurat])
+  @@index([nomorSurat])
+  @@map("surat_keluar")
+}
+
+// ==========================================
+// BOOKING ACARA
+// ==========================================
+
+model Fasilitas {
+  id        Int    @id @default(autoincrement())
+  nama      String
+  deskripsi String
+
+  bookingFasilitas BookingFasilitas[]
+
+  @@map("fasilitas")
+}
+
+model Booking {
+  id               Int      @id @default(autoincrement())
+  kodeBooking      String   @unique
+  namaCustomer     String
+  nomorHP          String
+  tanggalMulai     DateTime
+  tanggalSelesai   DateTime
+  jenisAcara       String
+  status           String   @default("menunggu") // "menunggu" | "disetujui" | "ditolak"
+  catatanPengelola String?  @db.Text
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  bookingFasilitas BookingFasilitas[]
+
+  @@index([status])
+  @@index([tanggalMulai])
+  @@index([kodeBooking])
+  @@map("bookings")
+}
+
+model BookingFasilitas {
+  id          Int @id @default(autoincrement())
+  bookingId   Int
+  fasilitasId Int
+
+  booking   Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  fasilitas Fasilitas @relation(fields: [fasilitasId], references: [id])
+
+  @@unique([bookingId, fasilitasId])
+  @@map("booking_fasilitas")
+}
+
+// ==========================================
+// KEUANGAN
+// ==========================================
+
+model KasMasuk {
+  id             Int      @id @default(autoincrement())
+  tanggal        DateTime
+  jenisTransaksi String
+  keteranganLain String?
+  nominal        Decimal  @db.Decimal(15, 2)
+  keterangan     String?  @db.Text
+  userId         Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([tanggal])
+  @@index([jenisTransaksi])
+  @@map("kas_masuk")
+}
+
+model KasKeluar {
+  id             Int      @id @default(autoincrement())
+  tanggal        DateTime
+  jenisTransaksi String
+  keteranganLain String?
+  nominal        Decimal  @db.Decimal(15, 2)
+  keterangan     String?  @db.Text
+  userId         Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([tanggal])
+  @@index([jenisTransaksi])
+  @@map("kas_keluar")
+}
+
+// ==========================================
+// DATA PENGUNJUNG
+// ==========================================
+
+model Pengunjung {
+  id        Int      @id @default(autoincrement())
+  tanggal   DateTime @unique
+  jumlah    Int
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([tanggal])
+  @@map("pengunjung")
+}
