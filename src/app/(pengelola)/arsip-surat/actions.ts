@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache'
 import { writeFile, mkdir, unlink } from 'fs/promises'
 import path from 'path'
 import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from '@/lib/constants'
+import { put, del } from '@vercel/blob'
 
 // ==================== SURAT MASUK ====================
 
@@ -122,7 +123,11 @@ export async function deleteSuratMasuk(id: number) {
 
   const surat = await prisma.suratMasuk.findUnique({ where: { id } })
   if (surat?.filePath) {
-    try { await unlink(path.join(process.cwd(), 'public', surat.filePath)) } catch {}
+    if (surat.filePath.startsWith('http')) {
+      try { await del(surat.filePath) } catch {}
+    } else {
+      try { await unlink(path.join(process.cwd(), 'public', surat.filePath)) } catch {}
+    }
   }
 
   await prisma.suratMasuk.delete({ where: { id } })
@@ -230,7 +235,11 @@ export async function deleteSuratKeluar(id: number) {
 
   const surat = await prisma.suratKeluar.findUnique({ where: { id } })
   if (surat?.filePath) {
-    try { await unlink(path.join(process.cwd(), 'public', surat.filePath)) } catch {}
+    if (surat.filePath.startsWith('http')) {
+      try { await del(surat.filePath) } catch {}
+    } else {
+      try { await unlink(path.join(process.cwd(), 'public', surat.filePath)) } catch {}
+    }
   }
 
   await prisma.suratKeluar.delete({ where: { id } })
@@ -248,6 +257,17 @@ async function uploadFile(file: File) {
     return { error: 'Ukuran file maksimal 10MB' }
   }
 
+  // If Vercel Blob token is configured, upload directly to Vercel Blob
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const blob = await put(file.name, file, { access: 'public' })
+      return { filePath: blob.url, namaFile: file.name }
+    } catch (e: any) {
+      return { error: `Gagal upload ke cloud storage: ${e.message || e}` }
+    }
+  }
+
+  // Fallback to local file system (e.g. during local development)
   const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
   await mkdir(uploadsDir, { recursive: true })
 

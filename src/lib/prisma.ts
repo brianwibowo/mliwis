@@ -1,4 +1,3 @@
-import 'dotenv/config'
 import { PrismaClient } from '@/generated/prisma/client'
 import { PrismaMariaDb } from '@prisma/adapter-mariadb'
 
@@ -7,13 +6,15 @@ const globalForPrisma = globalThis as unknown as {
 }
 
 function createPrismaClient(): PrismaClient {
+  const host = process.env.DB_HOST || 'localhost'
+  const port = Number(process.env.DB_PORT) || 3306
   const user = process.env.DB_USER || 'root'
   const password = process.env.DB_PASSWORD || ''
   const database = process.env.DB_NAME || 'si_mliwis'
-  const socketPath = process.env.MYSQL_SOCKET || '/var/lib/mysql/mysql.sock'
 
   const adapter = new PrismaMariaDb({
-    socketPath,
+    host,
+    port,
     user,
     password,
     database,
@@ -25,7 +26,5 @@ function createPrismaClient(): PrismaClient {
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient()
 
-// Cache the Prisma client globally in both development and production
-// to prevent duplicate connection pools and excessive database worker threads
+// Cache globally to prevent duplicate connection pools
 globalForPrisma.prisma = prisma
-
