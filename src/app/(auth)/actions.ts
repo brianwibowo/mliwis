@@ -41,8 +41,8 @@ export async function loginAction(
       namaLengkap: user.namaLengkap,
       role: user.role,
     })
-  } catch {
-    return { error: 'Terjadi kesalahan sistem. Silakan coba lagi.' }
+  } catch (error: any) {
+    return { error: `Kesalahan Sistem: ${error.message || String(error)}` }
   }
 
   redirect('/dashboard')

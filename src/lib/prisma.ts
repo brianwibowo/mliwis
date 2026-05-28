@@ -35,7 +35,7 @@ function createPrismaClient(): PrismaClient {
     user,
     password,
     database,
-    connectionLimit: 5,
+    connectionLimit: 2, // Optimized connection limit for resource-constrained hosting
   })
 
   return new PrismaClient({ adapter })
@@ -43,6 +43,6 @@ function createPrismaClient(): PrismaClient {
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient()
 
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma
-}
+// Cache the Prisma client globally in both development and production 
+// to prevent duplicate connection pools and excessive database worker threads
+globalForPrisma.prisma = prisma
