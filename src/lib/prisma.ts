@@ -7,35 +7,17 @@ const globalForPrisma = globalThis as unknown as {
 }
 
 function createPrismaClient(): PrismaClient {
-  // Default values or discrete environment variables
-  let host = process.env.DB_HOST || 'localhost'
-  let port = Number(process.env.DB_PORT) || 3306
-  let user = process.env.DB_USER || 'root'
-  let password = process.env.DB_PASSWORD || ''
-  let database = process.env.DB_NAME || 'si_mliwis'
-
-  // If DATABASE_URL is provided, dynamically parse it to support unified connection strings
-  const dbUrl = process.env.DATABASE_URL
-  if (dbUrl && dbUrl.startsWith('mysql://')) {
-    try {
-      const parsed = new URL(dbUrl)
-      host = parsed.hostname || host
-      port = Number(parsed.port) || port
-      user = parsed.username || user
-      password = parsed.password ? decodeURIComponent(parsed.password) : password
-      database = parsed.pathname ? parsed.pathname.replace(/^\//, '') : database
-    } catch (error) {
-      console.error('Failed to parse DATABASE_URL, falling back to discrete variables:', error)
-    }
-  }
+  const user = process.env.DB_USER || 'root'
+  const password = process.env.DB_PASSWORD || ''
+  const database = process.env.DB_NAME || 'si_mliwis'
+  const socketPath = process.env.MYSQL_SOCKET || '/var/lib/mysql/mysql.sock'
 
   const adapter = new PrismaMariaDb({
-    host,
-    port,
+    socketPath,
     user,
     password,
     database,
-    connectionLimit: 2, // Optimized connection limit for resource-constrained hosting
+    connectionLimit: 2,
   })
 
   return new PrismaClient({ adapter })
@@ -43,6 +25,7 @@ function createPrismaClient(): PrismaClient {
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient()
 
-// Cache the Prisma client globally in both development and production 
+// Cache the Prisma client globally in both development and production
 // to prevent duplicate connection pools and excessive database worker threads
 globalForPrisma.prisma = prisma
+
