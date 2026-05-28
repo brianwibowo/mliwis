@@ -200,7 +200,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
         <div className="chart-card">
           <div className="chart-card-header">
             <h3>Booking Terbaru</h3>
-            <p>5 booking terakhir</p>
+            <p>5 Booking Terakhir</p>
           </div>
           <ul className="recent-list">
             {recentBookings.length === 0 && (
