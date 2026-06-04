@@ -9,9 +9,10 @@ export const APP_DESCRIPTION =
 
 // --- Jenis Kas ---
 export const JENIS_KAS_MASUK = [
-  'Tiket Masuk Wisata',
-  'Sewa Gazebo/Tempat Duduk',
+  'Jasa Penitipan',
+  'Sewa Pendopo',
   'Sewa Camping Ground',
+  'Iuran Mitra Usaha',
   'Kerjasama Sponsorship',
   'Pendapatan Lain-lain',
 ] as const;
@@ -35,6 +36,15 @@ export const STATUS_BOOKING = {
 
 export type StatusBooking =
   (typeof STATUS_BOOKING)[keyof typeof STATUS_BOOKING];
+
+// --- Status Program Kerja ---
+export const STATUS_PROGRAM_KERJA = [
+  'Rencana',
+  'Berjalan',
+  'Selesai',
+] as const;
+
+export type StatusProgramKerja = (typeof STATUS_PROGRAM_KERJA)[number];
 
 // --- Upload / File ---
 export const ALLOWED_FILE_TYPES = [
@@ -115,6 +125,11 @@ export const NAV_ITEMS: NavItem[] = [
     icon: 'FileText',
     label: 'Laporan',
     href: '/laporan',
+  },
+  {
+    icon: 'ClipboardList',
+    label: 'Program Kerja',
+    href: '/program-kerja',
   },
   {
     icon: 'Settings',

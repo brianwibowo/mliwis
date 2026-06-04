@@ -23,11 +23,12 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  suratMasuk  SuratMasuk[]
-  suratKeluar SuratKeluar[]
-  kasMasuk    KasMasuk[]
-  kasKeluar   KasKeluar[]
-  pengunjung  Pengunjung[]
+  suratMasuk   SuratMasuk[]
+  suratKeluar  SuratKeluar[]
+  kasMasuk     KasMasuk[]
+  kasKeluar    KasKeluar[]
+  pengunjung   Pengunjung[]
+  programKerja ProgramKerja[]
 
   @@map("users")
 }
@@ -180,3 +181,40 @@ model Pengunjung {
   @@index([tanggal])
   @@map("pengunjung")
 }
+
+// ==========================================
+// PROGRAM KERJA POKDARWIS
+// ==========================================
+
+model ProgramKerja {
+  id              Int      @id @default(autoincrement())
+  namaKegiatan    String
+  tanggalKegiatan DateTime
+  jumlahDana      Decimal  @db.Decimal(15, 2)
+  sumberDana      String
+  statusKegiatan  String   @default("Rencana") // "Rencana" | "Berjalan" | "Selesai"
+  userId          Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user         User                       @relation(fields: [userId], references: [id])
+  dokumentasi  ProgramKerjaDokumentasi[]
+
+  @@index([tanggalKegiatan])
+  @@index([statusKegiatan])
+  @@map("program_kerja")
+}
+
+model ProgramKerjaDokumentasi {
+  id             Int    @id @default(autoincrement())
+  programKerjaId Int
+  filePath       String
+  namaFile       String
+  createdAt      DateTime @default(now())
+
+  programKerja ProgramKerja @relation(fields: [programKerjaId], references: [id], onDelete: Cascade)
+
+  @@index([programKerjaId])
+  @@map("program_kerja_dokumentasi")
+}
+

@@ -13,6 +13,7 @@ import {
   Waves,
   ChevronDown,
   LogOut,
+  ClipboardList,
 } from 'lucide-react'
 import { useState } from 'react'
 import { NAV_ITEMS } from '@/lib/constants'
@@ -27,6 +28,7 @@ const iconMap: Record<string, React.ComponentType<{ size?: number }>> = {
   Users,
   FileText,
   Settings,
+  ClipboardList,
 }
 
 interface SidebarProps {

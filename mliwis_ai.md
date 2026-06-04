@@ -93,11 +93,12 @@ Status Booking Cek status booking
 
 No | Jenis Transaksi
 ---|---
-1 | Tiket Masuk Wisata
-2 | Sewa Gazebo/Tempat Duduk
+1 | Jasa Penitipan
+2 | Sewa Pendopo
 3 | Sewa Camping Ground
-4 | Kerjasama Sponsorship
-5 | Pendapatan Lain-lain (ada isian)
+4 | Iuran Mitra Usaha
+5 | Kerjasama Sponsorship
+6 | Pendapatan Lain-lain (ada isian)
 
 ### 2. Kas Keluar
 
