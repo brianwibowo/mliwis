@@ -2,8 +2,8 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Pencil, Trash2, Lock, Shield, User } from 'lucide-react'
-import { createUser, updateUser, deleteUser, changePassword } from './actions'
+import { Plus, Pencil, Trash2, Shield } from 'lucide-react'
+import { createUser, updateUser, deleteUser } from './actions'
 import { useToast } from '@/hooks/useToast'
 import Modal from '@/components/ui/Modal'
 
@@ -18,14 +18,6 @@ export default function PengaturanClient({ isAdmin, users, currentUserId }: Prop
   const [showUserModal, setShowUserModal] = useState(false)
   const [editUser, setEditUser] = useState<UserData | null>(null)
   const [deleteId, setDeleteId] = useState<number | null>(null)
-
-  const handleChangePassword = (formData: FormData) => {
-    startTransition(async () => {
-      const r = await changePassword(formData)
-      if (r.error) addToast(r.error, 'error')
-      else addToast('Password berhasil diubah', 'success')
-    })
-  }
 
   const handleUserSubmit = (formData: FormData) => {
     startTransition(async () => {
@@ -48,20 +40,7 @@ export default function PengaturanClient({ isAdmin, users, currentUserId }: Prop
   return (
     <div>
       <div className="page-header">
-        <div className="page-header-left"><h1>Pengaturan</h1><p>Kelola akun dan keamanan</p></div>
-      </div>
-
-      {/* Ubah Password */}
-      <div className="card mb-6">
-        <div className="card-header"><h3><Lock size={18} style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />Ubah Password</h3></div>
-        <div className="card-body">
-          <form action={handleChangePassword} style={{ maxWidth: 400 }}>
-            <div className="form-group"><label className="form-label">Password Lama</label><input name="oldPassword" type="password" className="form-input" required /></div>
-            <div className="form-group"><label className="form-label">Password Baru</label><input name="newPassword" type="password" className="form-input" minLength={6} required /><p className="form-hint">Minimal 6 karakter</p></div>
-            <div className="form-group"><label className="form-label">Konfirmasi Password Baru</label><input name="confirmPassword" type="password" className="form-input" required /></div>
-            <button type="submit" className="btn btn-primary" disabled={isPending}>{isPending ? 'Menyimpan...' : 'Ubah Password'}</button>
-          </form>
-        </div>
+        <div className="page-header-left"><h1>Pengaturan</h1><p>Kelola akun pengelola</p></div>
       </div>
 
       {/* Kelola User (Admin Only) */}

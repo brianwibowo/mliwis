@@ -19,6 +19,7 @@ model User {
   username     String   @unique
   password     String   // bcrypt hashed
   namaLengkap  String
+  foto         String?
   role         String   @default("staff") // "admin" | "staff"
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

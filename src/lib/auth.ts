@@ -1,9 +1,43 @@
 import { SignJWT, jwtVerify } from 'jose'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 
 const secretKey = process.env.BETTER_AUTH_SECRET || 'default-secret-key'
 const encodedKey = new TextEncoder().encode(secretKey)
 const SESSION_COOKIE_NAME = 'si-mliwis-session'
+
+async function getCookieSecure(): Promise<boolean> {
+  if (process.env.NODE_ENV !== 'production') return false
+  try {
+    const headersList = await headers()
+    const host = headersList.get('host') || ''
+    const isLocal =
+      host.includes('localhost') ||
+      host.includes('127.0.0.1') ||
+      host.includes('[::1]') ||
+      host.startsWith('192.168.') ||
+      host.startsWith('10.') ||
+      host.startsWith('172.16.') ||
+      host.startsWith('172.17.') ||
+      host.startsWith('172.18.') ||
+      host.startsWith('172.19.') ||
+      host.startsWith('172.20.') ||
+      host.startsWith('172.21.') ||
+      host.startsWith('172.22.') ||
+      host.startsWith('172.23.') ||
+      host.startsWith('172.24.') ||
+      host.startsWith('172.25.') ||
+      host.startsWith('172.26.') ||
+      host.startsWith('172.27.') ||
+      host.startsWith('172.28.') ||
+      host.startsWith('172.29.') ||
+      host.startsWith('172.30.') ||
+      host.startsWith('172.31.') ||
+      host.endsWith('.local')
+    return !isLocal
+  } catch {
+    return true
+  }
+}
 
 export interface SessionPayload {
   userId: number
@@ -57,7 +91,7 @@ export async function createSession(user: {
   const cookieStore = await cookies()
   cookieStore.set(SESSION_COOKIE_NAME, session, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: await getCookieSecure(),
     expires: expiresAt,
     sameSite: 'lax',
     path: '/',
@@ -88,7 +122,7 @@ export async function updateSession(): Promise<void> {
   const cookieStore = await cookies()
   cookieStore.set(SESSION_COOKIE_NAME, newSession, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: await getCookieSecure(),
     expires: newExpiresAt,
     sameSite: 'lax',
     path: '/',

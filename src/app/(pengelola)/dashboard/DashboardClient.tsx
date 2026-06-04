@@ -149,7 +149,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
                   cx="50%"
                   cy="50%"
                   innerRadius={60}
-                  outerRadius={95}
+                  outerRadius={75}
                   paddingAngle={4}
                   dataKey="value"
                   label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}

@@ -2,8 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Waves, Tent, TreePine, Building, Camera, Store, LogIn, ArrowRight, Phone, MapPin, Mail, Calendar } from 'lucide-react'
+import { ArrowRight, Calendar } from 'lucide-react'
+import * as Icons from 'lucide-react'
 import BookingCalendar from '@/components/booking/BookingCalendar'
+import PublicHeader from '@/components/layout/PublicHeader'
+import PublicFooter from '@/components/layout/PublicFooter'
+import { LIST_FASILITAS } from '@/lib/data-landing'
 
 const CAROUSEL_IMAGES = [
   '/mliwis1.jpg',
@@ -15,7 +19,6 @@ const CAROUSEL_IMAGES = [
 
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [scrolled, setScrolled] = useState(false)
 
   // Autoplay carousel slides every 4 seconds
   useEffect(() => {
@@ -25,50 +28,10 @@ export default function Home() {
     return () => clearInterval(timer)
   }, [])
 
-  // Detect page scroll to change navbar visual style dynamically
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolled(true)
-      } else {
-        setScrolled(false)
-      }
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
   return (
     <div className="landing-layout" style={{ background: 'var(--color-surface)' }}>
-      {/* Header / Navbar (Dinamis: Transparan vs Frosted Glass) */}
-      <header className={`landing-navbar ${scrolled ? 'scrolled' : ''}`} id="main-header">
-        <Link href="/" className="landing-logo" id="logo-brand">
-          <span className="landing-logo-icon">
-            <Waves size={20} />
-          </span>
-          <span>Pantai Mliwis</span>
-        </Link>
-
-        <nav className="landing-nav-links" id="desktop-nav">
-          <a href="#deskripsi" className="landing-nav-link" id="nav-link-desc">Tentang Pantai</a>
-          <a href="#fasilitas" className="landing-nav-link" id="nav-link-fac">Fasilitas</a>
-          <a href="#booking-calendar" className="landing-nav-link" id="nav-link-cal">Jadwal Booking</a>
-          <Link href="/booking" className="landing-nav-link" id="nav-link-book">Pemesanan</Link>
-        </nav>
-
-        <div className="landing-nav-actions" id="nav-actions">
-          <Link
-            href="/login"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-outline btn-sm navbar-admin-btn"
-            id="btn-login-admin"
-          >
-            <LogIn size={14} />
-            <span>Login Admin</span>
-          </Link>
-        </div>
-      </header>
+      {/* Header / Navbar Bersama */}
+      <PublicHeader transparentByDefault={true} />
 
       {/* Hero / Deskripsi Section (Full Screen Carousel) */}
       <section className="landing-hero full-screen" id="deskripsi">
@@ -79,6 +42,18 @@ export default function Home() {
               key={img}
               className={`carousel-slide ${idx === currentSlide ? 'active' : ''}`}
               style={{ backgroundImage: `url(${img})` }}
+              onError={(e) => {
+                // Fallback to beautiful Unsplash images if files aren't uploaded yet
+                const fallbacks = [
+                  'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1600',
+                  'https://images.unsplash.com/photo-1473116763269-255448993f66?q=80&w=1600',
+                  'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1600',
+                  'https://images.unsplash.com/photo-1519046904884-53103b34b206?q=80&w=1600',
+                  'https://images.unsplash.com/photo-1439066615861-d1af74d74000?q=80&w=1600'
+                ]
+                const slide = e.target as HTMLDivElement
+                slide.style.backgroundImage = `url(${fallbacks[idx]})`
+              }}
             />
           ))}
           <div className="carousel-overlay" />
@@ -88,7 +63,7 @@ export default function Home() {
         <div className="landing-hero-container centered" id="hero-text-overlay">
           <div className="landing-hero-content-centered">
             <div className="landing-tagline translucent" id="tagline-badge">
-              <Waves size={14} />
+              <Icons.Waves size={14} />
               <span>Surga Tersembunyi di Kebumen</span>
             </div>
 
@@ -118,111 +93,270 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Facilities Section */}
-      <section className="landing-section alt" id="fasilitas">
+      {/* Sejarah Pantai Mliwis Section */}
+      <section className="landing-section" id="sejarah" style={{ padding: '90px 0', backgroundColor: 'var(--color-surface)' }}>
         <div className="landing-container">
-          <div className="landing-section-header">
-            <h2>Fasilitas Unggulan Kami</h2>
-            <p>Berbagai area khusus yang dirancang untuk kenyamanan kunjungan dan kesuksesan agenda acara Anda di Pantai Mliwis.</p>
+          <div className="landing-section-header" style={{ textAlign: 'center', marginBottom: '64px' }}>
+            <span className="landing-tagline" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: '30px', backgroundColor: 'var(--color-primary-50)', color: 'var(--color-primary-600)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '16px' }}>
+              <Icons.History size={14} />
+              <span>Jejak Sejarah & Kultur</span>
+            </span>
+            <h2 style={{ fontSize: '2.5rem', color: 'var(--color-primary-950)', fontWeight: 700, letterSpacing: '-0.02em' }}>Sejarah Pantai Mliwis</h2>
+            <p style={{ maxWidth: '700px', margin: '16px auto 0', color: 'var(--color-text-muted)', fontSize: '1.05rem', lineHeight: '1.6' }}>
+              Perjalanan destinasi pesisir yang tumbuh dari swadaya gotong royong warga Desa Kenoyojayan hingga menjadi destinasi asri bernilai budaya tinggi.
+            </p>
           </div>
 
-          <div className="facility-grid" id="facility-cards-container">
-            {/* Facility 1: Camping Ground */}
-            <div className="facility-card-item" id="facility-camping">
-              <div style={{ width: '100%', height: '180px', overflow: 'hidden', position: 'relative' }}>
-                <img src="/mliwis1.jpg" alt="Area Camping Ground Pantai Mliwis" style={{ width: '100%', height: '100%', objectFit: 'cover' }} className="facility-img" />
-              </div>
-              <div style={{ padding: 'var(--space-5) var(--space-6) var(--space-6)' }}>
-                <div className="facility-card-icon" style={{ marginTop: '-40px', position: 'relative', border: '3px solid white', boxShadow: 'var(--shadow-md)', zIndex: 5 }}>
-                  <Tent size={24} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
+            {/* Row 1: Legenda Nama */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '48px', alignItems: 'center' }}>
+              <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px' }}>
+                <img
+                  src="/1.png"
+                  alt="Asal Usul Nama Pantai Mliwis"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
+                  onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=600' }}
+                />
+                <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', color: 'white', padding: '6px 14px', borderRadius: '10px', fontSize: '0.825rem' }}>
+                  Ilustrasi Burung Belibis (Mliwis)
                 </div>
-                <h3 style={{ marginTop: 'var(--space-2)' }}>Area Camping Ground</h3>
-                <p>Merasakan sensasi berkemah di bawah rindangnya cemara udang dengan suara deburan ombak laut selatan yang menenangkan. Dilengkapi fasilitas toilet yang bersih dan aman.</p>
+              </div>
+              <div>
+                <span style={{ fontSize: '0.825rem', color: 'var(--color-primary-600)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Asal-Usul Nama</span>
+                <h3 style={{ fontSize: '1.75rem', color: 'var(--color-primary-950)', margin: '8px 0 16px', fontWeight: 700 }}>Mengapa Dinamakan "Mliwis"?</h3>
+                <p style={{ color: 'var(--color-text-muted)', lineHeight: '1.7', marginBottom: '14px', fontSize: '0.975rem' }}>
+                  Nama <strong>Mliwis</strong> dalam bahasa Jawa merujuk pada sejenis burung liar (belibis). Menurut cerita para sesepuh Desa Kenoyojayan dahulu kawasan pantai ini sering menjadi tempat singgah burung-burung liar tersebut saat bermigrasi.
+                </p>
+                <p style={{ color: 'var(--color-text-muted)', lineHeight: '1.7', fontSize: '0.975rem' }}>
+                  Keberadaan burung mliwis yang banyak mendiami kawasan pesisir ini membekas di hati warga lokal, sehingga pantai ini secara lisan dinamai Pantai Mliwis oleh masyarakat sekitar.
+                </p>
               </div>
             </div>
 
-            {/* Facility 2: Outbound */}
-            <div className="facility-card-item" id="facility-outbound">
-              <div style={{ width: '100%', height: '180px', overflow: 'hidden', position: 'relative' }}>
-                <img src="/mliwis2.jpg" alt="Area Outbound Pantai Mliwis" style={{ width: '100%', height: '100%', objectFit: 'cover' }} className="facility-img" />
+            {/* Row 2: Gotong Royong 2018 (Alternating) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '48px', alignItems: 'center' }}>
+              <div style={{ order: 2 }}>
+                <span style={{ fontSize: '0.825rem', color: 'var(--color-primary-600)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Pembangunan Mandiri</span>
+                <h3 style={{ fontSize: '1.75rem', color: 'var(--color-primary-950)', margin: '8px 0 16px', fontWeight: 700 }}>Kekuatan Gotong Royong (2018)</h3>
+                <p style={{ color: 'var(--color-text-muted)', lineHeight: '1.7', marginBottom: '14px', fontSize: '0.975rem' }}>
+                  Pengembangan Pantai Mliwis dimulai pada tahun 2018 secara swadaya murni oleh masyarakat Desa Kenoyojayan. Warga bergotong-royong merintis destinasi ini dari lahan liar hingga layak dikunjungi.
+                </p>
+                <p style={{ color: 'var(--color-text-muted)', lineHeight: '1.7', fontSize: '0.975rem' }}>
+                  Tanpa mengandalkan kontraktor luar, masyarakat bersama-sama membersihkan lokasi tempat usaha, menata lahan parkir, serta merapikan pepohonan agar bisa difungsikan secara produktif untuk mendongkrak kesejahteraan desa.
+                </p>
               </div>
-              <div style={{ padding: 'var(--space-5) var(--space-6) var(--space-6)' }}>
-                <div className="facility-card-icon" style={{ marginTop: '-40px', position: 'relative', border: '3px solid white', boxShadow: 'var(--shadow-md)', zIndex: 5 }}>
-                  <TreePine size={24} />
+              <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px', order: 1 }}>
+                <img
+                  src="/2.png"
+                  alt="Pembangunan Swadaya Warga"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600' }}
+                />
+                <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', color: 'white', padding: '6px 14px', borderRadius: '10px', fontSize: '0.825rem' }}>
+                  Gotong Royong Warga Kenoyojayan
                 </div>
-                <h3 style={{ marginTop: 'var(--space-2)' }}>Area Outbound</h3>
-                <p>Tanah lapang luas berumput di bawah pohon rindang yang sejuk. Sangat cocok untuk permainan kelompok, team-building perusahaan, pelatihan sekolah, maupun gathering komunitas.</p>
               </div>
             </div>
 
-            {/* Facility 3: Pendopo */}
-            <div className="facility-card-item" id="facility-pendopo">
-              <div style={{ width: '100%', height: '180px', overflow: 'hidden', position: 'relative' }}>
-                <img src="/mliwis3.jpg" alt="Pendopo Aula Terbuka Pantai Mliwis" style={{ width: '100%', height: '100%', objectFit: 'cover' }} className="facility-img" />
-              </div>
-              <div style={{ padding: 'var(--space-5) var(--space-6) var(--space-6)' }}>
-                <div className="facility-card-icon" style={{ marginTop: '-40px', position: 'relative', border: '3px solid white', boxShadow: 'var(--shadow-md)', zIndex: 5 }}>
-                  <Building size={24} />
+            {/* Row 3: Tradisi Budaya */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '48px', alignItems: 'center' }}>
+              <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px' }}>
+                <img
+                  src="/3.png"
+                  alt="Tradisi Grebeg Rolasan"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=600' }}
+                />
+                <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', color: 'white', padding: '6px 14px', borderRadius: '10px', fontSize: '0.825rem' }}>
+                  Pentas Grebeg Rolasan Pesisir
                 </div>
-                <h3 style={{ marginTop: 'var(--space-2)' }}>Pendopo / Aula Terbuka</h3>
-                <p>Pendopo tradisional berkapasitas besar dengan sirkulasi udara pantai alami. Tempat yang representatif untuk pertemuan formal, perayaan syukuran, rapat dinas, maupun pentas seni.</p>
+              </div>
+              <div>
+                <span style={{ fontSize: '0.825rem', color: 'var(--color-primary-600)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Kultur & Adat</span>
+                <h3 style={{ fontSize: '1.75rem', color: 'var(--color-primary-950)', margin: '8px 0 16px', fontWeight: 700 }}>Tradisi Budaya Grebeg Rolasan</h3>
+                <p style={{ color: 'var(--color-text-muted)', lineHeight: '1.7', marginBottom: '14px', fontSize: '0.975rem' }}>
+                  Salah satu kearifan lokal yang paling menonjol di Pantai Mliwis adalah diadakannya upacara adat **Grebeg Rolasan** atau *Grebeg Enthak-Enthik/Menthak-Menthik* setiap peringatan Maulid Nabi Muhammad SAW.
+                </p>
+                <p style={{ color: 'var(--color-text-muted)', lineHeight: '1.7', fontSize: '0.975rem' }}>
+                  Warga melakukan arak-arakan gunungan hasil bumi melimpah dari balai desa menuju pantai, diakhiri dengan doa bersama dan perebutan gunungan oleh ribuan pengunjung sebagai bentuk kesyukuran atas berkah bumi.
+                </p>
               </div>
             </div>
 
-            {/* Facility 4: Prewedding */}
-            <div className="facility-card-item" id="facility-prewedding">
-              <div style={{ width: '100%', height: '180px', overflow: 'hidden', position: 'relative' }}>
-                <img src="/mliwis4.jpg" alt="Area Prewedding Pantai Mliwis" style={{ width: '100%', height: '100%', objectFit: 'cover' }} className="facility-img" />
+            {/* Row 4: Akses & Parkir Terjangkau (Alternating) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '48px', alignItems: 'center' }}>
+              <div style={{ order: 2 }}>
+                <span style={{ fontSize: '0.825rem', color: 'var(--color-primary-600)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Informasi Kunjungan</span>
+                <h3 style={{ fontSize: '1.75rem', color: 'var(--color-primary-950)', margin: '8px 0 16px', fontWeight: 700 }}>Akses Mudah & Parkir Terjangkau</h3>
+                <p style={{ color: 'var(--color-text-muted)', lineHeight: '1.7', marginBottom: '14px', fontSize: '0.975rem' }}>
+                  Pantai Mliwis berjarak hanya 17 km dari pusat Kota Kebumen, dengan waktu tempuh sekitar 20 menit berkendara. Akses jalannya sudah dilapisi aspal halus dan terhubung langsung dengan JJLS (Jalur Jalan Lintas Selatan).
+                </p>
+                <p style={{ color: 'var(--color-text-muted)', lineHeight: '1.7', fontSize: '0.975rem' }}>
+                  Untuk masuk ke area wisata, pengunjung hanya dikenakan biaya **Jasa Penitipan Kendaraan (JPK)** yang sangat terjangkau: **Rp 3.000 untuk sepeda motor** dan **Rp 5.000 untuk mobil**, tanpa biaya masuk individu yang mahal.
+                </p>
               </div>
-              <div style={{ padding: 'var(--space-5) var(--space-6) var(--space-6)' }}>
-                <div className="facility-card-icon" style={{ marginTop: '-40px', position: 'relative', border: '3px solid white', boxShadow: 'var(--shadow-md)', zIndex: 5 }}>
-                  <Camera size={24} />
+              <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px', order: 1 }}>
+                <img
+                  src="/4.png"
+                  alt="Akses Jalan dan JPK"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1473116763269-255448993f66?q=80&w=600' }}
+                />
+                <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', color: 'white', padding: '6px 14px', borderRadius: '10px', fontSize: '0.825rem' }}>
+                  Akses Jalan Masuk Pantai Mliwis
                 </div>
-                <h3 style={{ marginTop: 'var(--space-2)' }}>Area Prewedding</h3>
-                <p>Menyajikan pemandangan alam romantis dan eksotis dengan latar belakang hutan cemara serta panorama matahari terbenam. Pilihan utama para fotografer profesional.</p>
-              </div>
-            </div>
-
-            {/* Facility 5: UMKM */}
-            <div className="facility-card-item" id="facility-umkm">
-              <div style={{ width: '100%', height: '180px', overflow: 'hidden', position: 'relative' }}>
-                <img src="/mliwis5.jpg" alt="Area UMKM Pantai Mliwis" style={{ width: '100%', height: '100%', objectFit: 'cover' }} className="facility-img" />
-              </div>
-              <div style={{ padding: 'var(--space-5) var(--space-6) var(--space-6)' }}>
-                <div className="facility-card-icon" style={{ marginTop: '-40px', position: 'relative', border: '3px solid white', boxShadow: 'var(--shadow-md)', zIndex: 5 }}>
-                  <Store size={24} />
-                </div>
-                <h3 style={{ marginTop: 'var(--space-2)' }}>Area UMKM</h3>
-                <p>Pusat kuliner lokal yang menyajikan hidangan laut segar khas pesisir Ambal dan kios oleh-oleh kerajinan lokal untuk mendukung perekonomian warga sekitar.</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Booking Calendar Section */}
-      <section className="landing-section" id="booking-calendar">
+      {/* Facilities Section */}
+      <section className="landing-section alt" id="fasilitas" style={{ backgroundColor: 'var(--color-surface-alt)', padding: '90px 0' }}>
         <div className="landing-container">
-          <div className="landing-section-header">
-            <h2>Jadwal Ketersediaan Tempat</h2>
-            <p>Lihat slot tanggal yang terisi sebelum melakukan pengajuan sewa fasilitas Pantai Mliwis agar agenda Anda berjalan lancar.</p>
+          <div className="landing-section-header" style={{ textAlign: 'center', marginBottom: '60px' }}>
+            <span className="landing-tagline" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: '30px', backgroundColor: 'var(--color-primary-50)', color: 'var(--color-primary-600)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '16px' }}>
+              <Icons.Sparkles size={14} />
+              <span>Kenyamanan Wisatawan</span>
+            </span>
+            <h2 style={{ fontSize: '2.5rem', color: 'var(--color-primary-950)', fontWeight: 700 }}>Fasilitas Unggulan Kami</h2>
+            <p style={{ maxWidth: '700px', margin: '16px auto 0', color: 'var(--color-text-muted)', fontSize: '1.05rem', lineHeight: '1.6' }}>
+              Berbagai fasilitas dan layanan khusus telah disiapkan oleh Pokdarwis Pantai Mliwis demi menjamin kenyamanan rekreasi Anda.
+            </p>
           </div>
 
-          <div style={{ marginBottom: 48 }} id="interactive-calendar-wrapper">
+          <div className="facility-grid" id="facility-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '30px' }}>
+            {LIST_FASILITAS.map((item) => {
+              const IconComp = (Icons as any)[item.icon] || Icons.HelpCircle
+              return (
+                <Link
+                  key={item.slug}
+                  href={`/fasilitas/${item.slug}`}
+                  className="facility-card-item"
+                  id={`facility-${item.slug}`}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    backgroundColor: 'white',
+                    borderRadius: '20px',
+                    overflow: 'hidden',
+                    boxShadow: 'var(--shadow-sm)',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    height: '100%',
+                    border: '1px solid var(--color-border-subtle)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-5px)'
+                    e.currentTarget.style.boxShadow = 'var(--shadow-md)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.boxShadow = 'var(--shadow-sm)'
+                  }}
+                >
+                  <div style={{ width: '100%', height: '170px', overflow: 'hidden', position: 'relative' }}>
+                    <img
+                      src={`/${item.slug}-1.png`}
+                      alt={item.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={(e) => {
+                        // Fallback images based on index
+                        const placeholders = [
+                          'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400', // camping
+                          'https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?q=80&w=400', // payung
+                          'https://images.unsplash.com/photo-1597935258735-e254c1839512?q=80&w=400', // musola
+                          'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=400', // kuliner
+                          'https://images.unsplash.com/photo-1464146072230-91cabc968266?q=80&w=400', // pendopo
+                          'https://images.unsplash.com/photo-1470246973918-29a93221c455?q=80&w=400', // tikar
+                          'https://images.unsplash.com/photo-1534067783941-51c9c23eccfd?q=80&w=400', // kuda
+                          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=400', // gazebo
+                          'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=400', // ayunan
+                          'https://images.unsplash.com/photo-1506015391300-4802dc74de2e?q=80&w=400', // parkir
+                          'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?q=80&w=400', // kolam renang
+                          'https://images.unsplash.com/photo-1551524559-8af4e6624178?q=80&w=400', // atv
+                          'https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=400'  // cemara
+                        ]
+                        const index = LIST_FASILITAS.findIndex(f => f.slug === item.slug)
+                        const fallbackUrl = placeholders[index % placeholders.length]
+                        ;(e.target as HTMLImageElement).src = fallbackUrl
+                      }}
+                    />
+                  </div>
+                  <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <div
+                      className="facility-card-icon"
+                      style={{
+                        marginTop: '-44px',
+                        position: 'relative',
+                        backgroundColor: 'var(--color-primary-600)',
+                        color: 'white',
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '3px solid white',
+                        boxShadow: 'var(--shadow-sm)',
+                        zIndex: 5,
+                        marginBottom: '12px'
+                      }}
+                    >
+                      <IconComp size={20} />
+                    </div>
+                    <h3 style={{ fontSize: '1.15rem', color: 'var(--color-primary-950)', fontWeight: 600, marginBottom: '8px' }}>
+                      {item.title}
+                    </h3>
+                    <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem', lineHeight: '1.5', flex: 1 }}>
+                      {item.description}
+                    </p>
+                    <div style={{ borderTop: '1px solid var(--color-border-subtle)', paddingTop: '12px', marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--color-primary-700)', fontWeight: 600 }}>
+                        {item.price ? item.price.split('|')[0] : ''}
+                      </span>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--color-primary-600)', display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 500 }}>
+                        Detail →
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Booking Calendar Section */}
+      <section className="landing-section" id="booking-calendar" style={{ padding: '90px 0' }}>
+        <div className="landing-container">
+          <div className="landing-section-header" style={{ textAlign: 'center', marginBottom: '60px' }}>
+            <span className="landing-tagline" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: '30px', backgroundColor: 'var(--color-primary-50)', color: 'var(--color-primary-600)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '16px' }}>
+              <Icons.CalendarCheck size={14} />
+              <span>Agenda Pantai</span>
+            </span>
+            <h2 style={{ fontSize: '2.5rem', color: 'var(--color-primary-950)', fontWeight: 700 }}>Jadwal Ketersediaan Tempat</h2>
+            <p style={{ maxWidth: '700px', margin: '16px auto 0', color: 'var(--color-text-muted)', fontSize: '1.05rem', lineHeight: '1.6' }}>
+              Lihat slot tanggal yang sudah terisi sebelum melakukan pengajuan sewa fasilitas Pantai Mliwis agar agenda Anda berjalan lancar.
+            </p>
+          </div>
+
+          <div style={{ marginBottom: 48, backgroundColor: 'white', padding: '24px', borderRadius: '24px', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--color-border-subtle)' }} id="interactive-calendar-wrapper">
             <BookingCalendar />
           </div>
 
-          <div style={{ textAlign: 'center' }} id="calendar-cta-box">
-            <h4 style={{ marginBottom: 12, color: 'var(--color-primary-900)' }}>Siap Merencanakan Acara Anda?</h4>
-            <p className="text-muted" style={{ marginBottom: 24, maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
+          <div style={{ textAlign: 'center', backgroundColor: 'var(--color-primary-50)', padding: '40px', borderRadius: '24px', border: '1px solid rgba(13, 148, 136, 0.15)' }} id="calendar-cta-box">
+            <h4 style={{ marginBottom: 12, color: 'var(--color-primary-900)', fontSize: '1.35rem', fontWeight: 700 }}>Siap Merencanakan Acara Anda?</h4>
+            <p className="text-muted" style={{ marginBottom: 24, maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto', fontSize: '0.95rem' }}>
               Ajukan sewa area dengan mengisi data secara online. Proses validasi cepat oleh tim admin pengelola Pantai Mliwis.
             </p>
             <div style={{ display: 'inline-flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Link href="/booking" className="btn btn-primary" id="btn-booking-now" style={{ padding: '12px 32px' }}>
+              <Link href="/booking" className="btn btn-primary" id="btn-booking-now" style={{ padding: '12px 32px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Calendar size={16} />
                 <span>Mulai Booking Sekarang</span>
               </Link>
-              <Link href="/booking/status" className="btn btn-outline" id="btn-check-status-now" style={{ padding: '12px 32px', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}>
+              <Link href="/booking/status" className="btn btn-outline" id="btn-check-status-now" style={{ padding: '12px 32px', backgroundColor: 'white', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}>
                 <span>Cek Status Pemesanan</span>
               </Link>
             </div>
@@ -230,49 +364,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="landing-footer" id="main-footer">
-        <div className="landing-container">
-          <div className="landing-footer-grid">
-            <div className="landing-footer-brand">
-              <h3>Pantai Mliwis</h3>
-              <p>Destinasi wisata terpadu yang memadukan keasrian alam bahari dan kemudahan penyelenggaraan acara kemasyarakatan di Kabupaten Kebumen.</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', color: 'rgba(255, 255, 255, 0.7)' }}>
-                <MapPin size={16} />
-                <span>Jl. Lintas Selatan, Ambal, Kebumen, Jawa Tengah</span>
-              </div>
-            </div>
-
-            <div className="landing-footer-links">
-              <h4>Akses Cepat</h4>
-              <ul style={{ marginTop: 16 }}>
-                <li><a href="#deskripsi">Tentang Pantai</a></li>
-                <li><a href="#fasilitas">Fasilitas</a></li>
-                <li><a href="#booking-calendar">Jadwal Booking</a></li>
-                <li><Link href="/booking">Pemesanan</Link></li>
-              </ul>
-            </div>
-
-            <div className="landing-footer-links">
-              <h4>Hubungi Kami</h4>
-              <ul style={{ marginTop: 16 }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', color: 'rgba(255, 255, 255, 0.7)' }}>
-                  <Phone size={14} />
-                  <span>+62 823-4567-8901</span>
-                </li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', color: 'rgba(255, 255, 255, 0.7)' }}>
-                  <Mail size={14} />
-                  <span>kontak@pantai-mliwis.com</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="landing-footer-bottom">
-            <p>© {new Date().getFullYear()} SI-Mliwis (Sistem Informasi Manajemen Pantai Mliwis). All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      {/* Footer Bersama */}
+      <PublicFooter />
     </div>
   )
 }

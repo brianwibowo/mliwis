@@ -169,13 +169,101 @@ input, select, textarea, button {
   top: 0;
   bottom: 0;
   width: var(--sidebar-width);
-  background: var(--color-ocean-gradient);
+  background: var(--color-ocean-dark);
   color: white;
   z-index: 40;
-  transition: width var(--transition-base), transform var(--transition-base);
+  transition: width var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+/* Collapsed Sidebar & Hover Expansion Style rules */
+.sidebar-collapse-btn {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .sidebar-collapse-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: var(--radius-sm);
+    width: 28px;
+    height: 28px;
+    color: white;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+  }
+  .sidebar-collapse-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Collapsed state */
+  .sidebar.collapsed {
+    width: var(--sidebar-collapsed-width);
+  }
+  
+  .sidebar.collapsed .sidebar-header {
+    padding: var(--space-5) 0;
+    justify-content: center;
+    gap: 0;
+  }
+  
+  .sidebar.collapsed .sidebar-collapse-btn {
+    display: none;
+  }
+  
+  .sidebar.collapsed .sidebar-logo-text,
+  .sidebar.collapsed .sidebar-section-label,
+  .sidebar.collapsed .sidebar-menu-item span,
+  .sidebar.collapsed .sidebar-submenu,
+  .sidebar.collapsed .sidebar-user-info,
+  .sidebar.collapsed .sidebar-menu-item .chevron-icon {
+    display: none !important;
+  }
+  
+  /* Hover Expand (floating overlay style) */
+  .sidebar.collapsed:hover {
+    width: var(--sidebar-width);
+    box-shadow: var(--shadow-xl);
+  }
+  
+  .sidebar.collapsed:hover .sidebar-header {
+    padding: var(--space-5) var(--space-5);
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+  
+  .sidebar.collapsed:hover .sidebar-collapse-btn {
+    display: flex;
+  }
+  
+  .sidebar.collapsed:hover .sidebar-logo-text {
+    display: block !important;
+  }
+  
+  .sidebar.collapsed:hover .sidebar-section-label {
+    display: block !important;
+  }
+  
+  .sidebar.collapsed:hover .sidebar-menu-item span {
+    display: inline !important;
+  }
+  
+  .sidebar.collapsed:hover .sidebar-submenu {
+    display: block !important;
+  }
+  
+  .sidebar.collapsed:hover .sidebar-user-info {
+    display: block !important;
+  }
+  
+  .sidebar.collapsed:hover .sidebar-menu-item .chevron-icon {
+    display: inline-block !important;
+  }
 }
 
 .sidebar-header {
@@ -375,6 +463,10 @@ input, select, textarea, button {
   flex: 1;
   min-height: 100vh;
   transition: margin-left var(--transition-base);
+}
+
+.main-content.collapsed {
+  margin-left: var(--sidebar-collapsed-width);
 }
 
 /* Topbar */
@@ -1526,7 +1618,7 @@ input, select, textarea, button {
 
 .charts-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1.3fr 1fr;
   gap: var(--space-5);
   margin-bottom: var(--space-6);
 }
