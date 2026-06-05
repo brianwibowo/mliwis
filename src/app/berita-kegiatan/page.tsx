@@ -1,53 +1,23 @@
+export const dynamic = 'force-dynamic'
+
 import Link from 'next/link'
 import * as Icons from 'lucide-react'
 import PublicHeader from '@/components/layout/PublicHeader'
 import PublicFooter from '@/components/layout/PublicFooter'
+import { prisma } from '@/lib/prisma'
+import { formatTanggal } from '@/lib/format'
 
 export const metadata = {
   title: 'Berita Kegiatan Pokdarwis — Pantai Mliwis',
   description: 'Ikuti perkembangan terbaru, agenda kegiatan kemasyarakatan, serta festival budaya menarik di Pantai Mliwis Kebumen.',
 }
 
-const MOCK_NEWS = [
-  {
-    id: 1,
-    title: 'Festival Budaya Grebeg Rolasan Tarik Perhatian Ribuan Pengunjung',
-    date: '12 Mei 2026',
-    author: 'Admin Pokdarwis',
-    summary: 'Arak-arakan gunungan hasil bumi raksasa menyusuri pesisir selatan sebagai bentuk rasa syukur warga Desa Kenoyojayan atas berkah melimpah.',
-    image: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=600',
-    category: 'Budaya & Tradisi',
-  },
-  {
-    id: 2,
-    title: 'Aksi Peduli Lingkungan: Penanaman 1.000 Pohon Cemara Udang',
-    date: '28 April 2026',
-    author: 'Pengelola Lingkungan',
-    summary: 'Bekerja sama dengan Karang Taruna, Pokdarwis menanam seribu bibit cemara udang baru guna memperluas area teduh di Pantai Mliwis.',
-    image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600',
-    category: 'Lingkungan',
-  },
-  {
-    id: 3,
-    title: 'Wahana Baru Kolam Renang Anak & Penyewaan ATV Resmi Dibuka',
-    date: '15 Maret 2026',
-    author: 'Humas Mliwis',
-    summary: 'Meningkatkan kenyamanan liburan keluarga, fasilitas kolam renang air tawar mini serta 10 unit motor ATV siap memanjakan para pengunjung.',
-    image: 'https://images.unsplash.com/photo-1551524559-8af4e6624178?q=80&w=600',
-    category: 'Wahana Wisata',
-  },
-  {
-    id: 4,
-    title: 'Sukses Gelar Outbound Corporate BUMN di Area Hutan Cemara',
-    date: '04 Februari 2026',
-    author: 'Admin Booking',
-    summary: 'Lebih dari 100 peserta mengikuti kegiatan team-building dan rapat koordinasi di Aula Terbuka Pendopo Mliwis dengan sirkulasi udara pesisir yang segar.',
-    image: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?q=80&w=600',
-    category: 'Kegiatan Acara',
-  },
-]
+export default async function NewsPage() {
+  const beritaList = await prisma.berita.findMany({
+    where: { published: true },
+    orderBy: { createdAt: 'desc' },
+  })
 
-export default function NewsPage() {
   return (
     <div style={{ background: 'var(--color-surface)', minHeight: '100vh' }}>
       {/* Header */}
@@ -101,81 +71,95 @@ export default function NewsPage() {
       {/* News Grid Section */}
       <section style={{ padding: '80px 0', backgroundColor: 'var(--color-surface-alt)' }}>
         <div className="landing-container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px' }}>
-            {MOCK_NEWS.map((news) => (
-              <article
-                key={news.id}
-                style={{
-                  backgroundColor: 'white',
-                  borderRadius: '24px',
-                  overflow: 'hidden',
-                  boxShadow: 'var(--shadow-sm)',
-                  border: '1px solid var(--color-border-subtle)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  height: '100%',
-                }}
-              >
-                <div style={{ width: '100%', height: '220px', overflow: 'hidden', position: 'relative' }}>
-                  <img src={news.image} alt={news.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: '16px',
-                      left: '16px',
-                      backgroundColor: 'var(--color-primary-600)',
-                      color: 'white',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      padding: '4px 12px',
-                      borderRadius: '8px',
-                    }}
-                  >
-                    {news.category}
-                  </span>
-                </div>
-                <div style={{ padding: '28px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: 'var(--color-text-muted)', fontSize: '0.8rem', marginBottom: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Icons.Calendar size={12} />
-                      <span>{news.date}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Icons.User size={12} />
-                      <span>{news.author}</span>
-                    </div>
+          {beritaList.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '60px 20px', backgroundColor: 'white', borderRadius: '24px', border: '1px solid var(--color-border-subtle)' }}>
+              <Icons.Newspaper size={48} className="text-muted" style={{ margin: '0 auto 16px' }} />
+              <h3 style={{ color: 'var(--color-primary-950)', fontWeight: 700, fontSize: '1.25rem', marginBottom: '8px' }}>Belum Ada Berita</h3>
+              <p style={{ color: 'var(--color-text-muted)' }}>Pantau terus halaman ini untuk mendapatkan informasi terbaru dari kami.</p>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px' }}>
+              {beritaList.map((news) => (
+                <article
+                  key={news.id}
+                  style={{
+                    backgroundColor: 'white',
+                    borderRadius: '24px',
+                    overflow: 'hidden',
+                    boxShadow: 'var(--shadow-sm)',
+                    border: '1px solid var(--color-border-subtle)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100%',
+                  }}
+                >
+                  <div style={{ width: '100%', height: '220px', overflow: 'hidden', position: 'relative', backgroundColor: 'var(--color-surface-alt)' }}>
+                    {news.gambarUtama ? (
+                      <img src={news.gambarUtama} alt={news.judul} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Icons.Newspaper size={48} className="text-muted" />
+                      </div>
+                    )}
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '16px',
+                        left: '16px',
+                        backgroundColor: 'var(--color-primary-600)',
+                        color: 'white',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        padding: '4px 12px',
+                        borderRadius: '8px',
+                      }}
+                    >
+                      {news.kategori}
+                    </span>
                   </div>
-                  <h2 style={{ fontSize: '1.25rem', color: 'var(--color-primary-950)', fontWeight: 700, lineHeight: '1.4', margin: '0 0 12px', letterSpacing: '-0.01em' }}>
-                    {news.title}
-                  </h2>
-                  <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', lineHeight: '1.6', flex: 1, margin: '0 0 20px' }}>
-                    {news.summary}
-                  </p>
-                  <Link
-                    href={`/berita-kegiatan`}
-                    style={{
-                      backgroundColor: 'transparent',
-                      border: '1px solid var(--color-border)',
-                      color: 'var(--color-text-muted)',
-                      padding: '10px 20px',
-                      borderRadius: '12px',
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      textDecoration: 'none',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      transition: 'all 0.2s ease',
-                      width: 'fit-content'
-                    }}
-                  >
-                    <span>Baca Selengkapnya</span>
-                    <Icons.ArrowRight size={14} />
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
+                  <div style={{ padding: '28px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: 'var(--color-text-muted)', fontSize: '0.8rem', marginBottom: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Icons.Calendar size={12} />
+                        <span>{formatTanggal(news.createdAt)}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Icons.User size={12} />
+                        <span>{news.penulis}</span>
+                      </div>
+                    </div>
+                    <h2 style={{ fontSize: '1.25rem', color: 'var(--color-primary-950)', fontWeight: 700, lineHeight: '1.4', margin: '0 0 12px', letterSpacing: '-0.01em', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      {news.judul}
+                    </h2>
+                    <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', lineHeight: '1.6', flex: 1, margin: '0 0 20px', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      {news.ringkasan}
+                    </p>
+                    <Link
+                      href={`/berita-kegiatan/${news.slug}`}
+                      style={{
+                        backgroundColor: 'transparent',
+                        border: '1px solid var(--color-border)',
+                        color: 'var(--color-text-muted)',
+                        padding: '10px 20px',
+                        borderRadius: '12px',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        textDecoration: 'none',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        transition: 'all 0.2s ease',
+                        width: 'fit-content'
+                      }}
+                    >
+                      <span>Baca Selengkapnya</span>
+                      <Icons.ArrowRight size={14} />
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

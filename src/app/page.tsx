@@ -81,13 +81,15 @@ export default function Home() {
                 <span>Lihat Jadwal</span>
                 <ArrowRight size={18} />
               </a>
-              <Link
-                href="/booking"
+              <a
+                href="/booking/form"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="btn btn-outline-white btn-lg"
                 id="btn-cta-booking"
               >
                 <span>Booking Tempat</span>
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -197,10 +199,9 @@ export default function Home() {
               </div>
               <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px', order: 1 }}>
                 <img
-                  src="/4.png"
+                  src="https://images.unsplash.com/photo-1506015391300-4802dc74de2e?q=80&w=600"
                   alt="Akses Jalan dan JPK"
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1473116763269-255448993f66?q=80&w=600' }}
                 />
                 <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', color: 'white', padding: '6px 14px', borderRadius: '10px', fontSize: '0.825rem' }}>
                   Akses Jalan Masuk Pantai Mliwis
@@ -258,30 +259,9 @@ export default function Home() {
                 >
                   <div style={{ width: '100%', height: '170px', overflow: 'hidden', position: 'relative' }}>
                     <img
-                      src={`/${item.slug}-1.png`}
+                      src={item.images[0]}
                       alt={item.title}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      onError={(e) => {
-                        // Fallback images based on index
-                        const placeholders = [
-                          'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=400', // camping
-                          'https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?q=80&w=400', // payung
-                          'https://images.unsplash.com/photo-1597935258735-e254c1839512?q=80&w=400', // musola
-                          'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=400', // kuliner
-                          'https://images.unsplash.com/photo-1464146072230-91cabc968266?q=80&w=400', // pendopo
-                          'https://images.unsplash.com/photo-1470246973918-29a93221c455?q=80&w=400', // tikar
-                          'https://images.unsplash.com/photo-1534067783941-51c9c23eccfd?q=80&w=400', // kuda
-                          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=400', // gazebo
-                          'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=400', // ayunan
-                          'https://images.unsplash.com/photo-1506015391300-4802dc74de2e?q=80&w=400', // parkir
-                          'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?q=80&w=400', // kolam renang
-                          'https://images.unsplash.com/photo-1551524559-8af4e6624178?q=80&w=400', // atv
-                          'https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=400'  // cemara
-                        ]
-                        const index = LIST_FASILITAS.findIndex(f => f.slug === item.slug)
-                        const fallbackUrl = placeholders[index % placeholders.length]
-                        ;(e.target as HTMLImageElement).src = fallbackUrl
-                      }}
                     />
                   </div>
                   <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -352,13 +332,13 @@ export default function Home() {
               Ajukan sewa area dengan mengisi data secara online. Proses validasi cepat oleh tim admin pengelola Pantai Mliwis.
             </p>
             <div style={{ display: 'inline-flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Link href="/booking" className="btn btn-primary" id="btn-booking-now" style={{ padding: '12px 32px', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <a href="/booking/form" target="_blank" rel="noopener noreferrer" className="btn btn-primary" id="btn-booking-now" style={{ padding: '12px 32px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Calendar size={16} />
                 <span>Mulai Booking Sekarang</span>
-              </Link>
-              <Link href="/booking/status" className="btn btn-outline" id="btn-check-status-now" style={{ padding: '12px 32px', backgroundColor: 'white', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}>
+              </a>
+              <a href="/booking/status" target="_blank" rel="noopener noreferrer" className="btn btn-outline" id="btn-check-status-now" style={{ padding: '12px 32px', backgroundColor: 'white', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}>
                 <span>Cek Status Pemesanan</span>
-              </Link>
+              </a>
             </div>
           </div>
         </div>

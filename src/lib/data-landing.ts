@@ -33,7 +33,10 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Akses sangat dekat dengan bibir pantai',
       'Area khusus api unggun bersama keluarga'
     ],
-    images: ['/camping-ground-1.png', '/camping-ground-2.png', '/camping-ground-3.png']
+    images: [
+      'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=600',
+      'https://images.unsplash.com/photo-1537905569824-f89f14cceb68?q=80&w=600'
+    ]
   },
   {
     slug: 'payung-pantai',
@@ -48,7 +51,10 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Peletakan fleksibel di dekat garis pantai',
       'Bisa disewa seharian penuh'
     ],
-    images: ['/payung-pantai-1.png', '/payung-pantai-2.png']
+    images: [
+      'https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?q=80&w=600',
+      'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?q=80&w=600'
+    ]
   },
   {
     slug: 'musola',
@@ -63,7 +69,10 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Kapasitas hingga 20 jamaah sekaligus',
       'Lokasi strategis dekat pusat keramaian & toilet'
     ],
-    images: ['/musola-1.png', '/musola-2.png']
+    images: [
+      'https://images.unsplash.com/photo-1597935258735-e254c1839512?q=80&w=600',
+      'https://images.unsplash.com/photo-1609137144813-91c69b5ae57?q=80&w=600'
+    ]
   },
   {
     slug: 'aneka-kuliner',
@@ -78,7 +87,10 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Area tempat duduk teduh di bawah cemara',
       'Harga bersahabat dan higienis'
     ],
-    images: ['/aneka-kuliner-1.png', '/aneka-kuliner-2.png']
+    images: [
+      'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=600',
+      'https://images.unsplash.com/photo-1563805042-7684c019e1cb?q=80&w=600'
+    ]
   },
   {
     slug: 'pendopo',
@@ -93,7 +105,10 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Stop kontak listrik yang cukup di sekeliling aula',
       'Dekat akses toilet utama dan parkiran luas'
     ],
-    images: ['/pendopo-1.png', '/pendopo-2.png']
+    images: [
+      'https://images.unsplash.com/photo-1464146072230-91cabc968266?q=80&w=600',
+      'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?q=80&w=600'
+    ]
   },
   {
     slug: 'sewa-tikar',
@@ -108,7 +123,9 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Bebas menggelar di area teduh manapun',
       'Harga sewa sangat terjangkau seharian'
     ],
-    images: ['/sewa-tikar-1.png']
+    images: [
+      'https://images.unsplash.com/photo-1470246973918-29a93221c455?q=80&w=600'
+    ]
   },
   {
     slug: 'kuda-pantai',
@@ -123,7 +140,10 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Rute perjalanan menyusuri bibir pantai yang luas',
       'Spot foto sangat ikonik di atas kuda dengan latar pantai'
     ],
-    images: ['/kuda-pantai-1.png', '/kuda-pantai-2.png']
+    images: [
+      'https://images.unsplash.com/photo-1534067783941-51c9c23eccfd?q=80&w=600',
+      'https://images.unsplash.com/photo-1485963631004-f2f00b1d6606?q=80&w=600'
+    ]
   },
   {
     slug: 'gazebo',
@@ -138,7 +158,10 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Colokan listrik tersedia di beberapa gazebo',
       'Sangat bersih dan berdekatan dengan area warung'
     ],
-    images: ['/gazebo-1.png', '/gazebo-2.png']
+    images: [
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600',
+      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=600'
+    ]
   },
   {
     slug: 'sewa-ayunan',
@@ -153,7 +176,9 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Sangat disukai anak-anak untuk area bermain',
       'Tarif ramah kantong untuk penggunaan sepanjang hari'
     ],
-    images: ['/sewa-ayunan-1.png']
+    images: [
+      'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=600'
+    ]
   },
   {
     slug: 'parkir',
@@ -168,7 +193,10 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Sistem karcis masuk resmi untuk keamanan ganda',
       'Tarif sangat terjangkau tanpa biaya tambahan per jam'
     ],
-    images: ['/parkir-1.png', '/parkir-2.png']
+    images: [
+      'https://images.unsplash.com/photo-1506015391300-4802dc74de2e?q=80&w=600',
+      'https://images.unsplash.com/photo-1473116763269-255448993f66?q=80&w=600'
+    ]
   },
   {
     slug: 'kolam-renang-anak',
@@ -183,7 +211,10 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Tempat duduk santai beratap bagi orang tua yang mengawasi',
       'Air tawar bersih yang disaring secara teratur'
     ],
-    images: ['/kolam-renang-anak-1.png', '/kolam-renang-anak-2.png']
+    images: [
+      'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?q=80&w=600',
+      'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?q=80&w=600'
+    ]
   },
   {
     slug: 'atv-pantai',
@@ -198,7 +229,10 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Jalur lintasan pasir pantai yang lapang dan aman',
       'Dilengkapi dengan fasilitas helm pengaman'
     ],
-    images: ['/atv-pantai-1.png', '/atv-pantai-2.png']
+    images: [
+      'https://images.unsplash.com/photo-1551524559-8af4e6624178?q=80&w=600',
+      'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?q=80&w=600'
+    ]
   },
   {
     slug: 'pohon-cemara',
@@ -213,7 +247,10 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Background foto bernuansa alam yang sangat estetik',
       'Udara sejuk bebas polusi'
     ],
-    images: ['/pohon-cemara-1.png', '/pohon-cemara-2.png']
+    images: [
+      'https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600',
+      'https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=600'
+    ]
   }
 ]
 

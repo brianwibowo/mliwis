@@ -52,6 +52,9 @@ async function main() {
   await prisma.kasKeluar.deleteMany()
   await prisma.pengunjung.deleteMany()
   await prisma.fasilitas.deleteMany()
+  await prisma.programKerjaDokumentasi.deleteMany()
+  await prisma.programKerja.deleteMany()
+  await prisma.berita.deleteMany()
   await prisma.user.deleteMany()
   console.log('  ✓ Data lama dihapus')
 
@@ -69,16 +72,24 @@ async function main() {
 
   // 2. Fasilitas
   const fasilitasData = [
-    { nama: 'Area Camping Ground', deskripsi: 'Tempat camping peserta' },
+    { nama: 'Area Camping Ground', deskripsi: 'Merasakan sensasi berkemah di bawah rindangnya cemara udang' },
+    { nama: 'Sewa Payung Pantai', deskripsi: 'Payung teduh di sepanjang pantai untuk menikmati keindahan laut' },
+    { nama: 'Mushola Pantai', deskripsi: 'Fasilitas ibadah yang tenang, bersih, dan sejuk' },
+    { nama: 'Area UMKM', deskripsi: 'Kawasan kuliner yang menjajakan makanan laut segar dan hidangan tradisional' },
+    { nama: 'Pendopo/Aula Terbuka', deskripsi: 'Pendopo tradisional berkapasitas besar untuk berbagai acara' },
+    { nama: 'Sewa Tikar Piknik', deskripsi: 'Tikar piknik praktis untuk berkumpul dan makan bersama keluarga' },
+    { nama: 'Sewa Kuda Pantai', deskripsi: 'Menyusuri keindahan garis pantai selatan dengan menunggangi kuda' },
+    { nama: 'Gazebo Pantai', deskripsi: 'Pondok kayu santai menghadap ke arah laut selatan' },
+    { nama: 'Area Ayunan', deskripsi: 'Fasilitas ayunan gantung di bawah pepohonan cemara' },
+    { nama: 'Kolam Renang Anak', deskripsi: 'Kolam renang air tawar mini yang aman dan menyenangkan' },
+    { nama: 'Sewa ATV Pantai', deskripsi: 'Petualangan seru mengendarai motor ATV menyusuri hamparan pasir' },
     { nama: 'Area Outbound', deskripsi: 'Tempat kegiatan permainan/outbound' },
-    { nama: 'Pendopo/Aula Terbuka', deskripsi: 'Tempat acara resmi' },
     { nama: 'Area Prewedding', deskripsi: 'Lokasi foto prewedding' },
-    { nama: 'Area UMKM', deskripsi: 'Tempat bazar/penjualan' },
   ]
   const fasilitas = await Promise.all(
     fasilitasData.map((f) => prisma.fasilitas.create({ data: f }))
   )
-  console.log('  ✓ 5 fasilitas dibuat')
+  console.log('  ✓ 13 fasilitas dibuat')
 
   // 3. Surat Masuk
   const suratMasukData = [
@@ -107,13 +118,13 @@ async function main() {
   // 5. Booking
   const bookingData = [
     { kodeBooking: randomKode(), namaCustomer: 'Ahmad Fauzi', nomorHP: '081234567890', tanggalMulai: daysFromNow(7), tanggalSelesai: daysFromNow(8), jenisAcara: 'Camping Keluarga', status: 'menunggu', fasilitasIds: [fasilitas[0].id] },
-    { kodeBooking: randomKode(), namaCustomer: 'Siti Rahayu', nomorHP: '082345678901', tanggalMulai: daysFromNow(14), tanggalSelesai: daysFromNow(14), jenisAcara: 'Foto Prewedding', status: 'menunggu', fasilitasIds: [fasilitas[3].id] },
-    { kodeBooking: randomKode(), namaCustomer: 'PT. Maju Jaya', nomorHP: '083456789012', tanggalMulai: daysFromNow(21), tanggalSelesai: daysFromNow(22), jenisAcara: 'Outbound Karyawan', status: 'menunggu', fasilitasIds: [fasilitas[0].id, fasilitas[1].id] },
-    { kodeBooking: randomKode(), namaCustomer: 'Dewi Kusuma', nomorHP: '084567890123', tanggalMulai: daysFromNow(3), tanggalSelesai: daysFromNow(3), jenisAcara: 'Acara Pernikahan', status: 'disetujui', catatanPengelola: 'Sudah dikonfirmasi. Silakan datang 1 jam sebelumnya.', fasilitasIds: [fasilitas[2].id] },
-    { kodeBooking: randomKode(), namaCustomer: 'Komunitas Alam Bebas', nomorHP: '085678901234', tanggalMulai: daysFromNow(10), tanggalSelesai: daysFromNow(12), jenisAcara: 'Camping Komunitas', status: 'disetujui', catatanPengelola: 'Area camping sudah disiapkan.', fasilitasIds: [fasilitas[0].id, fasilitas[1].id] },
-    { kodeBooking: randomKode(), namaCustomer: 'UMKM Kebumen Bersatu', nomorHP: '086789012345', tanggalMulai: daysFromNow(5), tanggalSelesai: daysFromNow(6), jenisAcara: 'Bazar UMKM', status: 'disetujui', catatanPengelola: 'Maksimal 20 stand.', fasilitasIds: [fasilitas[4].id] },
-    { kodeBooking: randomKode(), namaCustomer: 'Rina Susanti', nomorHP: '087890123456', tanggalMulai: daysFromNow(2), tanggalSelesai: daysFromNow(2), jenisAcara: 'Pesta Ulang Tahun', status: 'ditolak', catatanPengelola: 'Maaf, tanggal sudah penuh.', fasilitasIds: [fasilitas[2].id] },
-    { kodeBooking: randomKode(), namaCustomer: 'Sekolah SMP N 1 Mirit', nomorHP: '088901234567', tanggalMulai: daysFromNow(1), tanggalSelesai: daysFromNow(1), jenisAcara: 'Study Tour', status: 'ditolak', catatanPengelola: 'Jadwal bentrok dengan kegiatan lain.', fasilitasIds: [fasilitas[1].id, fasilitas[0].id] },
+    { kodeBooking: randomKode(), namaCustomer: 'Siti Rahayu', nomorHP: '082345678901', tanggalMulai: daysFromNow(14), tanggalSelesai: daysFromNow(14), jenisAcara: 'Foto Prewedding', status: 'menunggu', fasilitasIds: [fasilitas[12].id] },
+    { kodeBooking: randomKode(), namaCustomer: 'PT. Maju Jaya', nomorHP: '083456789012', tanggalMulai: daysFromNow(21), tanggalSelesai: daysFromNow(22), jenisAcara: 'Outbound Karyawan', status: 'menunggu', fasilitasIds: [fasilitas[0].id, fasilitas[11].id] },
+    { kodeBooking: randomKode(), namaCustomer: 'Dewi Kusuma', nomorHP: '084567890123', tanggalMulai: daysFromNow(3), tanggalSelesai: daysFromNow(3), jenisAcara: 'Acara Pernikahan', status: 'disetujui', catatanPengelola: 'Sudah dikonfirmasi. Silakan datang 1 jam sebelumnya.', fasilitasIds: [fasilitas[4].id] },
+    { kodeBooking: randomKode(), namaCustomer: 'Komunitas Alam Bebas', nomorHP: '085678901234', tanggalMulai: daysFromNow(10), tanggalSelesai: daysFromNow(12), jenisAcara: 'Camping Komunitas', status: 'disetujui', catatanPengelola: 'Area camping sudah disiapkan.', fasilitasIds: [fasilitas[0].id, fasilitas[11].id] },
+    { kodeBooking: randomKode(), namaCustomer: 'UMKM Kebumen Bersatu', nomorHP: '086789012345', tanggalMulai: daysFromNow(5), tanggalSelesai: daysFromNow(6), jenisAcara: 'Bazar UMKM', status: 'disetujui', catatanPengelola: 'Maksimal 20 stand.', fasilitasIds: [fasilitas[3].id] },
+    { kodeBooking: randomKode(), namaCustomer: 'Rina Susanti', nomorHP: '087890123456', tanggalMulai: daysFromNow(2), tanggalSelesai: daysFromNow(2), jenisAcara: 'Pesta Ulang Tahun', status: 'ditolak', catatanPengelola: 'Maaf, tanggal sudah penuh.', fasilitasIds: [fasilitas[4].id] },
+    { kodeBooking: randomKode(), namaCustomer: 'Sekolah SMP N 1 Mirit', nomorHP: '088901234567', tanggalMulai: daysFromNow(1), tanggalSelesai: daysFromNow(1), jenisAcara: 'Study Tour', status: 'ditolak', catatanPengelola: 'Jadwal bentrok dengan kegiatan lain.', fasilitasIds: [fasilitas[11].id, fasilitas[0].id] },
   ]
 
   for (const b of bookingData) {
@@ -186,6 +197,67 @@ async function main() {
     pengunjungData.map((p) => prisma.pengunjung.create({ data: p }))
   )
   console.log('  ✓ 30 data pengunjung dibuat')
+
+  // 9. Berita (Kabar & Kegiatan)
+  const beritaData = [
+    {
+      judul: 'Festival Budaya Grebeg Rolasan Tarik Perhatian Ribuan Pengunjung',
+      slug: 'festival-budaya-grebeg-rolasan-tarik-perhatian-ribuan-pengunjung',
+      ringkasan: 'Arak-arakan gunungan hasil bumi raksasa menyusuri pesisir selatan sebagai bentuk rasa syukur warga Desa Kenoyojayan atas berkah melimpah.',
+      gambarUtama: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=600',
+      kategori: 'Budaya & Tradisi',
+      penulis: 'Admin Pokdarwis',
+      published: true,
+      konten: [
+        { type: 'text', value: 'Arak-arakan gunungan hasil bumi raksasa menyusuri pesisir selatan Pantai Mliwis Kebumen sebagai bentuk rasa syukur warga Desa Kenoyojayan atas berkah melimpah yang mereka terima sepanjang tahun.' },
+        { type: 'text', value: 'Ribuan pengunjung memadati lokasi festival sejak pagi hari untuk menyaksikan keunikan tradisi Grebeg Rolasan ini. Warga setempat menghias gunungan dengan berbagai sayuran, buah-buahan, serta aneka makanan tradisional.' }
+      ]
+    },
+    {
+      judul: 'Aksi Peduli Lingkungan: Penanaman 1.000 Pohon Cemara Udang',
+      slug: 'aksi-peduli-lingkungan-penanaman-1-000-pohon-cemara-udang',
+      ringkasan: 'Bekerja sama dengan Karang Taruna, Pokdarwis menanam seribu bibit cemara udang baru guna memperluas area teduh di Pantai Mliwis.',
+      gambarUtama: 'https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600',
+      kategori: 'Lingkungan',
+      penulis: 'Pengelola Lingkungan',
+      published: true,
+      konten: [
+        { type: 'text', value: 'Bekerja sama dengan Karang Taruna Desa Kenoyojayan, Pokdarwis Pantai Mliwis melakukan aksi penanaman seribu bibit pohon cemara udang baru.' },
+        { type: 'text', value: 'Kegiatan ini bertujuan untuk mencegah abrasi air laut samudra hindia serta memperluas kawasan teduh yang menjadi daya tarik utama bagi para wisatawan.' }
+      ]
+    },
+    {
+      judul: 'Wahana Baru Kolam Renang Anak & Penyewaan ATV Resmi Dibuka',
+      slug: 'wahana-baru-kolam-renang-anak-penyewaan-atv-resmi-dibuka',
+      ringkasan: 'Meningkatkan kenyamanan liburan keluarga, fasilitas kolam renang air tawar mini serta 10 unit motor ATV siap memanjakan para pengunjung.',
+      gambarUtama: 'https://images.unsplash.com/photo-1551524559-8af4e6624178?q=80&w=600',
+      kategori: 'Wahana Wisata',
+      penulis: 'Humas Mliwis',
+      published: true,
+      konten: [
+        { type: 'text', value: 'Guna meningkatkan kepuasan pengunjung, pengelola Pantai Mliwis secara resmi membuka wahana baru berupa kolam renang air tawar anak-anak.' },
+        { type: 'text', value: 'Selain itu, tersedia pula 10 unit motor ATV tangguh yang siap disewa untuk menyusuri hamparan pasir hitam luas khas pantai selatan Kebumen.' }
+      ]
+    },
+    {
+      judul: 'Sukses Gelar Outbound Corporate BUMN di Area Hutan Cemara',
+      slug: 'sukses-gelar-outbound-corporate-bumn-di-area-hutan-cemara',
+      ringkasan: 'Lebih dari 100 peserta mengikuti kegiatan team-building dan rapat koordinasi di Aula Terbuka Pendopo Mliwis dengan sirkulasi udara pesisir yang segar.',
+      gambarUtama: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?q=80&w=600',
+      kategori: 'Kegiatan Acara',
+      penulis: 'Admin Booking',
+      published: true,
+      konten: [
+        { type: 'text', value: 'Area Hutan Cemara Pantai Mliwis kembali menjadi pilihan utama untuk acara corporate gathering berskala besar.' },
+        { type: 'text', value: 'Kali ini, salah satu instansi BUMN mengadakan program team building (outbound) dan rapat koordinasi di kawasan Pendopo / Aula Terbuka Pantai Mliwis.' }
+      ]
+    }
+  ]
+
+  await Promise.all(
+    beritaData.map((b) => prisma.berita.create({ data: { ...b, userId: admin.id } }))
+  )
+  console.log('  ✓ 4 berita kegiatan dibuat')
 
   console.log('\n🏖️  Seeding selesai!\n')
   console.log('  Akun tersedia:')

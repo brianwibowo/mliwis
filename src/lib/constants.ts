@@ -132,6 +132,11 @@ export const NAV_ITEMS: NavItem[] = [
     href: '/program-kerja',
   },
   {
+    icon: 'Newspaper',
+    label: 'Berita',
+    href: '/berita-admin',
+  },
+  {
     icon: 'Settings',
     label: 'Pengaturan',
     href: '/pengaturan',

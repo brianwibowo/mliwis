@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Tent, TreePine, Info } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Tent, TreePine, Info, X, Clock, MapPin, AlignLeft } from 'lucide-react'
 
 // Mock schedules for a premium realistic visual representation
 interface Schedule {
@@ -10,6 +10,9 @@ interface Schedule {
   tanggalSelesai: number // day of current month
   nama: string
   tipe: 'camping' | 'outbound' | 'event'
+  fasilitas: string
+  jam: string
+  deskripsi: string
 }
 
 const NAMA_BULAN = [
@@ -21,14 +24,33 @@ const HARI_MINGGU = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']
 
 export default function BookingCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date())
+  const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null)
+
   const currentMonth = currentDate.getMonth()
   const currentYear = currentDate.getFullYear()
 
   // Generate some premium realistic mock schedules specific to the month
-  // To keep it clean and mostly empty, we only have 2 mock events
   const mockSchedules: Schedule[] = [
-    { id: 1, tanggalMulai: 12, tanggalSelesai: 14, nama: 'Camping Ceria Mandiri', tipe: 'camping' },
-    { id: 2, tanggalMulai: 22, tanggalSelesai: 22, nama: 'Outbound Gathering BNI', tipe: 'outbound' },
+    {
+      id: 1,
+      tanggalMulai: 12,
+      tanggalSelesai: 14,
+      nama: 'Camping Ceria Mandiri',
+      tipe: 'camping',
+      fasilitas: 'Area Camping Ground, Mushola Pantai',
+      jam: '08:00 (12 Jun) - 17:00 (14 Jun)',
+      deskripsi: 'Acara kemah bersama dan gathering keluarga besar karyawan Mandiri Jaya.',
+    },
+    {
+      id: 2,
+      tanggalMulai: 22,
+      tanggalSelesai: 22,
+      nama: 'Outbound Gathering BNI',
+      tipe: 'outbound',
+      fasilitas: 'Area Outbound, Pendopo / Aula Terbuka',
+      jam: '07:30 - 16:00 WIB',
+      deskripsi: 'Kegiatan team building, fun games, dan ramah tamah karyawan Bank BNI Cabang Kebumen.',
+    },
   ]
 
   // Get first day of the month (0 = Sunday, 1 = Monday, etc.)
@@ -62,7 +84,18 @@ export default function BookingCalendar() {
   }
 
   return (
-    <div className="calendar-card card">
+    <div className="calendar-card card" style={{ position: 'relative' }}>
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+      `}</style>
+
       <div className="calendar-header">
         <div className="calendar-title-wrapper">
           <CalendarIcon size={22} className="text-primary" />
@@ -102,11 +135,29 @@ export default function BookingCalendar() {
             const isToday = new Date().getDate() === day && new Date().getMonth() === currentMonth && new Date().getFullYear() === currentYear
             
             return (
-              <div key={`day-${day}`} className={`calendar-day ${isToday ? 'today' : ''} ${daySchedules.length > 0 ? 'has-event' : 'available'}`}>
+              <div
+                key={`day-${day}`}
+                className={`calendar-day ${isToday ? 'today' : ''} ${daySchedules.length > 0 ? 'has-event' : 'available'}`}
+                onClick={() => {
+                  if (daySchedules.length > 0) {
+                    setSelectedSchedule(daySchedules[0])
+                  }
+                }}
+                style={{ cursor: daySchedules.length > 0 ? 'pointer' : 'default' }}
+              >
                 <div className="day-number">{day}</div>
                 <div className="day-events">
                   {daySchedules.map(sched => (
-                    <div key={sched.id} className={`day-event-tag ${sched.tipe}`} title={sched.nama}>
+                    <div
+                      key={sched.id}
+                      className={`day-event-tag ${sched.tipe}`}
+                      title={sched.nama}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedSchedule(sched)
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
                       {sched.tipe === 'camping' ? <Tent size={10} /> : <TreePine size={10} />}
                       <span className="event-name">{sched.nama}</span>
                     </div>
@@ -143,6 +194,162 @@ export default function BookingCalendar() {
           </p>
         </div>
       </div>
+
+      {/* Detail Modal */}
+      {selectedSchedule && (
+        <div
+          className="calendar-modal-overlay"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.6)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            animation: 'fadeIn 0.2s ease-out',
+          }}
+          onClick={() => setSelectedSchedule(null)}
+        >
+          <div
+            className="calendar-modal-card"
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '24px',
+              width: '90%',
+              maxWidth: '480px',
+              padding: '32px',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+              border: '1px solid var(--color-border-subtle)',
+              position: 'relative',
+              animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedSchedule(null)}
+              style={{
+                position: 'absolute',
+                top: '24px',
+                right: '24px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--color-text-muted)',
+                padding: '4px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'background-color 0.2s',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-surface-alt)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <X size={20} />
+            </button>
+
+            {/* Header / Event Type */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+              <span
+                className={`badge ${selectedSchedule.tipe === 'camping' ? 'badge-success' : 'badge-info'}`}
+                style={{
+                  textTransform: 'uppercase',
+                  fontWeight: 700,
+                  fontSize: '0.75rem',
+                  letterSpacing: '0.05em',
+                  padding: '6px 12px',
+                  borderRadius: '20px',
+                }}
+              >
+                {selectedSchedule.tipe === 'camping' ? 'Camping Ground' : 'Outbound Area'}
+              </span>
+            </div>
+
+            {/* Event Title */}
+            <h3
+              style={{
+                fontSize: '1.4rem',
+                fontWeight: 800,
+                color: 'var(--color-primary-950)',
+                lineHeight: '1.3',
+                marginBottom: '24px',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              {selectedSchedule.nama}
+            </h3>
+
+            {/* Details List */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', marginBottom: '28px', textAlign: 'left' }}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'start' }}>
+                <CalendarIcon size={18} className="text-primary" style={{ marginTop: '2px', flexShrink: 0 }} />
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>Rentang Tanggal</div>
+                  <div style={{ fontSize: '0.925rem', fontWeight: 700, color: 'var(--color-primary-950)', marginTop: '2px' }}>
+                    {selectedSchedule.tanggalMulai === selectedSchedule.tanggalSelesai
+                      ? `${selectedSchedule.tanggalMulai} ${NAMA_BULAN[currentMonth]} ${currentYear}`
+                      : `${selectedSchedule.tanggalMulai} - ${selectedSchedule.tanggalSelesai} ${NAMA_BULAN[currentMonth]} ${currentYear}`
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'start' }}>
+                <Clock size={18} className="text-primary" style={{ marginTop: '2px', flexShrink: 0 }} />
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>Rentang Waktu / Jam</div>
+                  <div style={{ fontSize: '0.925rem', fontWeight: 700, color: 'var(--color-primary-950)', marginTop: '2px' }}>
+                    {selectedSchedule.jam}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'start' }}>
+                <MapPin size={18} className="text-primary" style={{ marginTop: '2px', flexShrink: 0 }} />
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>Fasilitas Yang Disewa</div>
+                  <div style={{ fontSize: '0.925rem', fontWeight: 700, color: 'var(--color-primary-950)', marginTop: '2px' }}>
+                    {selectedSchedule.fasilitas}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'start' }}>
+                <AlignLeft size={18} className="text-primary" style={{ marginTop: '2px', flexShrink: 0 }} />
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>Keterangan Acara</div>
+                  <div style={{ fontSize: '0.925rem', color: 'var(--color-text)', lineHeight: '1.5', marginTop: '4px' }}>
+                    {selectedSchedule.deskripsi}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Close Button */}
+            <button
+              onClick={() => setSelectedSchedule(null)}
+              className="btn btn-primary"
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '12px',
+                justifyContent: 'center',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              Tutup Detail
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

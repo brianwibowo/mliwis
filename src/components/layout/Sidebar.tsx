@@ -16,6 +16,7 @@ import {
   ClipboardList,
   ChevronLeft,
   ChevronRight,
+  Newspaper,
 } from 'lucide-react'
 import { useState } from 'react'
 import { NAV_ITEMS } from '@/lib/constants'
@@ -31,6 +32,7 @@ const iconMap: Record<string, React.ComponentType<{ size?: number }>> = {
   FileText,
   Settings,
   ClipboardList,
+  Newspaper,
 }
 
 interface SidebarProps {

@@ -21,7 +21,7 @@ export default function PublicFooter() {
 
           <div className="landing-footer-links">
             <h4 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '16px', color: 'white' }}>Akses Cepat</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <li>
                 <Link href="/" style={{ color: 'rgba(255, 255, 255, 0.75)', textDecoration: 'none', fontSize: '0.925rem' }}>
                   Beranda

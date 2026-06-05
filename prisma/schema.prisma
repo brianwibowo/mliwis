@@ -30,6 +30,7 @@ model User {
   kasKeluar    KasKeluar[]
   pengunjung   Pengunjung[]
   programKerja ProgramKerja[]
+  berita       Berita[]
 
   @@map("users")
 }
@@ -217,5 +218,31 @@ model ProgramKerjaDokumentasi {
 
   @@index([programKerjaId])
   @@map("program_kerja_dokumentasi")
+}
+
+// ==========================================
+// BERITA & KEGIATAN
+// ==========================================
+
+model Berita {
+  id           Int      @id @default(autoincrement())
+  judul        String
+  slug         String   @unique
+  konten       Json     // Array of blocks: [{type: 'text', value: '...'}, {type: 'image', value: '/path/...'}]
+  ringkasan    String   @db.Text
+  gambarUtama  String?
+  kategori     String
+  linkExternal String?
+  penulis      String
+  published    Boolean  @default(false)
+  userId       Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([slug])
+  @@index([published])
+  @@map("berita")
 }
 
