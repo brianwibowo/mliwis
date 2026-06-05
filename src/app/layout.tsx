@@ -1,21 +1,6 @@
 import type { Metadata } from 'next'
-import { Poppins } from 'next/font/google'
 import './globals.css'
 import { ToastProvider } from '@/hooks/useToast'
-
-const poppinsHeading = Poppins({
-  weight: ['600', '700', '800'],
-  subsets: ['latin'],
-  variable: '--font-heading',
-  display: 'swap',
-})
-
-const poppinsBody = Poppins({
-  weight: ['300', '400', '500', '600'],
-  subsets: ['latin'],
-  variable: '--font-body',
-  display: 'swap',
-})
 
 export const metadata: Metadata = {
   title: {
@@ -31,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="id" className={`${poppinsHeading.variable} ${poppinsBody.variable}`}>
+    <html lang="id">
       <body>
         <ToastProvider>
           {children}

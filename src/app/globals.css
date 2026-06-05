@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
 /* ==========================================
    SI-Mliwis Design System
    Ocean Blue Theme — Pantai Mliwis, Kebumen
@@ -18,11 +20,6 @@
   --color-primary-700: #1d4ed8;
   --color-primary-800: #1e40af;
   --color-primary-900: #1e3a5f;
-
-  /* Sand Accent */
-  --color-sand-50: #fefce8;
-  --color-sand-100: #fef9c3;
-  --color-sand-400: #facc15;
 
   /* Ocean */
   --color-ocean-dark: #0c1e3a;
@@ -64,8 +61,8 @@
   --space-16: 64px;
 
   /* Typography */
-  --font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Poppins', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-body: 'Poppins', 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
