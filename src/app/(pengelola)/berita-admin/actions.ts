@@ -145,212 +145,239 @@ export async function getBeritaById(id: number) {
 }
 
 export async function createBerita(formData: FormData) {
-  const session = await getSession()
-  if (!session) return { error: 'Unauthorized' }
+  try {
+    const session = await getSession()
+    if (!session) return { error: 'Unauthorized' }
 
-  const judul = formData.get('judul') as string
-  const kategori = formData.get('kategori') as string
-  const ringkasan = formData.get('ringkasan') as string
-  const penulis = formData.get('penulis') as string
-  const published = formData.get('published') === 'true'
-  const linkExternal = formData.get('linkExternal') as string || null
+    const judul = formData.get('judul') as string
+    const kategori = formData.get('kategori') as string
+    const ringkasan = formData.get('ringkasan') as string
+    const penulis = formData.get('penulis') as string
+    const published = formData.get('published') === 'true'
+    const linkExternal = formData.get('linkExternal') as string || null
 
-  if (!judul || !kategori || !ringkasan || !penulis) {
-    return { error: 'Judul, Kategori, Ringkasan, dan Penulis wajib diisi' }
-  }
+    if (!judul || !kategori || !ringkasan || !penulis) {
+      return { error: 'Judul, Kategori, Ringkasan, dan Penulis wajib diisi' }
+    }
 
-  // Upload main cover image if any
-  let gambarUtamaPath = ''
-  const gambarUtamaFile = formData.get('gambarUtama') as File | null
-  if (gambarUtamaFile && gambarUtamaFile.size > 0) {
-    const uploadResult = await uploadFile(gambarUtamaFile)
-    if (uploadResult.error) return { error: uploadResult.error }
-    gambarUtamaPath = uploadResult.filePath!
-  }
+    // Upload main cover image if any
+    let gambarUtamaPath = ''
+    const gambarUtamaFile = formData.get('gambarUtama') as File | null
+    if (gambarUtamaFile && gambarUtamaFile.size > 0) {
+      const uploadResult = await uploadFile(gambarUtamaFile)
+      if (uploadResult.error) return { error: uploadResult.error }
+      gambarUtamaPath = uploadResult.filePath!
+    }
 
-  // Parse and process dynamic content blocks
-  const blocksMetaRaw = formData.get('blocksMeta') as string
-  const blocksMeta = blocksMetaRaw ? JSON.parse(blocksMetaRaw) : []
-  const processedBlocks: Array<{ type: string; value: string }> = []
+    // Parse and process dynamic content blocks
+    const blocksMetaRaw = formData.get('blocksMeta') as string
+    let blocksMeta = []
+    try {
+      blocksMeta = blocksMetaRaw ? JSON.parse(blocksMetaRaw) : []
+    } catch {
+      return { error: 'Format data blok konten tidak valid' }
+    }
+    
+    const processedBlocks: Array<{ type: string; value: string }> = []
 
-  for (const block of blocksMeta) {
-    if (block.type === 'text') {
-      processedBlocks.push({ type: 'text', value: block.value || '' })
-    } else if (block.type === 'image') {
-      // If it's a new image block, it has a fileKey
-      if (block.fileKey) {
-        const file = formData.get(block.fileKey) as File | null
-        if (file && file.size > 0) {
-          const uploadResult = await uploadFile(file)
-          if (uploadResult.error) return { error: uploadResult.error }
-          processedBlocks.push({ type: 'image', value: uploadResult.filePath! })
-        } else if (block.value) {
-          // Fallback or old value
-          processedBlocks.push({ type: 'image', value: block.value })
+    for (const block of blocksMeta) {
+      if (block.type === 'text') {
+        processedBlocks.push({ type: 'text', value: block.value || '' })
+      } else if (block.type === 'image') {
+        // If it's a new image block, it has a fileKey
+        if (block.fileKey) {
+          const file = formData.get(block.fileKey) as File | null
+          if (file && file.size > 0) {
+            const uploadResult = await uploadFile(file)
+            if (uploadResult.error) return { error: uploadResult.error }
+            processedBlocks.push({ type: 'image', value: uploadResult.filePath! })
+          } else if (block.value) {
+            // Fallback or old value
+            processedBlocks.push({ type: 'image', value: block.value })
+          } else {
+            processedBlocks.push({ type: 'image', value: '' })
+          }
         } else {
-          processedBlocks.push({ type: 'image', value: '' })
+          // Existing image value
+          processedBlocks.push({ type: 'image', value: block.value || '' })
         }
-      } else {
-        // Existing image value
-        processedBlocks.push({ type: 'image', value: block.value || '' })
       }
     }
+
+    const slug = await generateUniqueSlug(judul)
+
+    await prisma.berita.create({
+      data: {
+        judul,
+        slug,
+        konten: processedBlocks,
+        ringkasan,
+        gambarUtama: gambarUtamaPath || null,
+        kategori,
+        linkExternal,
+        penulis,
+        published,
+        userId: session.userId
+      }
+    })
+
+    revalidatePath('/berita-admin')
+    revalidatePath('/berita-kegiatan')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Error in createBerita:', error)
+    return { error: error.message || String(error) }
   }
-
-  const slug = await generateUniqueSlug(judul)
-
-  await prisma.berita.create({
-    data: {
-      judul,
-      slug,
-      konten: processedBlocks,
-      ringkasan,
-      gambarUtama: gambarUtamaPath || null,
-      kategori,
-      linkExternal,
-      penulis,
-      published,
-      userId: session.userId
-    }
-  })
-
-  revalidatePath('/berita-admin')
-  revalidatePath('/berita-kegiatan')
-  return { success: true }
 }
 
 export async function updateBerita(id: number, formData: FormData) {
-  const session = await getSession()
-  if (!session) return { error: 'Unauthorized' }
+  try {
+    const session = await getSession()
+    if (!session) return { error: 'Unauthorized' }
 
-  const judul = formData.get('judul') as string
-  const kategori = formData.get('kategori') as string
-  const ringkasan = formData.get('ringkasan') as string
-  const penulis = formData.get('penulis') as string
-  const published = formData.get('published') === 'true'
-  const linkExternal = formData.get('linkExternal') as string || null
+    const judul = formData.get('judul') as string
+    const kategori = formData.get('kategori') as string
+    const ringkasan = formData.get('ringkasan') as string
+    const penulis = formData.get('penulis') as string
+    const published = formData.get('published') === 'true'
+    const linkExternal = formData.get('linkExternal') as string || null
 
-  if (!judul || !kategori || !ringkasan || !penulis) {
-    return { error: 'Judul, Kategori, Ringkasan, dan Penulis wajib diisi' }
-  }
-
-  const existingBerita = await prisma.berita.findUnique({
-    where: { id }
-  })
-  if (!existingBerita) return { error: 'Berita tidak ditemukan' }
-
-  // Handle cover image
-  let gambarUtamaPath = existingBerita.gambarUtama || ''
-  const gambarUtamaFile = formData.get('gambarUtama') as File | null
-  const keepGambarUtama = formData.get('keepGambarUtama') === 'true'
-
-  if (!keepGambarUtama && existingBerita.gambarUtama) {
-    await deleteFile(existingBerita.gambarUtama)
-    gambarUtamaPath = ''
-  }
-
-  if (gambarUtamaFile && gambarUtamaFile.size > 0) {
-    // Delete old one if exists
-    if (existingBerita.gambarUtama) {
-      await deleteFile(existingBerita.gambarUtama)
+    if (!judul || !kategori || !ringkasan || !penulis) {
+      return { error: 'Judul, Kategori, Ringkasan, dan Penulis wajib diisi' }
     }
-    const uploadResult = await uploadFile(gambarUtamaFile)
-    if (uploadResult.error) return { error: uploadResult.error }
-    gambarUtamaPath = uploadResult.filePath!
-  }
 
-  // Parse and process dynamic content blocks
-  const blocksMetaRaw = formData.get('blocksMeta') as string
-  const blocksMeta = blocksMetaRaw ? JSON.parse(blocksMetaRaw) : []
-  const processedBlocks: Array<{ type: string; value: string }> = []
+    const existingBerita = await prisma.berita.findUnique({
+      where: { id }
+    })
+    if (!existingBerita) return { error: 'Berita tidak ditemukan' }
 
-  // Keep track of images currently used to clean up unused ones from disk
-  const newImageUrls: string[] = []
+    // Handle cover image
+    let gambarUtamaPath = existingBerita.gambarUtama || ''
+    const gambarUtamaFile = formData.get('gambarUtama') as File | null
+    const keepGambarUtama = formData.get('keepGambarUtama') === 'true'
 
-  for (const block of blocksMeta) {
-    if (block.type === 'text') {
-      processedBlocks.push({ type: 'text', value: block.value || '' })
-    } else if (block.type === 'image') {
-      if (block.fileKey) {
-        const file = formData.get(block.fileKey) as File | null
-        if (file && file.size > 0) {
-          const uploadResult = await uploadFile(file)
-          if (uploadResult.error) return { error: uploadResult.error }
-          processedBlocks.push({ type: 'image', value: uploadResult.filePath! })
-          newImageUrls.push(uploadResult.filePath!)
-        } else if (block.value) {
-          processedBlocks.push({ type: 'image', value: block.value })
-          newImageUrls.push(block.value)
+    if (!keepGambarUtama && existingBerita.gambarUtama) {
+      await deleteFile(existingBerita.gambarUtama)
+      gambarUtamaPath = ''
+    }
+
+    if (gambarUtamaFile && gambarUtamaFile.size > 0) {
+      // Delete old one if exists
+      if (existingBerita.gambarUtama) {
+        await deleteFile(existingBerita.gambarUtama)
+      }
+      const uploadResult = await uploadFile(gambarUtamaFile)
+      if (uploadResult.error) return { error: uploadResult.error }
+      gambarUtamaPath = uploadResult.filePath!
+    }
+
+    // Parse and process dynamic content blocks
+    const blocksMetaRaw = formData.get('blocksMeta') as string
+    let blocksMeta = []
+    try {
+      blocksMeta = blocksMetaRaw ? JSON.parse(blocksMetaRaw) : []
+    } catch {
+      return { error: 'Format data blok konten tidak valid' }
+    }
+
+    const processedBlocks: Array<{ type: string; value: string }> = []
+
+    // Keep track of images currently used to clean up unused ones from disk
+    const newImageUrls: string[] = []
+
+    for (const block of blocksMeta) {
+      if (block.type === 'text') {
+        processedBlocks.push({ type: 'text', value: block.value || '' })
+      } else if (block.type === 'image') {
+        if (block.fileKey) {
+          const file = formData.get(block.fileKey) as File | null
+          if (file && file.size > 0) {
+            const uploadResult = await uploadFile(file)
+            if (uploadResult.error) return { error: uploadResult.error }
+            processedBlocks.push({ type: 'image', value: uploadResult.filePath! })
+            newImageUrls.push(uploadResult.filePath!)
+          } else if (block.value) {
+            processedBlocks.push({ type: 'image', value: block.value })
+            newImageUrls.push(block.value)
+          } else {
+            processedBlocks.push({ type: 'image', value: '' })
+          }
         } else {
-          processedBlocks.push({ type: 'image', value: '' })
-        }
-      } else {
-        processedBlocks.push({ type: 'image', value: block.value || '' })
-        if (block.value) {
-          newImageUrls.push(block.value)
+          processedBlocks.push({ type: 'image', value: block.value || '' })
+          if (block.value) {
+            newImageUrls.push(block.value)
+          }
         }
       }
     }
-  }
 
-  // Clean up old block images that are no longer referenced in the updated content
-  const oldBlocks = existingBerita.konten as Array<{ type: string; value: string }> || []
-  for (const oldBlock of oldBlocks) {
-    if (oldBlock.type === 'image' && oldBlock.value && !newImageUrls.includes(oldBlock.value)) {
-      await deleteFile(oldBlock.value)
+    // Clean up old block images that are no longer referenced in the updated content
+    const oldBlocks = existingBerita.konten as Array<{ type: string; value: string }> || []
+    for (const oldBlock of oldBlocks) {
+      if (oldBlock.type === 'image' && oldBlock.value && !newImageUrls.includes(oldBlock.value)) {
+        await deleteFile(oldBlock.value)
+      }
     }
-  }
 
-  // Generate unique slug only if title changes
-  let slug = existingBerita.slug
-  if (existingBerita.judul !== judul) {
-    slug = await generateUniqueSlug(judul, id)
-  }
-
-  await prisma.berita.update({
-    where: { id },
-    data: {
-      judul,
-      slug,
-      konten: processedBlocks,
-      ringkasan,
-      gambarUtama: gambarUtamaPath || null,
-      kategori,
-      linkExternal,
-      penulis,
-      published,
+    // Generate unique slug only if title changes
+    let slug = existingBerita.slug
+    if (existingBerita.judul !== judul) {
+      slug = await generateUniqueSlug(judul, id)
     }
-  })
 
-  revalidatePath('/berita-admin')
-  revalidatePath('/berita-kegiatan')
-  revalidatePath(`/berita-kegiatan/${slug}`)
-  return { success: true }
+    await prisma.berita.update({
+      where: { id },
+      data: {
+        judul,
+        slug,
+        konten: processedBlocks,
+        ringkasan,
+        gambarUtama: gambarUtamaPath || null,
+        kategori,
+        linkExternal,
+        penulis,
+        published,
+      }
+    })
+
+    revalidatePath('/berita-admin')
+    revalidatePath('/berita-kegiatan')
+    revalidatePath(`/berita-kegiatan/${slug}`)
+    return { success: true }
+  } catch (error: any) {
+    console.error('Error in updateBerita:', error)
+    return { error: error.message || String(error) }
+  }
 }
 
 export async function deleteBerita(id: number) {
-  const session = await getSession()
-  if (!session) return { error: 'Unauthorized' }
+  try {
+    const session = await getSession()
+    if (!session) return { error: 'Unauthorized' }
 
-  const b = await prisma.berita.findUnique({ where: { id } })
-  if (!b) return { error: 'Berita tidak ditemukan' }
+    const b = await prisma.berita.findUnique({ where: { id } })
+    if (!b) return { error: 'Berita tidak ditemukan' }
 
-  // Delete cover image
-  if (b.gambarUtama) {
-    await deleteFile(b.gambarUtama)
-  }
-
-  // Delete all block images
-  const blocks = b.konten as Array<{ type: string; value: string }> || []
-  for (const block of blocks) {
-    if (block.type === 'image' && block.value) {
-      await deleteFile(block.value)
+    // Delete cover image
+    if (b.gambarUtama) {
+      await deleteFile(b.gambarUtama)
     }
+
+    // Delete all block images
+    const blocks = b.konten as Array<{ type: string; value: string }> || []
+    for (const block of blocks) {
+      if (block.type === 'image' && block.value) {
+        await deleteFile(block.value)
+      }
+    }
+
+    await prisma.berita.delete({ where: { id } })
+
+    revalidatePath('/berita-admin')
+    revalidatePath('/berita-kegiatan')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Error in deleteBerita:', error)
+    return { error: error.message || String(error) }
   }
-
-  await prisma.berita.delete({ where: { id } })
-
-  revalidatePath('/berita-admin')
-  revalidatePath('/berita-kegiatan')
-  return { success: true }
 }
