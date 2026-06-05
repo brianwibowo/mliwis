@@ -201,6 +201,28 @@ input, select, textarea, button {
     background: rgba(255, 255, 255, 0.2);
   }
   
+  /* Transition styles for collapse elements */
+  .sidebar-logo-text,
+  .sidebar-section-label,
+  .sidebar-menu-item span,
+  .sidebar-submenu,
+  .sidebar-user-info,
+  .sidebar-menu-item .chevron-icon {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    transition: opacity var(--transition-base), transform var(--transition-base), visibility var(--transition-base);
+    white-space: nowrap;
+  }
+
+  .sidebar-menu-item {
+    transition: background var(--transition-fast), color var(--transition-fast), padding var(--transition-base);
+  }
+
+  .sidebar-user {
+    transition: background var(--transition-fast), padding var(--transition-base);
+  }
+
   /* Collapsed state */
   .sidebar.collapsed {
     width: var(--sidebar-collapsed-width);
@@ -222,7 +244,21 @@ input, select, textarea, button {
   .sidebar.collapsed .sidebar-submenu,
   .sidebar.collapsed .sidebar-user-info,
   .sidebar.collapsed .sidebar-menu-item .chevron-icon {
-    display: none !important;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(-15px);
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+  }
+
+  .sidebar.collapsed .sidebar-menu-item {
+    padding-left: 26px;
+    padding-right: 0;
+  }
+
+  .sidebar.collapsed .sidebar-user {
+    padding-left: 18px;
+    padding-right: 0;
   }
   
   /* Hover Expand (floating overlay style) */
@@ -241,28 +277,24 @@ input, select, textarea, button {
     display: flex;
   }
   
-  .sidebar.collapsed:hover .sidebar-logo-text {
-    display: block !important;
-  }
-  
-  .sidebar.collapsed:hover .sidebar-section-label {
-    display: block !important;
-  }
-  
-  .sidebar.collapsed:hover .sidebar-menu-item span {
-    display: inline !important;
-  }
-  
-  .sidebar.collapsed:hover .sidebar-submenu {
-    display: block !important;
-  }
-  
-  .sidebar.collapsed:hover .sidebar-user-info {
-    display: block !important;
-  }
-  
+  .sidebar.collapsed:hover .sidebar-logo-text,
+  .sidebar.collapsed:hover .sidebar-section-label,
+  .sidebar.collapsed:hover .sidebar-menu-item span,
+  .sidebar.collapsed:hover .sidebar-submenu,
+  .sidebar.collapsed:hover .sidebar-user-info,
   .sidebar.collapsed:hover .sidebar-menu-item .chevron-icon {
-    display: inline-block !important;
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    transition: opacity 0.25s ease 0.1s, transform 0.25s ease 0.1s, visibility 0.25s ease 0.1s;
+  }
+
+  .sidebar.collapsed:hover .sidebar-menu-item {
+    padding-left: var(--space-3);
+  }
+
+  .sidebar.collapsed:hover .sidebar-user {
+    padding-left: var(--space-3);
   }
 }
 

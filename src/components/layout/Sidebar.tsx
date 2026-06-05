@@ -88,12 +88,10 @@ export default function Sidebar({ isOpen, onClose, user, isCollapsed = false, on
               className="sidebar-logo-img" 
               style={{ width: '36px', height: '36px', objectFit: 'contain', flexShrink: 0 }} 
             />
-            {!isCollapsed && (
-              <div className="sidebar-logo-text" style={{ whiteSpace: 'nowrap' }}>
-                <h2>SI-Mliwis</h2>
-                <p>Pantai Mliwis</p>
-              </div>
-            )}
+            <div className="sidebar-logo-text" style={{ whiteSpace: 'nowrap' }}>
+              <h2>SI-Mliwis</h2>
+              <p>Pantai Mliwis</p>
+            </div>
           </div>
           {/* Collapse Button for desktop */}
           <button 
