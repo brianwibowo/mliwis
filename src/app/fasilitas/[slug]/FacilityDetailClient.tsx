@@ -46,7 +46,7 @@ export default function FacilityDetailClient({ item }: Props) {
         '/pendopo 2.jpg'
       ],
       'sewa-tikar': [
-        '/vibes_mliwis.jpg',
+        '/mliwis8.jpg',
         '/vibes_mliwis2.jpg'
       ],
       'kuda-pantai': [
@@ -54,11 +54,11 @@ export default function FacilityDetailClient({ item }: Props) {
         '/kuda pantai 2.JPG'
       ],
       'gazebo': [
-        '/vibes_mliwis3.jpg',
-        '/vibes_mliwis4.jpg'
+        '/mliwis4.jpg',
+        '/vibes_mliwis3.jpg'
       ],
       'sewa-ayunan': [
-        '/vibes_mliwis5.jpg'
+        '/vibes_mliwis3.jpg'
       ],
       'parkir': [
         '/area tiket masuk1.jpg',
@@ -74,7 +74,7 @@ export default function FacilityDetailClient({ item }: Props) {
         '/mobil pantai 2.JPG'
       ],
       'pohon-cemara': [
-        '/mliwis1.jpg',
+        '/vibes_mliwis5.jpg',
         '/mliwis2.jpg'
       ]
     }
@@ -94,7 +94,7 @@ export default function FacilityDetailClient({ item }: Props) {
         style={{
           position: 'relative',
           height: '100vh',
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url(${getFacilityFallback(item.slug, 0)})`,
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url("${getFacilityFallback(item.slug, 0)}")`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           display: 'flex',

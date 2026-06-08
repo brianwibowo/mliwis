@@ -3,7 +3,7 @@
 import { useState, useTransition, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { Waves, Send, Copy, CheckCircle, Tent, TreePine, Building, Camera, Store, Info, Phone, MapPin, ExternalLink, Umbrella, Grid, Smile, Droplet, Zap, Compass } from 'lucide-react'
+import { Waves, Send, Copy, CheckCircle, Tent, TreePine, Building, Camera, Store, Info, Phone, MapPin, ExternalLink, Umbrella, Grid, Smile, Droplet, Zap, Compass, Search } from 'lucide-react'
 import { createBooking } from '../actions'
 import PublicHeader from '@/components/layout/PublicHeader'
 import PublicFooter from '@/components/layout/PublicFooter'
@@ -116,7 +116,7 @@ export default function BookingFormPage({ fasilitas }: { fasilitas: Fasilitas[] 
     return (
       <div style={{ background: 'var(--color-surface)', minHeight: '100vh' }}>
         <PublicHeader transparentByDefault={false} />
-        
+
         <div style={{ padding: '140px 24px 80px' }}>
           <div className="booking-container">
             <div className="card booking-status-card" style={{ animation: 'bounceIn 0.5s ease-out', maxWidth: '600px', margin: '0 auto', border: '1px solid var(--color-border)' }}>
@@ -124,10 +124,10 @@ export default function BookingFormPage({ fasilitas }: { fasilitas: Fasilitas[] 
                 <CheckCircle size={64} style={{ color: 'var(--color-success)', margin: '0 auto 16px' }} />
                 <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--color-primary-950)', marginBottom: '8px' }}>Booking Berhasil!</h1>
                 <p className="text-muted mb-6">Simpan kode booking Anda untuk mengecek status</p>
-                
+
                 <p className="text-muted mb-2 text-sm">Kode Booking Anda</p>
                 <div style={{ fontSize: '2rem', fontFamily: 'var(--font-heading)', fontWeight: 800, color: 'var(--color-primary-600)', letterSpacing: '0.05em', marginBottom: 16 }}>{result.kodeBooking}</div>
-                
+
                 <button className="btn btn-outline mb-6" onClick={copyCode} style={{ margin: '0 auto' }}><Copy size={16} /> {copied ? 'Tersalin!' : 'Salin Kode'}</button>
                 <p className="text-muted text-sm" style={{ borderTop: '1px solid var(--color-border-subtle)', paddingTop: '16px' }}>
                   Pengelola akan memvalidasi booking Anda. Cek status secara berkala dengan kode di atas.
@@ -156,7 +156,7 @@ export default function BookingFormPage({ fasilitas }: { fasilitas: Fasilitas[] 
         style={{
           position: 'relative',
           height: '100vh',
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200")',
+          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url("/mahasiswa di mliwis.jpg")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           display: 'flex',
@@ -261,7 +261,7 @@ export default function BookingFormPage({ fasilitas }: { fasilitas: Fasilitas[] 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, color: 'var(--color-text)' }}>
                     <Phone size={12} className="text-primary" />
-                    <span>+62 823-4567-8901</span>
+                    <a href="https://wa.me/6285643309636" target="_blank" rel="noopener noreferrer"><span>WhatsApp: +62 856-4330-9636</span></a>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, color: 'var(--color-text)' }}>
                     <MapPin size={12} className="text-primary" />
@@ -276,9 +276,9 @@ export default function BookingFormPage({ fasilitas }: { fasilitas: Fasilitas[] 
               <div className="card" style={{ border: '1px solid var(--color-border-subtle)', borderRadius: '24px', boxShadow: 'var(--shadow-sm)' }}>
                 <div className="card-body" style={{ padding: '32px' }}>
                   <h3 className="mb-6" style={{ color: 'var(--color-primary-900)', borderBottom: '2px solid var(--color-border-light)', paddingBottom: 12, fontSize: '1.25rem', fontWeight: 700 }}>Formulir Booking Area</h3>
-                  
+
                   {error && <div className="alert alert-danger mb-4">{error}</div>}
-                  
+
                   <form action={handleSubmit}>
                     <div className="form-row">
                       <div className="form-group">
@@ -384,6 +384,46 @@ export default function BookingFormPage({ fasilitas }: { fasilitas: Fasilitas[] 
                 </div>
               </div>
             </main>
+          </div>
+
+          {/* Cek Status Booking Section */}
+          <div style={{ maxWidth: '650px', margin: '60px auto 0' }}>
+            <div className="card" style={{ border: '1px solid var(--color-border-subtle)', borderRadius: '24px', boxShadow: 'var(--shadow-sm)', backgroundColor: 'white' }}>
+              <div className="card-body" style={{ padding: 32 }}>
+                <h4 style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: 8, color: 'var(--color-primary-900)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Search size={18} className="text-primary" />
+                  <span>Sudah Melakukan Booking?</span>
+                </h4>
+                <p className="text-muted text-xs" style={{ marginBottom: 16 }}>
+                  Masukkan kode booking unik Anda untuk melacak proses persetujuan oleh pengelola Pantai Mliwis.
+                </p>
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <input
+                    className="form-input"
+                    placeholder="Contoh: BK-A1B2C3D4"
+                    id="input-kode-booking-form"
+                    style={{ fontFamily: 'var(--font-mono)', fontSize: '1rem', letterSpacing: '0.05em', borderRadius: '12px', flex: 1 }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const val = (e.target as HTMLInputElement).value.trim();
+                        if (val) window.location.href = `/booking/status?kode=${val.toUpperCase()}`;
+                      }
+                    }}
+                  />
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                      const input = document.getElementById('input-kode-booking-form') as HTMLInputElement;
+                      const val = input ? input.value.trim() : '';
+                      if (val) window.location.href = `/booking/status?kode=${val.toUpperCase()}`;
+                    }}
+                    style={{ borderRadius: '12px', padding: '0 24px' }}
+                  >
+                    Cek Status
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

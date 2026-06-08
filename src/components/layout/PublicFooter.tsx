@@ -37,15 +37,42 @@ export default function PublicFooter() {
             <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '20px', color: 'white', letterSpacing: '-0.01em' }}>
               Akses Cepat
             </h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gridTemplateColumns: '1fr', gap: '10px' }}>
-              {quickLinks.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} style={{ color: 'rgba(255, 255, 255, 0.75)', textDecoration: 'none', fontSize: '0.925rem', transition: 'color 0.2s ease' }} className="footer-link-hover">
-                    {link.label}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 24px' }}>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <li>
+                  <Link href="/" style={{ color: 'rgba(255, 255, 255, 0.75)', textDecoration: 'none', fontSize: '0.925rem', transition: 'color 0.2s ease' }} className="footer-link-hover">
+                    Beranda
                   </Link>
                 </li>
-              ))}
-            </ul>
+                <li>
+                  <Link href="/tentang-mliwis" style={{ color: 'rgba(255, 255, 255, 0.75)', textDecoration: 'none', fontSize: '0.925rem', transition: 'color 0.2s ease' }} className="footer-link-hover">
+                    Tentang Mliwis
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/fasilitas" style={{ color: 'rgba(255, 255, 255, 0.75)', textDecoration: 'none', fontSize: '0.925rem', transition: 'color 0.2s ease' }} className="footer-link-hover">
+                    Fasilitas
+                  </Link>
+                </li>
+              </ul>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <li>
+                  <Link href="/kuliner" style={{ color: 'rgba(255, 255, 255, 0.75)', textDecoration: 'none', fontSize: '0.925rem', transition: 'color 0.2s ease' }} className="footer-link-hover">
+                    Aneka Kuliner
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/berita-kegiatan" style={{ color: 'rgba(255, 255, 255, 0.75)', textDecoration: 'none', fontSize: '0.925rem', transition: 'color 0.2s ease' }} className="footer-link-hover">
+                    Berita Kegiatan
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/booking" style={{ color: 'rgba(255, 255, 255, 0.75)', textDecoration: 'none', fontSize: '0.925rem', transition: 'color 0.2s ease' }} className="footer-link-hover">
+                    Booking Tempat
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
 
           {/* Contact & Social Column */}

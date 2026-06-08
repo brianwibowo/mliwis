@@ -1,22 +1,37 @@
-export const dynamic = 'force-dynamic'
+'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import * as Icons from 'lucide-react'
 import PublicHeader from '@/components/layout/PublicHeader'
 import PublicFooter from '@/components/layout/PublicFooter'
-import { prisma } from '@/lib/prisma'
+import { getLatestNews } from './actions'
 import { formatTanggal } from '@/lib/format'
 
-export const metadata = {
-  title: 'Berita Kegiatan Pokdarwis — Pantai Mliwis',
-  description: 'Ikuti perkembangan terbaru, agenda kegiatan kemasyarakatan, serta festival budaya menarik di Pantai Mliwis Kebumen.',
-}
+export default function NewsPage() {
+  const [beritaList, setBeritaList] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-export default async function NewsPage() {
-  const beritaList = await prisma.berita.findMany({
-    where: { published: true },
-    orderBy: { createdAt: 'desc' },
-  })
+  useEffect(() => {
+    async function loadNews() {
+      try {
+        const r = await getLatestNews()
+        if (r.success) {
+          setBeritaList(r.data)
+        } else {
+          setError(r.error || 'Gagal memuat berita.')
+          setBeritaList(r.data || [])
+        }
+      } catch (err) {
+        console.error(err)
+        setError('Terjadi masalah koneksi database.')
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadNews()
+  }, [])
 
   return (
     <div style={{ background: 'var(--color-surface)', minHeight: '100vh' }}>
@@ -71,7 +86,33 @@ export default async function NewsPage() {
       {/* News Grid Section */}
       <section style={{ padding: '80px 0', backgroundColor: 'var(--color-surface-alt)' }}>
         <div className="landing-container">
-          {beritaList.length === 0 ? (
+          {error && (
+            <div className="alert alert-warning mb-6" style={{ borderRadius: '12px', padding: '12px 20px', fontSize: '0.9rem' }}>
+              {error}
+            </div>
+          )}
+
+          {loading ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px' }}>
+              {[1, 2, 3].map((n) => (
+                <div
+                  key={n}
+                  style={{
+                    backgroundColor: 'white',
+                    borderRadius: '24px',
+                    height: '400px',
+                    border: '1px solid var(--color-border-subtle)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    opacity: 0.6,
+                  }}
+                >
+                  <div className="spinner" />
+                </div>
+              ))}
+            </div>
+          ) : beritaList.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 20px', backgroundColor: 'white', borderRadius: '24px', border: '1px solid var(--color-border-subtle)' }}>
               <Icons.Newspaper size={48} className="text-muted" style={{ margin: '0 auto 16px' }} />
               <h3 style={{ color: 'var(--color-primary-950)', fontWeight: 700, fontSize: '1.25rem', marginBottom: '8px' }}>Belum Ada Berita</h3>

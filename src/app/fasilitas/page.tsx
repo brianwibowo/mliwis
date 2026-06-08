@@ -14,14 +14,14 @@ export default function FasilitasPage() {
       'musola': '/mushola.jpg',
       'aneka-kuliner': '/pedagang dan pembeli.jpg',
       'pendopo': '/pendopo 1.jpg',
-      'sewa-tikar': '/vibes_mliwis.jpg',
+      'sewa-tikar': '/mliwis8.jpg',
       'kuda-pantai': '/kuda pantai 1.JPG',
-      'gazebo': '/vibes_mliwis3.jpg',
-      'sewa-ayunan': '/vibes_mliwis5.jpg',
+      'gazebo': '/mliwis4.jpg',
+      'sewa-ayunan': '/vibes_mliwis3.jpg',
       'parkir': '/area tiket masuk1.jpg',
       'kolam-renang-anak': '/kolam renang 1.JPG',
       'atv-pantai': '/mobil pantai1.JPG',
-      'pohon-cemara': '/mliwis1.jpg'
+      'pohon-cemara': '/vibes_mliwis5.jpg'
     }
     return list[slug] || '/mliwis3.jpg'
   }

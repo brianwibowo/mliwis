@@ -123,7 +123,7 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Harga sewa sangat terjangkau seharian'
     ],
     images: [
-      '/vibes_mliwis.jpg',
+      '/mliwis8.jpg',
       '/vibes_mliwis2.jpg'
     ]
   },
@@ -159,8 +159,8 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Sangat bersih dan berdekatan dengan area warung'
     ],
     images: [
-      '/vibes_mliwis3.jpg',
-      '/vibes_mliwis4.jpg'
+      '/mliwis4.jpg',
+      '/vibes_mliwis3.jpg'
     ]
   },
   {
@@ -177,7 +177,7 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Tarif ramah kantong untuk penggunaan sepanjang hari'
     ],
     images: [
-      '/vibes_mliwis5.jpg'
+      '/vibes_mliwis3.jpg'
     ]
   },
   {
@@ -249,7 +249,7 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Udara sejuk bebas polusi'
     ],
     images: [
-      '/mliwis1.jpg',
+      '/vibes_mliwis5.jpg',
       '/mliwis2.jpg'
     ]
   }
