@@ -9,21 +9,21 @@ import { LIST_FASILITAS } from '@/lib/data-landing'
 export default function FasilitasPage() {
   const getFacilityFallback = (slug: string) => {
     const list: Record<string, string> = {
-      'camping-ground': 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=600',
-      'payung-pantai': 'https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?q=80&w=600',
-      'musola': 'https://images.unsplash.com/photo-1597935258735-e254c1839512?q=80&w=600',
-      'aneka-kuliner': 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=600',
-      'pendopo': 'https://images.unsplash.com/photo-1464146072230-91cabc968266?q=80&w=600',
-      'sewa-tikar': 'https://images.unsplash.com/photo-1470246973918-29a93221c455?q=80&w=600',
-      'kuda-pantai': 'https://images.unsplash.com/photo-1534067783941-51c9c23eccfd?q=80&w=600',
-      'gazebo': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600',
-      'sewa-ayunan': 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=600',
-      'parkir': 'https://images.unsplash.com/photo-1506015391300-4802dc74de2e?q=80&w=600',
-      'kolam-renang-anak': 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?q=80&w=600',
-      'atv-pantai': 'https://images.unsplash.com/photo-1551524559-8af4e6624178?q=80&w=600',
-      'pohon-cemara': 'https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600'
+      'camping-ground': '/vibes1.JPG',
+      'payung-pantai': '/payung pantai1.JPG',
+      'musola': '/mushola.jpg',
+      'aneka-kuliner': '/pedagang dan pembeli.jpg',
+      'pendopo': '/pendopo 1.jpg',
+      'sewa-tikar': '/vibes_mliwis.jpg',
+      'kuda-pantai': '/kuda pantai 1.JPG',
+      'gazebo': '/vibes_mliwis3.jpg',
+      'sewa-ayunan': '/vibes_mliwis5.jpg',
+      'parkir': '/area tiket masuk1.jpg',
+      'kolam-renang-anak': '/kolam renang 1.JPG',
+      'atv-pantai': '/mobil pantai1.JPG',
+      'pohon-cemara': '/mliwis1.jpg'
     }
-    return list[slug] || 'https://images.unsplash.com/photo-1473116763269-255448993f66?q=80&w=600'
+    return list[slug] || '/mliwis3.jpg'
   }
 
   return (
@@ -36,7 +36,7 @@ export default function FasilitasPage() {
         style={{
           position: 'relative',
           height: '100vh',
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200")',
+          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url("/mliwis3.jpg")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           display: 'flex',

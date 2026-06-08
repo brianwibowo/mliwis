@@ -16,17 +16,17 @@
   --color-primary-300: #82d1e2;
   --color-primary-400: #14a2ba;   /* Biru Muda / Bright Cyan */
   --color-primary-500: #108ba1;
-  --color-primary-600: #125d72;   /* Biru Tua / Deep Teal */
+  --color-primary-600: #0f2556;   /* Biru Tua / Deep Navy */
   --color-primary-700: #0d4858;
   --color-primary-800: #093440;
   --color-primary-900: #052129;   /* Darkest Teal background for header/footer/sidebar */
   
   /* Yellow / Sand Accent */
-  --color-sand-400: #efe62f;      /* Kuning Pantai Mliwis */
+  --color-sand-400: #fed43e;      /* Kuning Pantai Mliwis */
 
   /* Ocean Gradients */
   --color-ocean-dark: #052129;
-  --color-ocean-gradient: linear-gradient(135deg, #052129 0%, #125d72 50%, #14a2ba 100%);
+  --color-ocean-gradient: linear-gradient(135deg, #052129 0%, #0f2556 50%, #14a2ba 100%);
 
   /* Semantic */
   --color-success: #10b981;

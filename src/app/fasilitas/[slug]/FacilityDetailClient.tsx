@@ -27,53 +27,58 @@ export default function FacilityDetailClient({ item }: Props) {
   const getFacilityFallback = (slug: string, idx: number) => {
     const list: Record<string, string[]> = {
       'camping-ground': [
-        'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=600',
-        'https://images.unsplash.com/photo-1537905569824-f89f14cceb68?q=80&w=600'
+        '/vibes1.JPG',
+        '/vibes2.JPG'
       ],
       'payung-pantai': [
-        'https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?q=80&w=600',
-        'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?q=80&w=600'
+        '/payung pantai1.JPG',
+        '/payung pantai2.JPG'
       ],
       'musola': [
-        'https://images.unsplash.com/photo-1597935258735-e254c1839512?q=80&w=600',
-        'https://images.unsplash.com/photo-1609137144813-91c69b5ae57?q=80&w=600'
+        '/mushola.jpg'
       ],
       'aneka-kuliner': [
-        'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=600',
-        'https://images.unsplash.com/photo-1563805042-7684c019e1cb?q=80&w=600'
+        '/pedagang dan pembeli.jpg',
+        '/makanan1.jpg'
       ],
       'pendopo': [
-        'https://images.unsplash.com/photo-1464146072230-91cabc968266?q=80&w=600',
-        'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?q=80&w=600'
+        '/pendopo 1.jpg',
+        '/pendopo 2.jpg'
       ],
       'sewa-tikar': [
-        'https://images.unsplash.com/photo-1470246973918-29a93221c455?q=80&w=600'
+        '/vibes_mliwis.jpg',
+        '/vibes_mliwis2.jpg'
       ],
       'kuda-pantai': [
-        'https://images.unsplash.com/photo-1534067783941-51c9c23eccfd?q=80&w=600',
-        'https://images.unsplash.com/photo-1485963631004-f2f00b1d6606?q=80&w=600'
+        '/kuda pantai 1.JPG',
+        '/kuda pantai 2.JPG'
       ],
       'gazebo': [
-        'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600',
-        'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=600'
+        '/vibes_mliwis3.jpg',
+        '/vibes_mliwis4.jpg'
       ],
       'sewa-ayunan': [
-        'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=600'
+        '/vibes_mliwis5.jpg'
       ],
       'parkir': [
-        'https://images.unsplash.com/photo-1506015391300-4802dc74de2e?q=80&w=600'
+        '/area tiket masuk1.jpg',
+        '/area tiket masuk2.jpg',
+        '/parkiran motor.jpg'
       ],
       'kolam-renang-anak': [
-        'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?q=80&w=600'
+        '/kolam renang 1.JPG',
+        '/kolam renang 2.JPG'
       ],
       'atv-pantai': [
-        'https://images.unsplash.com/photo-1551524559-8af4e6624178?q=80&w=600'
+        '/mobil pantai1.JPG',
+        '/mobil pantai 2.JPG'
       ],
       'pohon-cemara': [
-        'https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600'
+        '/mliwis1.jpg',
+        '/mliwis2.jpg'
       ]
     }
-    const urls = list[slug] || ['https://images.unsplash.com/photo-1473116763269-255448993f66?q=80&w=600']
+    const urls = list[slug] || ['/mliwis3.jpg']
     return urls[idx % urls.length]
   }
 

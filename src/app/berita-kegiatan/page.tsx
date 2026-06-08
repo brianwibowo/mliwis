@@ -28,7 +28,7 @@ export default async function NewsPage() {
         style={{
           position: 'relative',
           height: '100vh',
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url("https://images.unsplash.com/photo-1506015391300-4802dc74de2e?q=80&w=1200")',
+          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url("/mliwis10.jpg")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           display: 'flex',

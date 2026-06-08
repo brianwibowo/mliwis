@@ -137,7 +137,7 @@ export default function TentangMliwisPage() {
                 <span style={{ fontSize: '0.825rem', color: 'var(--color-primary-600)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Kultur & Adat</span>
                 <h3 style={{ fontSize: '1.75rem', color: 'var(--color-primary-950)', margin: '8px 0 16px', fontWeight: 700 }}>Tradisi Budaya Grebeg Rolasan</h3>
                 <p style={{ color: 'var(--color-text-muted)', lineHeight: '1.7', marginBottom: '14px', fontSize: '0.975rem' }}>
-                  Salah satu kearifan lokal yang paling menonjol di Pantai Mliwis adalah diadakannya upacara adat **Grebeg Rolasan** atau *Grebeg Enthak-Enthik/Menthak-Menthik* setiap peringatan Maulid Nabi Muhammad SAW.
+                  Salah satu kearifan lokal yang paling menonjol di Pantai Mliwis adalah diadakannya upacara adat Grebeg Rolasan atau Grebeg Enthak-Enthik/Menthak-Menthik setiap peringatan Maulid Nabi Muhammad SAW.
                 </p>
                 <p style={{ color: 'var(--color-text-muted)', lineHeight: '1.7', fontSize: '0.975rem' }}>
                   Warga melakukan arak-arakan gunungan hasil bumi melimpah dari balai desa menuju pantai, diakhiri dengan doa bersama dan perebutan gunungan oleh ribuan pengunjung sebagai bentuk kesyukuran atas berkah bumi.
@@ -154,7 +154,7 @@ export default function TentangMliwisPage() {
                   Pantai Mliwis berjarak hanya 17 km dari pusat Kota Kebumen, dengan waktu tempuh sekitar 20 menit berkendara. Akses jalannya sudah dilapisi aspal halus dan terhubung langsung dengan JJLS (Jalur Jalan Lintas Selatan).
                 </p>
                 <p style={{ color: 'var(--color-text-muted)', lineHeight: '1.7', fontSize: '0.975rem' }}>
-                  Untuk masuk ke area wisata, pengunjung hanya dikenakan biaya **Jasa Penitipan Kendaraan (JPK)** yang sangat terjangkau: **Rp 3.000 untuk sepeda motor** dan **Rp 5.000 untuk mobil**, tanpa biaya masuk individu yang mahal.
+                  Untuk masuk ke area wisata, pengunjung hanya dikenakan biaya Jasa Penitipan Kendaraan (JPK) yang sangat terjangkau: Rp 3.000 untuk sepeda motor dan Rp 5.000 untuk mobil, tanpa biaya masuk individu yang mahal.
                 </p>
               </div>
               <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px', order: 1 }}>

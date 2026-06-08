@@ -34,8 +34,8 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Area khusus api unggun bersama keluarga'
     ],
     images: [
-      'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=600',
-      'https://images.unsplash.com/photo-1537905569824-f89f14cceb68?q=80&w=600'
+      '/vibes1.JPG',
+      '/vibes2.JPG'
     ]
   },
   {
@@ -52,8 +52,8 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Bisa disewa seharian penuh'
     ],
     images: [
-      'https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?q=80&w=600',
-      'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?q=80&w=600'
+      '/payung pantai1.JPG',
+      '/payung pantai2.JPG'
     ]
   },
   {
@@ -70,8 +70,7 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Lokasi strategis dekat pusat keramaian & toilet'
     ],
     images: [
-      'https://images.unsplash.com/photo-1597935258735-e254c1839512?q=80&w=600',
-      'https://images.unsplash.com/photo-1609137144813-91c69b5ae57?q=80&w=600'
+      '/mushola.jpg'
     ]
   },
   {
@@ -88,8 +87,8 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Harga bersahabat dan higienis'
     ],
     images: [
-      'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=600',
-      'https://images.unsplash.com/photo-1563805042-7684c019e1cb?q=80&w=600'
+      '/pedagang dan pembeli.jpg',
+      '/makanan1.jpg'
     ]
   },
   {
@@ -106,8 +105,8 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Dekat akses toilet utama dan parkiran luas'
     ],
     images: [
-      'https://images.unsplash.com/photo-1464146072230-91cabc968266?q=80&w=600',
-      'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?q=80&w=600'
+      '/pendopo 1.jpg',
+      '/pendopo 2.jpg'
     ]
   },
   {
@@ -124,7 +123,8 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Harga sewa sangat terjangkau seharian'
     ],
     images: [
-      'https://images.unsplash.com/photo-1470246973918-29a93221c455?q=80&w=600'
+      '/vibes_mliwis.jpg',
+      '/vibes_mliwis2.jpg'
     ]
   },
   {
@@ -141,8 +141,8 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Spot foto sangat ikonik di atas kuda dengan latar pantai'
     ],
     images: [
-      'https://images.unsplash.com/photo-1534067783941-51c9c23eccfd?q=80&w=600',
-      'https://images.unsplash.com/photo-1485963631004-f2f00b1d6606?q=80&w=600'
+      '/kuda pantai 1.JPG',
+      '/kuda pantai 2.JPG'
     ]
   },
   {
@@ -159,8 +159,8 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Sangat bersih dan berdekatan dengan area warung'
     ],
     images: [
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600',
-      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=600'
+      '/vibes_mliwis3.jpg',
+      '/vibes_mliwis4.jpg'
     ]
   },
   {
@@ -177,7 +177,7 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Tarif ramah kantong untuk penggunaan sepanjang hari'
     ],
     images: [
-      'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=600'
+      '/vibes_mliwis5.jpg'
     ]
   },
   {
@@ -194,8 +194,9 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Tarif sangat terjangkau tanpa biaya tambahan per jam'
     ],
     images: [
-      'https://images.unsplash.com/photo-1506015391300-4802dc74de2e?q=80&w=600',
-      'https://images.unsplash.com/photo-1473116763269-255448993f66?q=80&w=600'
+      '/area tiket masuk1.jpg',
+      '/area tiket masuk2.jpg',
+      '/parkiran motor.jpg'
     ]
   },
   {
@@ -212,8 +213,8 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Air tawar bersih yang disaring secara teratur'
     ],
     images: [
-      'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?q=80&w=600',
-      'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?q=80&w=600'
+      '/kolam renang 1.JPG',
+      '/kolam renang 2.JPG'
     ]
   },
   {
@@ -230,8 +231,8 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Dilengkapi dengan fasilitas helm pengaman'
     ],
     images: [
-      'https://images.unsplash.com/photo-1551524559-8af4e6624178?q=80&w=600',
-      'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?q=80&w=600'
+      '/mobil pantai1.JPG',
+      '/mobil pantai 2.JPG'
     ]
   },
   {
@@ -248,8 +249,8 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Udara sejuk bebas polusi'
     ],
     images: [
-      'https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600',
-      'https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=600'
+      '/mliwis1.jpg',
+      '/mliwis2.jpg'
     ]
   }
 ]
@@ -267,7 +268,7 @@ export const LIST_KULINER: KulinerItem[] = [
       'Saus khusus berbahan tempe halus pilihan khas Ambal',
       'Disajikan dengan ketupat janur tradisional'
     ],
-    images: ['/sate-ambal-1.png', '/sate-ambal-2.png']
+    images: ['/sate ambal1.jpeg', '/sate ambal2.jpeg']
   },
   {
     slug: 'emping-melinjo',
@@ -281,21 +282,21 @@ export const LIST_KULINER: KulinerItem[] = [
       'Bumbu tabur garam (original), cabai, atau gula jawa',
       'Tanpa pengawet buatan'
     ],
-    images: ['/emping-melinjo-1.png', '/emping-melinjo-2.png']
+    images: ['/emping melinjo1.jpeg', '/emping melinjo2.jpeg']
   },
   {
     slug: 'pecel',
     title: 'Pecel Pesisir Mliwis',
     price: '',
     description: 'Kombinasi sayuran rebus segar yang disiram dengan saus kacang pedas khas pesisir pantai selatan.',
-    longDescription: 'Pecel Pesisir Pantai Mliwis menawarkan kesegaran aneka sayur-sayuran rebus yang dipadukan dengan bumbu kacang tradisional khas Kebumen. Bumbu pecel di sini memiliki ciri khas rasa kencur dan jeruk purut yang harum menyengat dengan tingkat kepedasan yang pas. Biasa disajikan hangat dengan alas pincuk daun pisang, ditemani ketupat, rempeyek renyah, atau tempe mendoan panas.',
+    longDescription: 'Pecel Pesisir Pantai Mliwis erbjuder kesegaran aneka sayur-sayuran rebus yang dipadukan dengan bumbu kacang tradisional khas Kebumen. Bumbu pecel di sini memiliki ciri khas rasa kencur dan jeruk purut yang harum menyengat dengan tingkat kepedasan yang pas. Biasa disajikan hangat dengan alas pincuk daun pisang, ditemani ketupat, rempeyek renyah, atau tempe mendoan panas.',
     ingredients: [
       'Sayur bayam, kangkung, taoge, kacang panjang segar',
       'Saus kacang giling tradisional beraroma kencur & jeruk purut',
       'Rempeyek teri/kacang garing sebagai pendamping',
       'Lontong atau nasi putih hangat'
     ],
-    images: ['/pecel-1.png', '/pecel-2.png']
+    images: ['/nasi pecel 1.jpg', '/nasi pecel 2.jpg']
   },
   {
     slug: 'mendoan',
@@ -309,6 +310,34 @@ export const LIST_KULINER: KulinerItem[] = [
       'Daun bawang segar rajangan halus',
       'Cocolan sambal kecap cabai rawit pedas manis'
     ],
-    images: ['/mendoan-1.png', '/mendoan-2.png']
+    images: ['/mendoan1.jpeg', '/mendoan2.jpg']
+  },
+  {
+    slug: 'bakwan',
+    title: 'Bakwan Sayur Krispi',
+    price: '',
+    description: 'Camilan bakwan sayur goreng dengan tekstur garing dan krispi di luar, disajikan hangat dengan cabai rawit.',
+    longDescription: 'Bakwan Sayur Krispi Pantai Mliwis dibuat dari campuran sayuran segar seperti kol, wortel, dan daun bawang yang dibalut adonan tepung berbumbu gurih ketumbar dan bawang putih. Digoreng garing hingga berwarna cokelat keemasan, sangat nikmat disantap hangat sembari menikmati sore hari yang syahdu di tepi pantai.',
+    ingredients: [
+      'Sayuran segar iris tipis (kol, wortel, daun bawang)',
+      'Tepung terigu & maizena bumbu ketumbar & bawang putih',
+      'Cabai rawit segar pendamping',
+      'Minyak goreng bersih'
+    ],
+    images: ['/bakwan 1.jpeg', '/bakwan 2.png']
+  },
+  {
+    slug: 'tahu-isi',
+    title: 'Tahu Berontak / Tahu Isi',
+    price: '',
+    description: 'Tahu goreng isi sayuran pedas dan bihun dibalut adonan tepung renyah, disajikan panas-panas.',
+    longDescription: 'Tahu Berontak (atau lebih dikenal dengan Tahu Isi) merupakan kuliner merakyat yang digemari para pengunjung pantai. Tahu kulit pilihan diisi dengan tumisan sayuran pedas manis, tauge, wortel, dan bihun, kemudian dicelupkan ke adonan tepung basah krispi sebelum digoreng matang. Rasa pedas gurih di dalamnya sangat menggugah selera.',
+    ingredients: [
+      'Tahu pong/tahu kulit pilihan',
+      'Tumisan sayur isi (wortel, tauge, daun kol, bihun)',
+      'Adonan tepung krispi dengan daun bawang',
+      'Cabai rawit hijau segar'
+    ],
+    images: ['/tahu isi1.jpg', '/tahu isi 2.jpg']
   }
 ]

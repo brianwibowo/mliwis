@@ -26,23 +26,31 @@ export default function CulinaryDetailClient({ item }: Props) {
   const getFoodFallback = (slug: string, idx: number) => {
     const list: Record<string, string[]> = {
       'sate-ambal': [
-        'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=600',
-        'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=600'
+        '/sate ambal1.jpeg',
+        '/sate ambal2.jpeg'
       ],
       'emping-melinjo': [
-        'https://images.unsplash.com/photo-1596797038530-2c107229654b?q=80&w=600',
-        'https://images.unsplash.com/photo-1505576399279-565b52d4ac71?q=80&w=600'
+        '/emping melinjo1.jpeg',
+        '/emping melinjo2.jpeg'
       ],
       'pecel': [
-        'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=600',
-        'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=600'
+        '/nasi pecel 1.jpg',
+        '/nasi pecel 2.jpg'
       ],
       'mendoan': [
-        'https://images.unsplash.com/photo-1565557623262-b51c2513a641?q=80&w=600',
-        'https://images.unsplash.com/photo-1547592180-85f173990554?q=80&w=600'
+        '/mendoan1.jpeg',
+        '/mendoan2.jpg'
+      ],
+      'bakwan': [
+        '/bakwan 1.jpeg',
+        '/bakwan 2.png'
+      ],
+      'tahu-isi': [
+        '/tahu isi1.jpg',
+        '/tahu isi 2.jpg'
       ]
     }
-    const urls = list[slug] || ['https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=600']
+    const urls = list[slug] || ['/mliwis6.jpg']
     return urls[idx % urls.length]
   }
 

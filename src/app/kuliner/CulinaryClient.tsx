@@ -17,7 +17,7 @@ export default function CulinaryClient() {
         style={{
           position: 'relative',
           height: '100vh',
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url("https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1200")',
+          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url("/mliwis6.jpg")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           display: 'flex',
@@ -77,18 +77,20 @@ export default function CulinaryClient() {
               >
                 <div style={{ width: '100%', height: '200px', overflow: 'hidden', position: 'relative' }}>
                   <img
-                    src={`/${item.slug}-1.png`}
+                    src={item.images[0] || "/mliwis6.jpg"}
                     alt={item.title}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     onError={(e) => {
                       const fallbacks = [
-                        'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=400', // sate ambal
-                        'https://images.unsplash.com/photo-1596797038530-2c107229654b?q=80&w=400', // emping
-                        'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=400', // pecel
-                        'https://images.unsplash.com/photo-1565557623262-b51c2513a641?q=80&w=400'  // mendoan
+                        '/sate ambal1.jpeg',
+                        '/emping melinjo1.jpeg',
+                        '/nasi pecel 1.jpg',
+                        '/mendoan1.jpeg',
+                        '/bakwan 1.jpeg',
+                        '/tahu isi1.jpg'
                       ]
                       const index = LIST_KULINER.findIndex(k => k.slug === item.slug)
-                      ;(e.target as HTMLImageElement).src = fallbacks[index % fallbacks.length]
+                      ;(e.target as HTMLImageElement).src = fallbacks[index !== -1 ? index % fallbacks.length : 0]
                     }}
                   />
                 </div>
