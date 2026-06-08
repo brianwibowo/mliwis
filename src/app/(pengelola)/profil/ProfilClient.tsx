@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { User, Lock, Upload, KeyRound } from 'lucide-react'
 import { updateProfile } from './actions'
 import { useToast } from '@/hooks/useToast'
+import { compressImageIfNeeded } from '@/lib/utils'
 
 interface UserData {
   id: number
@@ -36,8 +37,8 @@ export default function ProfilClient({ user }: { user: UserData }) {
 
     const file = formData.get('foto') as File | null
     if (file && file.size > 0) {
-      if (file.size > 5 * 1024 * 1024) {
-        addToast('Ukuran foto profil maksimal 5MB', 'error')
+      if (file.size > 20 * 1024 * 1024) {
+        addToast('Ukuran foto profil maksimal 20MB (foto di atas 5MB akan dikompresi otomatis)', 'error')
         return
       }
       const ext = file.name.split('.').pop()?.toLowerCase() || ''
@@ -52,6 +53,12 @@ export default function ProfilClient({ user }: { user: UserData }) {
 
     startTransition(async () => {
       try {
+        // Compress profile photo if it is an image
+        if (file && file.size > 0) {
+          const compressedFile = await compressImageIfNeeded(file, 5 * 1024 * 1024)
+          formData.set('foto', compressedFile)
+        }
+
         const r = await updateProfile(formData)
 
         removeToast(toastId)

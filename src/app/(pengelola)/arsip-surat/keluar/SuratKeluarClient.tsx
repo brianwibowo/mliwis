@@ -6,6 +6,7 @@ import { Plus, Pencil, Trash2, Download, Search, FileText } from 'lucide-react'
 import { createSuratKeluar, updateSuratKeluar, deleteSuratKeluar } from '../actions'
 import { formatTanggal } from '@/lib/format'
 import { useToast } from '@/hooks/useToast'
+import { compressImageIfNeeded } from '@/lib/utils'
 import Modal from '@/components/ui/Modal'
 
 interface SuratData {
@@ -37,8 +38,8 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
     // Client-side file size and type validation
     const file = formData.get('file') as File | null
     if (file && file.size > 0) {
-      if (file.size > 10 * 1024 * 1024) {
-        addToast('Ukuran file lampiran maksimal 10MB', 'error')
+      if (file.size > 20 * 1024 * 1024) {
+        addToast('Ukuran file lampiran maksimal 20MB', 'error')
         return
       }
       const ext = file.name.split('.').pop()?.toLowerCase() || ''
@@ -53,6 +54,12 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
 
     startTransition(async () => {
       try {
+        // Compress file if it is an image
+        if (file && file.size > 0) {
+          const compressedFile = await compressImageIfNeeded(file, 5 * 1024 * 1024)
+          formData.set('file', compressedFile)
+        }
+
         const result = editData ? await updateSuratKeluar(editData.id, formData) : await createSuratKeluar(formData)
 
         removeToast(toastId)

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Plus, Trash2, ArrowUp, ArrowDown, Upload, FileText, Image as ImageIcon, Check } from 'lucide-react'
 import { createBerita, updateBerita } from './actions'
+import { compressImageIfNeeded } from '@/lib/utils'
 import { useToast } from '@/hooks/useToast'
 
 interface Block {
@@ -151,8 +152,8 @@ export default function BeritaFormClient({ initialBerita }: Props) {
     const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'heic', 'heif', 'webp', 'gif', 'svg', 'bmp', 'tiff']
 
     if (coverFile) {
-      if (coverFile.size > 10 * 1024 * 1024) {
-        addToast('Ukuran gambar cover maksimal 10MB', 'error')
+      if (coverFile.size > 20 * 1024 * 1024) {
+        addToast('Ukuran gambar cover maksimal 20MB', 'error')
         return
       }
       const ext = coverFile.name.split('.').pop()?.toLowerCase() || ''
@@ -165,8 +166,8 @@ export default function BeritaFormClient({ initialBerita }: Props) {
     for (let index = 0; index < blocks.length; index++) {
       const b = blocks[index]
       if (b.type === 'image' && b.file) {
-        if (b.file.size > 10 * 1024 * 1024) {
-          addToast(`Ukuran gambar pada Blok ${index + 1} maksimal 10MB`, 'error')
+        if (b.file.size > 20 * 1024 * 1024) {
+          addToast(`Ukuran gambar pada Blok ${index + 1} maksimal 20MB`, 'error')
           return
         }
         const ext = b.file.name.split('.').pop()?.toLowerCase() || ''
@@ -177,46 +178,63 @@ export default function BeritaFormClient({ initialBerita }: Props) {
       }
     }
 
-    const formData = new FormData()
-    formData.append('judul', judul)
-    formData.append('kategori', kategori)
-    formData.append('ringkasan', ringkasan)
-    formData.append('penulis', penulis)
-    formData.append('published', String(published))
-    formData.append('linkExternal', linkExternal)
-
-    // Handle Cover Image
-    if (coverFile) {
-      formData.append('gambarUtama', coverFile)
-    }
-    formData.append('keepGambarUtama', String(keepCover))
-
-    // Serialize Blocks metadata
-    const blocksMeta = blocks.map((b) => {
-      if (b.type === 'text') {
-        return { type: 'text', value: b.value }
-      } else {
-        return {
-          type: 'image',
-          value: b.previewUrl ? '' : b.value, // Send old value if no new previewUrl
-          fileKey: b.file ? b.fileKey : undefined,
-        }
-      }
-    })
-
-    formData.append('blocksMeta', JSON.stringify(blocksMeta))
-
-    // Append block files using their respective fileKeys
-    blocks.forEach((b) => {
-      if (b.type === 'image' && b.file && b.fileKey) {
-        formData.append(b.fileKey, b.file)
-      }
-    })
-
     const toastId = addToast('Menyimpan berita dan mengunggah gambar...', 'info')
 
     startTransition(async () => {
       try {
+        // Compress cover image if needed (target 5MB limit)
+        let finalCoverFile = coverFile
+        if (coverFile) {
+          finalCoverFile = await compressImageIfNeeded(coverFile, 5 * 1024 * 1024)
+        }
+
+        // Compress block image files if needed (target 5MB limit)
+        const finalBlocks = await Promise.all(
+          blocks.map(async (b) => {
+            if (b.type === 'image' && b.file) {
+              const compressed = await compressImageIfNeeded(b.file, 5 * 1024 * 1024)
+              return { ...b, file: compressed }
+            }
+            return b
+          })
+        )
+
+        const formData = new FormData()
+        formData.append('judul', judul)
+        formData.append('kategori', kategori)
+        formData.append('ringkasan', ringkasan)
+        formData.append('penulis', penulis)
+        formData.append('published', String(published))
+        formData.append('linkExternal', linkExternal)
+
+        // Handle Cover Image
+        if (finalCoverFile) {
+          formData.append('gambarUtama', finalCoverFile)
+        }
+        formData.append('keepGambarUtama', String(keepCover))
+
+        // Serialize Blocks metadata
+        const blocksMeta = finalBlocks.map((b) => {
+          if (b.type === 'text') {
+            return { type: 'text', value: b.value }
+          } else {
+            return {
+              type: 'image',
+              value: b.previewUrl ? '' : b.value, // Send old value if no new previewUrl
+              fileKey: b.file ? b.fileKey : undefined,
+            }
+          }
+        })
+
+        formData.append('blocksMeta', JSON.stringify(blocksMeta))
+
+        // Append block files using their respective fileKeys
+        finalBlocks.forEach((b) => {
+          if (b.type === 'image' && b.file && b.fileKey) {
+            formData.append(b.fileKey, b.file)
+          }
+        })
+
         const res = isEditMode
           ? await updateBerita(initialBerita!.id, formData)
           : await createBerita(formData)

@@ -8,6 +8,7 @@ import { createProgramKerja, updateProgramKerja, deleteProgramKerja } from './ac
 import { formatRupiah, formatTanggal } from '@/lib/format'
 import { STATUS_PROGRAM_KERJA } from '@/lib/constants'
 import { useToast } from '@/hooks/useToast'
+import { compressImageIfNeeded } from '@/lib/utils'
 import Modal from '@/components/ui/Modal'
 
 interface Dokumentasi {
@@ -107,8 +108,8 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
     // Client-side file size and type validation for documentation files
     const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'heic', 'heif', 'webp', 'gif', 'svg', 'bmp', 'tiff']
     for (const file of selectedFiles) {
-      if (file.size > 10 * 1024 * 1024) {
-        addToast(`Ukuran berkas "${file.name}" maksimal 10MB`, 'error')
+      if (file.size > 20 * 1024 * 1024) {
+        addToast(`Ukuran berkas "${file.name}" maksimal 20MB`, 'error')
         return
       }
       const ext = file.name.split('.').pop()?.toLowerCase() || ''
@@ -118,18 +119,25 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
       }
     }
 
-    // Remove the default file input entries and add our tracked files
-    formData.delete('dokumentasi')
-    selectedFiles.forEach(f => formData.append('dokumentasi', f))
-
-    if (editData && deletedDocIds.length > 0) {
-      formData.set('deletedDokumentasiIds', JSON.stringify(deletedDocIds))
-    }
-
     const toastId = addToast('Menyimpan program kerja dan mengunggah dokumentasi...', 'info')
 
     startTransition(async () => {
       try {
+        // Compress selected files if needed (target 5MB limit)
+        const compressedFiles = await Promise.all(
+          selectedFiles.map(async (file) => {
+            return await compressImageIfNeeded(file, 5 * 1024 * 1024)
+          })
+        )
+
+        // Remove the default file input entries and add our tracked compressed files
+        formData.delete('dokumentasi')
+        compressedFiles.forEach(f => formData.append('dokumentasi', f))
+
+        if (editData && deletedDocIds.length > 0) {
+          formData.set('deletedDokumentasiIds', JSON.stringify(deletedDocIds))
+        }
+
         const r = editData
           ? await updateProgramKerja(editData.id, formData)
           : await createProgramKerja(formData)
