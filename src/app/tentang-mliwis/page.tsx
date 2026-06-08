@@ -74,7 +74,7 @@ export default function TentangMliwisPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '48px', alignItems: 'center' }}>
               <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px' }}>
                 <img
-                  src="/1.png"
+                  src="/vibes_mliwis.jpg"
                   alt="Asal Usul Nama Pantai Mliwis"
                   style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
                   onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=600' }}
@@ -109,7 +109,7 @@ export default function TentangMliwisPage() {
               </div>
               <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px', order: 1 }}>
                 <img
-                  src="/2.png"
+                  src="/gotong royong.jpg"
                   alt="Pembangunan Swadaya Warga"
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600' }}
@@ -124,7 +124,7 @@ export default function TentangMliwisPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '48px', alignItems: 'center' }}>
               <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px' }}>
                 <img
-                  src="/3.png"
+                  src="/grebek.webp"
                   alt="Tradisi Grebeg Rolasan"
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=600' }}
