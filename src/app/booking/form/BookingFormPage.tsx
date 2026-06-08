@@ -93,9 +93,14 @@ export default function BookingFormPage({ fasilitas }: { fasilitas: Fasilitas[] 
     selectedIds.forEach(id => formData.append('fasilitas', String(id)))
 
     startTransition(async () => {
-      const r = await createBooking(formData)
-      if (r.error) setError(r.error)
-      else if (r.kodeBooking) setResult({ kodeBooking: r.kodeBooking })
+      try {
+        const r = await createBooking(formData)
+        if (r.error) setError(r.error)
+        else if (r.kodeBooking) setResult({ kodeBooking: r.kodeBooking })
+      } catch (err) {
+        console.error(err)
+        setError('Terjadi kesalahan koneksi sistem. Silakan coba beberapa saat lagi.')
+      }
     })
   }
 
@@ -150,7 +155,7 @@ export default function BookingFormPage({ fasilitas }: { fasilitas: Fasilitas[] 
       <section
         style={{
           position: 'relative',
-          height: '360px',
+          height: '100vh',
           backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',

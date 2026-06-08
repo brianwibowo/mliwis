@@ -16,7 +16,7 @@ export default function BookingFormClient() {
       <section
         style={{
           position: 'relative',
-          height: '360px',
+          height: '100vh',
           backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',

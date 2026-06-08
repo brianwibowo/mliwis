@@ -9,21 +9,24 @@
    1. CSS CUSTOM PROPERTIES
    ========================================== */
 :root {
-  /* Colors - Ocean Blue Palette */
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
-  --color-primary-400: #60a5fa;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-primary-900: #1e3a5f;
+  /* Colors - Pantai Mliwis New Palette */
+  --color-primary-50: #f0f9fa;
+  --color-primary-100: #e7f6f9;   /* Ice Blue */
+  --color-primary-200: #bde8f0;
+  --color-primary-300: #82d1e2;
+  --color-primary-400: #14a2ba;   /* Biru Muda / Bright Cyan */
+  --color-primary-500: #108ba1;
+  --color-primary-600: #125d72;   /* Biru Tua / Deep Teal */
+  --color-primary-700: #0d4858;
+  --color-primary-800: #093440;
+  --color-primary-900: #052129;   /* Darkest Teal background for header/footer/sidebar */
+  
+  /* Yellow / Sand Accent */
+  --color-sand-400: #efe62f;      /* Kuning Pantai Mliwis */
 
-  /* Ocean */
-  --color-ocean-dark: #0c1e3a;
-  --color-ocean-gradient: linear-gradient(135deg, #0c1e3a 0%, #1e3a5f 30%, #2563eb 70%, #06b6d4 100%);
+  /* Ocean Gradients */
+  --color-ocean-dark: #052129;
+  --color-ocean-gradient: linear-gradient(135deg, #052129 0%, #125d72 50%, #14a2ba 100%);
 
   /* Semantic */
   --color-success: #10b981;
@@ -35,18 +38,18 @@
   --color-danger: #ef4444;
   --color-danger-light: #fee2e2;
   --color-danger-dark: #991b1b;
-  --color-info: #3b82f6;
-  --color-info-light: #dbeafe;
+  --color-info: #14a2ba;
+  --color-info-light: #e7f6f9;
 
   /* Surface & Text */
   --color-surface: #ffffff;
-  --color-surface-alt: #f8fafc;
+  --color-surface-alt: #e7f6f9;   /* Ice Blue background for alt sections */
   --color-surface-hover: #f1f5f9;
-  --color-border: #e2e8f0;
-  --color-border-light: #f1f5f9;
-  --color-text: #1e293b;
-  --color-text-muted: #64748b;
-  --color-text-light: #94a3b8;
+  --color-border: #d9d9d9;        /* Abu-abu / Silver border */
+  --color-border-light: #e5e5e5;
+  --color-text: #052129;
+  --color-text-muted: #4a666e;
+  --color-text-light: #809a9f;
 
   /* Spacing */
   --space-1: 4px;
@@ -2358,8 +2361,9 @@ input, select, textarea, button {
 }
 
 .text-gradient-sand {
-  background: linear-gradient(135deg, var(--color-sand-400) 0%, #06b6d4 100%);
+  background: linear-gradient(135deg, var(--color-sand-400) 0%, var(--color-primary-400) 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -3470,3 +3474,86 @@ input, select, textarea, button {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ==========================================
+   BRANDING REDESIGN EXTRA STYLES
+   ========================================== */
+.play-btn-glow:hover {
+  transform: scale(1.08);
+  background-color: var(--color-primary-500) !important;
+  box-shadow: 0 0 40px rgba(37, 99, 235, 0.8) !important;
+}
+
+.gallery-card-hover:hover .gallery-image {
+  transform: scale(1.06);
+}
+
+.gallery-card-hover:hover div {
+  opacity: 1 !important;
+}
+
+.news-card-item:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md) !important;
+  border-color: var(--color-primary-200) !important;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ==========================================
+   BENTO GRID & PORTRAIT SMARTPHONE VIDEO
+   ========================================== */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .bento-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+  
+  .bento-grid > div {
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+    height: 240px !important;
+  }
+}
+
+.phone-mockup {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  aspect-ratio: 9 / 16;
+  border: 12px solid #1f2937;
+  border-radius: 40px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5), 0 0 35px rgba(20, 162, 186, 0.2);
+  overflow: hidden;
+  background-color: #000;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.phone-mockup:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 30px 70px -10px rgba(0, 0, 0, 0.65), 0 0 45px rgba(20, 162, 186, 0.35);
+}
+
+.phone-notch {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 18px;
+  background-color: #1f2937;
+  border-radius: 20px;
+  z-index: 10;
+}
+
+

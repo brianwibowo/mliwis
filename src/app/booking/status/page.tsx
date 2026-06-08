@@ -28,9 +28,14 @@ export default function BookingStatusPage() {
   const handleCheck = () => {
     setError(''); setResult(null)
     startTransition(async () => {
-      const r = await checkBookingStatus(kode.trim().toUpperCase())
-      if (r.error) setError(r.error)
-      else if (r.data) setResult(r.data)
+      try {
+        const r = await checkBookingStatus(kode.trim().toUpperCase())
+        if (r.error) setError(r.error)
+        else if (r.data) setResult(r.data)
+      } catch (err) {
+        console.error(err)
+        setError('Terjadi kesalahan koneksi sistem. Silakan coba beberapa saat lagi.')
+      }
     })
   }
 
@@ -45,7 +50,7 @@ export default function BookingStatusPage() {
       <section
         style={{
           position: 'relative',
-          height: '360px',
+          height: '100vh',
           backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',

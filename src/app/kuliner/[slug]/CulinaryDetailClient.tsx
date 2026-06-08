@@ -55,7 +55,7 @@ export default function CulinaryDetailClient({ item }: Props) {
       <section
         style={{
           position: 'relative',
-          height: '320px',
+          height: '100vh',
           backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url(${getFoodFallback(item.slug, 0)})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',

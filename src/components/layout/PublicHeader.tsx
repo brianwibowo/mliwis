@@ -38,6 +38,8 @@ export default function PublicHeader({ transparentByDefault = false }: PublicHea
 
   const navLinks = [
     { label: 'Beranda', href: '/' },
+    { label: 'Tentang Mliwis', href: '/tentang-mliwis' },
+    { label: 'Fasilitas', href: '/fasilitas' },
     { label: 'Aneka Kuliner', href: '/kuliner' },
     { label: 'Berita Kegiatan', href: '/berita-kegiatan' },
     { label: 'Booking Tempat', href: '/booking' },
@@ -60,7 +62,7 @@ export default function PublicHeader({ transparentByDefault = false }: PublicHea
         )}
         id="main-header"
         style={{
-          backgroundColor: scrolled ? 'rgba(255, 255, 255, 0.9)' : 'transparent',
+          backgroundColor: scrolled ? 'rgba(255, 255, 255, 0.8)' : 'transparent',
           backdropFilter: scrolled ? 'blur(16px)' : 'none',
           WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
           transition: 'all 0.3s ease',
@@ -68,15 +70,15 @@ export default function PublicHeader({ transparentByDefault = false }: PublicHea
       >
         <Link href="/" className="landing-logo" id="logo-brand" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
           <img
-            src="/logo_mliwis.png"
+            src="/logo_mliwis.jpg"
             alt="Logo Pantai Mliwis"
-            style={{ height: '36px', width: 'auto', objectFit: 'contain' }}
+            style={{ height: '40px', width: 'auto', borderRadius: '50%', objectFit: 'cover' }}
           />
           <span style={{ color: scrolled ? 'var(--color-primary-900)' : 'white' }}>Pantai Mliwis</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="landing-nav-links" id="desktop-nav" style={{ display: 'flex', gap: '32px' }}>
+        <nav className="landing-nav-links" id="desktop-nav" style={{ display: 'flex', gap: '24px' }}>
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -124,6 +126,7 @@ export default function PublicHeader({ transparentByDefault = false }: PublicHea
               border: 'none',
               cursor: 'pointer',
               color: scrolled ? 'var(--color-primary-900)' : 'white',
+              zIndex: 101,
             }}
           >
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -131,24 +134,44 @@ export default function PublicHeader({ transparentByDefault = false }: PublicHea
         </div>
       </header>
 
-      {/* Mobile Navigation Drawer */}
+      {/* Backdrop for Mobile Menu */}
+      {mobileMenuOpen && (
+        <div
+          onClick={() => setMobileMenuOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+            zIndex: 98,
+            animation: 'fadeIn 0.2s ease-out',
+          }}
+        />
+      )}
+
+      {/* Mobile Navigation Drawer: Half Screen & Transparent Glassmorphism */}
       {mobileMenuOpen && (
         <div
           className="mobile-nav-menu"
           style={{
             position: 'fixed',
-            top: '72px',
-            left: 0,
+            top: 0,
             right: 0,
-            backgroundColor: 'white',
-            borderBottom: '1px solid var(--color-border)',
-            boxShadow: 'var(--shadow-lg)',
+            width: '60vw',
+            maxWidth: '400px',
+            height: '100vh',
+            backgroundColor: 'rgba(255, 255, 255, 0.75)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderLeft: '1px solid rgba(255, 255, 255, 0.3)',
+            boxShadow: '-10px 0 30px rgba(0, 0, 0, 0.15)',
             zIndex: 99,
             display: 'flex',
             flexDirection: 'column',
-            padding: '24px',
-            gap: '16px',
-            animation: 'slideDown 0.3s ease-out',
+            padding: '100px 24px 24px 24px',
+            gap: '20px',
+            animation: 'slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
           {navLinks.map((link) => (
@@ -161,11 +184,12 @@ export default function PublicHeader({ transparentByDefault = false }: PublicHea
               )}
               onClick={() => setMobileMenuOpen(false)}
               style={{
-                color: isActive(link.href) ? 'var(--color-primary-600)' : 'var(--color-text-muted)',
-                fontSize: '1.1rem',
+                color: isActive(link.href) ? 'var(--color-primary-600)' : 'var(--color-primary-950)',
+                fontSize: '1.15rem',
                 fontWeight: isActive(link.href) ? '600' : '500',
                 padding: '8px 0',
-                borderBottom: '1px solid var(--color-border-subtle)',
+                borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                transition: 'color 0.2s ease',
               }}
             >
               {link.label}
@@ -177,7 +201,13 @@ export default function PublicHeader({ transparentByDefault = false }: PublicHea
             rel="noopener noreferrer"
             className="btn btn-outline"
             onClick={() => setMobileMenuOpen(false)}
-            style={{ marginTop: '12px', justifyContent: 'center' }}
+            style={{
+              marginTop: '20px',
+              justifyContent: 'center',
+              backgroundColor: 'var(--color-primary-600)',
+              color: 'white',
+              borderColor: 'var(--color-primary-600)'
+            }}
           >
             <LogIn size={16} />
             <span>Login Admin</span>
