@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import { getPengunjung } from './actions'
 import PengunjungClient from './PengunjungClient'
 
-export const metadata = { title: 'Data Pengunjung' }
+export const metadata = { title: 'Laporan Pengunjung' }
 
 export default async function PengunjungPage({
   searchParams,

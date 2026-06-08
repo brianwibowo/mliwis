@@ -2,7 +2,8 @@
 
 import { useActionState } from 'react'
 import { loginAction, LoginState } from '../actions'
-import { Waves, Lock, User } from 'lucide-react'
+import { Lock, User, ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
 
 const initialState: LoginState = {}
 
@@ -12,9 +13,6 @@ export default function LoginPage() {
   return (
     <div className="auth-card">
       <div className="auth-logo">
-        <div className="auth-logo-icon">
-          <Waves size={40} />
-        </div>
         <h1 className="auth-title">SI-Mliwis</h1>
         <p className="auth-subtitle">Sistem Informasi Manajemen Pantai Mliwis</p>
       </div>
@@ -75,7 +73,25 @@ export default function LoginPage() {
         </button>
       </form>
 
-      <p className="auth-footer-text">
+      <div style={{ textAlign: 'center', marginTop: '20px', borderTop: '1px solid var(--color-border-subtle)', paddingTop: '16px' }}>
+        <Link 
+          href="/" 
+          style={{ 
+            color: 'var(--color-primary-600)', 
+            fontSize: '0.9rem', 
+            fontWeight: 600, 
+            textDecoration: 'none', 
+            display: 'inline-flex', 
+            alignItems: 'center', 
+            gap: '6px' 
+          }}
+        >
+          <ArrowLeft size={16} />
+          <span>Kembali ke Beranda</span>
+        </Link>
+      </div>
+
+      <p className="auth-footer-text" style={{ marginTop: '16px' }}>
         Pantai Mliwis &mdash; Kebumen
       </p>
     </div>

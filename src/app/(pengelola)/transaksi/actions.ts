@@ -43,7 +43,7 @@ export async function createKasMasuk(formData: FormData) {
   await prisma.kasMasuk.create({
     data: { tanggal: new Date(tanggal), jenisTransaksi, nominal, keterangan: keterangan || null, keteranganLain: keteranganLain || null, userId: session.userId },
   })
-  revalidatePath('/keuangan/kas-masuk')
+  revalidatePath('/transaksi/kas-masuk')
   return { success: true }
 }
 
@@ -61,7 +61,7 @@ export async function updateKasMasuk(id: number, formData: FormData) {
       keteranganLain: (formData.get('keteranganLain') as string) || null,
     },
   })
-  revalidatePath('/keuangan/kas-masuk')
+  revalidatePath('/transaksi/kas-masuk')
   return { success: true }
 }
 
@@ -69,7 +69,7 @@ export async function deleteKasMasuk(id: number) {
   const session = await getSession()
   if (!session) return { error: 'Unauthorized' }
   await prisma.kasMasuk.delete({ where: { id } })
-  revalidatePath('/keuangan/kas-masuk')
+  revalidatePath('/transaksi/kas-masuk')
   return { success: true }
 }
 
@@ -112,7 +112,7 @@ export async function createKasKeluar(formData: FormData) {
   await prisma.kasKeluar.create({
     data: { tanggal: new Date(tanggal), jenisTransaksi, nominal, keterangan: keterangan || null, keteranganLain: keteranganLain || null, userId: session.userId },
   })
-  revalidatePath('/keuangan/kas-keluar')
+  revalidatePath('/transaksi/kas-keluar')
   return { success: true }
 }
 
@@ -130,7 +130,7 @@ export async function updateKasKeluar(id: number, formData: FormData) {
       keteranganLain: (formData.get('keteranganLain') as string) || null,
     },
   })
-  revalidatePath('/keuangan/kas-keluar')
+  revalidatePath('/transaksi/kas-keluar')
   return { success: true }
 }
 
@@ -138,6 +138,6 @@ export async function deleteKasKeluar(id: number) {
   const session = await getSession()
   if (!session) return { error: 'Unauthorized' }
   await prisma.kasKeluar.delete({ where: { id } })
-  revalidatePath('/keuangan/kas-keluar')
+  revalidatePath('/transaksi/kas-keluar')
   return { success: true }
 }

@@ -120,22 +120,21 @@ export const NAV_ITEMS: NavItem[] = [
   },
   {
     icon: 'Wallet',
-    label: 'Keuangan',
-    href: '/keuangan',
+    label: 'Transaksi',
+    href: '/transaksi',
     subItems: [
-      { label: 'Kas Masuk', href: '/keuangan/kas-masuk' },
-      { label: 'Kas Keluar', href: '/keuangan/kas-keluar' },
+      { label: 'Kas Masuk', href: '/transaksi/kas-masuk' },
+      { label: 'Kas Keluar', href: '/transaksi/kas-keluar' },
     ],
-  },
-  {
-    icon: 'Users',
-    label: 'Pengunjung',
-    href: '/pengunjung',
   },
   {
     icon: 'FileText',
     label: 'Laporan',
     href: '/laporan',
+    subItems: [
+      { label: 'Pengunjung', href: '/laporan/pengunjung' },
+      { label: 'Transaksi', href: '/laporan/transaksi' },
+    ],
   },
   {
     icon: 'ClipboardList',

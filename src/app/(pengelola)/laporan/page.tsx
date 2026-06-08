@@ -1,11 +1,5 @@
-export const dynamic = 'force-dynamic'
+import { redirect } from 'next/navigation'
 
-import { getLaporanData } from './actions'
-import LaporanClient from './LaporanClient'
-
-export const metadata = { title: 'Laporan' }
-
-export default async function LaporanPage() {
-  const result = await getLaporanData('bulanan')
-  return <LaporanClient initialData={result && !('error' in result) ? result : null} />
+export default function LaporanPage() {
+  redirect('/laporan/pengunjung')
 }

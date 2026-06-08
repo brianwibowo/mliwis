@@ -190,8 +190,20 @@ async function main() {
     const dayOfWeek = d.getDay()
     // Weekend lebih ramai
     const base = dayOfWeek === 0 || dayOfWeek === 6 ? 250 : 100
-    const jumlah = base + Math.floor(Math.random() * 200)
-    pengunjungData.push({ tanggal: d, jumlah, userId: staff.id })
+    const total = base + Math.floor(Math.random() * 200)
+    
+    const jumlahBalita = Math.floor(total * 0.1)
+    const jumlahAnak = Math.floor(total * 0.3)
+    const jumlahDewasa = total - jumlahBalita - jumlahAnak
+    
+    pengunjungData.push({ 
+      tanggal: d, 
+      jumlahBalita, 
+      jumlahAnak, 
+      jumlahDewasa, 
+      jumlah: total, 
+      userId: staff.id 
+    })
   }
   await Promise.all(
     pengunjungData.map((p) => prisma.pengunjung.create({ data: p }))

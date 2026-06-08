@@ -38,7 +38,7 @@ export default function LaporanClient({ initialData }: { initialData: LaporanRes
   return (
     <div>
       <div className="page-header">
-        <div className="page-header-left"><h1>Laporan Keuangan</h1><p>Rekap pemasukan dan pengeluaran</p></div>
+        <div className="page-header-left"><h1>Laporan Transaksi</h1><p>Rekap pemasukan dan pengeluaran</p></div>
         {data && <button className="btn btn-outline" onClick={handlePrint}><Printer size={18} /> Cetak</button>}
       </div>
 

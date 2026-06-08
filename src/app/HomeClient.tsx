@@ -190,9 +190,7 @@ export default function HomeClient({ initialNews }: HomeClientProps) {
                 <ArrowRight size={18} />
               </a>
               <a
-                href="/booking/form"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/booking"
                 className="btn btn-outline-white btn-lg"
                 id="btn-cta-booking"
                 style={{ padding: '14px 28px', borderRadius: '12px' }}
@@ -688,12 +686,12 @@ export default function HomeClient({ initialNews }: HomeClientProps) {
             <p className="text-muted" style={{ marginBottom: 28, maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto', fontSize: '0.95rem', lineHeight: 1.6 }}>
               Ajukan sewa area pendopo, camping ground, outbound, atau area prewedding secara online. Tim Pokdarwis akan memproses pengajuan Anda dengan cepat.
             </p>
-            <div style={{ display: 'inline-flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <a href="/booking/form" target="_blank" rel="noopener noreferrer" className="btn btn-primary" id="btn-booking-now" style={{ padding: '12px 32px', display: 'flex', alignItems: 'center', gap: 8, borderRadius: '12px' }}>
+             <div style={{ display: 'inline-flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <a href="/booking" className="btn btn-primary" id="btn-booking-now" style={{ padding: '12px 32px', display: 'flex', alignItems: 'center', gap: 8, borderRadius: '12px' }}>
                 <Calendar size={16} />
                 <span>Mulai Booking Sekarang</span>
               </a>
-              <a href="/booking/status" target="_blank" rel="noopener noreferrer" className="btn btn-outline" id="btn-check-status-now" style={{ padding: '12px 32px', backgroundColor: 'white', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)', borderRadius: '12px' }}>
+              <a href="/booking#cek-status-section" className="btn btn-outline" id="btn-check-status-now" style={{ padding: '12px 32px', backgroundColor: 'white', borderColor: 'var(--color-border)', color: 'var(--color-text-muted)', borderRadius: '12px' }}>
                 <span>Cek Status Pemesanan</span>
               </a>
             </div>

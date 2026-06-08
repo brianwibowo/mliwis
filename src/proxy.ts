@@ -5,13 +5,12 @@ const protectedRoutes = [
   '/dashboard',
   '/arsip-surat',
   '/booking-admin',
-  '/keuangan',
-  '/pengunjung',
+  '/transaksi',
   '/laporan',
   '/pengaturan',
 ]
 
-const publicRoutes = ['/login', '/booking', '/booking/status']
+const publicRoutes = ['/login', '/booking']
 
 export default async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname
