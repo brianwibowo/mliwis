@@ -100,7 +100,14 @@ export default function BookingFormClient({ fasilitas }: { fasilitas: Fasilitas[
   const queryKode = searchParams ? searchParams.get('kode') || '' : ''
 
   const [isPending, startTransition] = useTransition()
-  const [result, setResult] = useState<{ kodeBooking: string } | null>(null)
+  const [result, setResult] = useState<{ 
+    kodeBooking: string
+    namaCustomer: string
+    nomorHP: string
+    jenisAcara: string
+    tanggalMulai: string
+    tanggalSelesai: string
+  } | null>(null)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
   const [selectedIds, setSelectedIds] = useState<number[]>([])
@@ -171,7 +178,14 @@ export default function BookingFormClient({ fasilitas }: { fasilitas: Fasilitas[
           setError(res.error)
           scrollToId('form-card')
         } else if (res.kodeBooking) {
-          setResult({ kodeBooking: res.kodeBooking })
+          setResult({ 
+            kodeBooking: res.kodeBooking,
+            namaCustomer: formData.get('namaCustomer') as string,
+            nomorHP: formData.get('nomorHP') as string,
+            jenisAcara: formData.get('jenisAcara') as string,
+            tanggalMulai: formData.get('tanggalMulai') as string,
+            tanggalSelesai: formData.get('tanggalSelesai') as string,
+          })
           // Scroll to top to see success state
           window.scrollTo({ top: 0, behavior: 'smooth' })
         }
@@ -187,6 +201,37 @@ export default function BookingFormClient({ fasilitas }: { fasilitas: Fasilitas[
     navigator.clipboard.writeText(code)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  // Generate and redirect to WhatsApp API for confirmation
+  const handleWhatsAppConfirm = () => {
+    if (!result) return
+    const adminNumber = '6285643309636'
+    
+    const formatLabelTanggal = (tglStr: string) => {
+      try {
+        return new Date(tglStr).toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        })
+      } catch {
+        return tglStr
+      }
+    }
+
+    const text = `Halo Pengelola Pantai Mliwis, saya baru saja mengajukan permohonan booking tempat dengan rincian berikut:
+
+*Kode Booking:* ${result.kodeBooking}
+*Nama Customer:* ${result.namaCustomer}
+*Nomor HP:* ${result.nomorHP}
+*Jenis Acara:* ${result.jenisAcara}
+*Tanggal:* ${formatLabelTanggal(result.tanggalMulai)} s/d ${formatLabelTanggal(result.tanggalSelesai)}
+
+Mohon bantuan untuk melakukan verifikasi pemesanan kami. Terima kasih!`
+
+    const url = `https://wa.me/${adminNumber}?text=${encodeURIComponent(text)}`
+    window.open(url, '_blank')
   }
 
   // Handle trigger status search
@@ -500,11 +545,37 @@ export default function BookingFormClient({ fasilitas }: { fasilitas: Fasilitas[
                   {result.kodeBooking}
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '32px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', marginBottom: '32px', maxWidth: '320px', margin: '0 auto 32px' }}>
                   <button 
-                    className="btn btn-outline" 
+                    onClick={handleWhatsAppConfirm}
+                    className="btn w-full"
+                    style={{ 
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '12.5px 20px',
+                      borderRadius: '12px',
+                      fontSize: '0.95rem',
+                      fontWeight: 700,
+                      backgroundColor: '#22c55e',
+                      color: 'white',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background 0.2s'
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#16a34a')}
+                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#22c55e')}
+                  >
+                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.003 5.324 5.328 0 11.859 0c3.166.001 6.141 1.233 8.375 3.47 2.233 2.237 3.461 5.214 3.46 8.384-.002 6.535-5.328 11.859-11.859 11.859-2.007-.001-3.98-.51-5.74-1.482L0 24zm6.59-4.846c1.785 1.059 3.55 1.603 5.26 1.604 5.26 0 9.54-4.28 9.54-9.54 0-2.548-.992-4.945-2.793-6.747C16.855 2.67 14.462 1.678 11.91 1.678c-5.26 0-9.54 4.28-9.54 9.542 0 1.9.497 3.753 1.438 5.4l-.946 3.454 3.535-.928-.198-.124zm11.396-6.195c-.313-.156-1.853-.915-2.134-1.018-.282-.102-.487-.153-.692.156-.205.308-.795 1.018-.974 1.222-.179.205-.359.227-.672.07-.313-.156-1.32-.486-2.515-1.552-.928-.828-1.555-1.85-1.737-2.162-.182-.313-.02-.482.137-.638.14-.14.313-.365.47-.547.156-.182.208-.312.313-.52.104-.208.052-.39-.026-.547-.078-.156-.692-1.67-.949-2.288-.25-.6-.525-.516-.72-.526-.179-.01-.384-.01-.59-.01-.205 0-.54.078-.823.39-.282.313-1.077 1.053-1.077 2.566 0 1.513 1.1 2.978 1.253 3.187.153.208 2.163 3.303 5.24 4.633.73.316 1.3.504 1.745.646.734.233 1.402.2 1.93.12.588-.088 1.853-.758 2.115-1.458.263-.7.263-1.3.183-1.458-.08-.156-.285-.25-.598-.406z"/>
+                    </svg>
+                    <span>Konfirmasi via WhatsApp</span>
+                  </button>
+                  <button 
+                    className="btn btn-outline w-full" 
                     onClick={() => handleCopyCode(result.kodeBooking)}
-                    style={{ fontSize: '0.875rem', borderRadius: '10px', padding: '10px 20px' }}
+                    style={{ fontSize: '0.875rem', borderRadius: '12px', padding: '10px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                   >
                     <Copy size={14} />
                     <span>{copied ? 'Tersalin!' : 'Salin Kode Booking'}</span>
