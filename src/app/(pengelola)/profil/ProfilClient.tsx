@@ -16,7 +16,7 @@ interface UserData {
 
 export default function ProfilClient({ user }: { user: UserData }) {
   const router = useRouter()
-  const { addToast } = useToast()
+  const { addToast, removeToast } = useToast()
   const [isPending, startTransition] = useTransition()
   const [previewUrl, setPreviewUrl] = useState<string | null>(user.foto)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -34,20 +34,45 @@ export default function ProfilClient({ user }: { user: UserData }) {
     const form = e.currentTarget
     const formData = new FormData(form)
 
+    const file = formData.get('foto') as File | null
+    if (file && file.size > 0) {
+      if (file.size > 5 * 1024 * 1024) {
+        addToast('Ukuran foto profil maksimal 5MB', 'error')
+        return
+      }
+      const ext = file.name.split('.').pop()?.toLowerCase() || ''
+      const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif']
+      if (!allowedExtensions.includes(ext) && !file.type.startsWith('image/')) {
+        addToast('Format foto tidak didukung. Gunakan JPG, PNG, GIF, WEBP, atau HEIC/HEIF.', 'error')
+        return
+      }
+    }
+
+    const toastId = addToast('Menyimpan perubahan profil...', 'info')
+
     startTransition(async () => {
-      const r = await updateProfile(formData)
-      if (r.error) {
-        addToast(r.error, 'error')
-      } else {
-        addToast('Profil berhasil diperbarui', 'success')
-        // Reset password fields
-        const oldPass = form.querySelector('input[name="oldPassword"]') as HTMLInputElement
-        const newPass = form.querySelector('input[name="newPassword"]') as HTMLInputElement
-        const confPass = form.querySelector('input[name="confirmPassword"]') as HTMLInputElement
-        if (oldPass) oldPass.value = ''
-        if (newPass) newPass.value = ''
-        if (confPass) confPass.value = ''
-        router.refresh()
+      try {
+        const r = await updateProfile(formData)
+
+        removeToast(toastId)
+
+        if (r.error) {
+          addToast(r.error, 'error')
+        } else {
+          addToast('Profil berhasil diperbarui!', 'success')
+          // Reset password fields
+          const oldPass = form.querySelector('input[name="oldPassword"]') as HTMLInputElement
+          const newPass = form.querySelector('input[name="newPassword"]') as HTMLInputElement
+          const confPass = form.querySelector('input[name="confirmPassword"]') as HTMLInputElement
+          if (oldPass) oldPass.value = ''
+          if (newPass) newPass.value = ''
+          if (confPass) confPass.value = ''
+          router.refresh()
+        }
+      } catch (err: any) {
+        removeToast(toastId)
+        console.error('Client action error:', err)
+        addToast(err.message || 'Terjadi kesalahan sistem saat memperbarui profil', 'error')
       }
     })
   }

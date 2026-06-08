@@ -43,7 +43,7 @@ const KATEGORI_OPTIONS = [
 
 export default function BeritaFormClient({ initialBerita }: Props) {
   const router = useRouter()
-  const { addToast } = useToast()
+  const { addToast, removeToast } = useToast()
   const [isPending, startTransition] = useTransition()
 
   const isEditMode = !!initialBerita
@@ -147,6 +147,36 @@ export default function BeritaFormClient({ initialBerita }: Props) {
       return
     }
 
+    // Client-side file size and type validation
+    const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'heic', 'heif', 'webp', 'gif', 'svg', 'bmp', 'tiff']
+
+    if (coverFile) {
+      if (coverFile.size > 10 * 1024 * 1024) {
+        addToast('Ukuran gambar cover maksimal 10MB', 'error')
+        return
+      }
+      const ext = coverFile.name.split('.').pop()?.toLowerCase() || ''
+      if (!allowedExtensions.includes(ext) && !coverFile.type.startsWith('image/')) {
+        addToast('Format gambar cover tidak didukung. Gunakan JPG, PNG, WEBP, HEIC, HEIF, dll.', 'error')
+        return
+      }
+    }
+
+    for (let index = 0; index < blocks.length; index++) {
+      const b = blocks[index]
+      if (b.type === 'image' && b.file) {
+        if (b.file.size > 10 * 1024 * 1024) {
+          addToast(`Ukuran gambar pada Blok ${index + 1} maksimal 10MB`, 'error')
+          return
+        }
+        const ext = b.file.name.split('.').pop()?.toLowerCase() || ''
+        if (!allowedExtensions.includes(ext) && !b.file.type.startsWith('image/')) {
+          addToast(`Format gambar pada Blok ${index + 1} tidak didukung.`, 'error')
+          return
+        }
+      }
+    }
+
     const formData = new FormData()
     formData.append('judul', judul)
     formData.append('kategori', kategori)
@@ -183,20 +213,30 @@ export default function BeritaFormClient({ initialBerita }: Props) {
       }
     })
 
-    startTransition(async () => {
-      const res = isEditMode
-        ? await updateBerita(initialBerita!.id, formData)
-        : await createBerita(formData)
+    const toastId = addToast('Menyimpan berita dan mengunggah gambar...', 'info')
 
-      if (res.error) {
-        addToast(res.error, 'error')
-      } else {
-        addToast(
-          isEditMode ? 'Berita berhasil diperbarui' : 'Berita berhasil dibuat',
-          'success'
-        )
-        router.push('/berita-admin')
-        router.refresh()
+    startTransition(async () => {
+      try {
+        const res = isEditMode
+          ? await updateBerita(initialBerita!.id, formData)
+          : await createBerita(formData)
+
+        removeToast(toastId)
+
+        if (res?.error) {
+          addToast(res.error, 'error')
+        } else {
+          addToast(
+            isEditMode ? 'Berita berhasil diperbarui dan gambar diunggah!' : 'Berita berhasil dibuat dan gambar diunggah!',
+            'success'
+          )
+          router.push('/berita-admin')
+          router.refresh()
+        }
+      } catch (err: any) {
+        removeToast(toastId)
+        console.error('Client action error:', err)
+        addToast(err.message || 'Terjadi kesalahan jaringan atau sistem saat menyimpan berita', 'error')
       }
     })
   }

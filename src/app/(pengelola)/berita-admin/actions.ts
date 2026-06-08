@@ -6,10 +6,13 @@ import { revalidatePath } from 'next/cache'
 import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from '@/lib/constants'
 import { put, del } from '@vercel/blob'
 
-// Helper for file uploading
 async function uploadFile(file: File) {
-  if (!ALLOWED_FILE_TYPES.includes(file.type as typeof ALLOWED_FILE_TYPES[number])) {
-    return { error: `Tipe file tidak didukung. Gunakan: PDF, JPG, PNG, HEIC, HEIF` }
+  const fileExt = file.name.split('.').pop()?.toLowerCase() || ''
+  const isAllowedExt = ['.pdf', '.jpg', '.jpeg', '.png', '.heic', '.heif', '.webp', '.gif', '.svg', '.bmp', '.tiff'].includes('.' + fileExt)
+  const isAllowedMime = file.type.startsWith('image/') || file.type === 'application/pdf'
+
+  if (!isAllowedExt && !isAllowedMime) {
+    return { error: `Tipe file tidak didukung. Gunakan: PDF, JPG, PNG, WEBP, GIF, SVG, HEIC, HEIF` }
   }
   if (file.size > MAX_FILE_SIZE) {
     return { error: 'Ukuran file maksimal 10MB' }

@@ -50,9 +50,15 @@ export type StatusProgramKerja = (typeof STATUS_PROGRAM_KERJA)[number];
 export const ALLOWED_FILE_TYPES = [
   'application/pdf',
   'image/jpeg',
+  'image/jpg',
   'image/png',
   'image/heic',
   'image/heif',
+  'image/webp',
+  'image/gif',
+  'image/svg+xml',
+  'image/bmp',
+  'image/tiff',
 ] as const;
 
 export const ALLOWED_FILE_EXTENSIONS = [
@@ -62,6 +68,11 @@ export const ALLOWED_FILE_EXTENSIONS = [
   '.png',
   '.heic',
   '.heif',
+  '.webp',
+  '.gif',
+  '.svg',
+  '.bmp',
+  '.tiff',
 ] as const;
 
 /** 10 MB dalam byte */

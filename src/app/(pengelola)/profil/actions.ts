@@ -8,7 +8,7 @@ import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 import { put } from '@vercel/blob'
 
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif']
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 5MB
 
 export async function updateProfile(formData: FormData) {
@@ -29,8 +29,13 @@ export async function updateProfile(formData: FormData) {
 
   // 1. Handle Foto Profil Upload
   if (file && file.size > 0) {
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      return { error: 'Format foto tidak didukung. Gunakan JPG, PNG, GIF, atau WEBP' }
+    const ext = file.name.split('.').pop()?.toLowerCase() || ''
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif']
+    const isAllowedExt = allowedExtensions.includes(ext)
+    const isAllowedMime = ALLOWED_IMAGE_TYPES.includes(file.type) || file.type.startsWith('image/')
+
+    if (!isAllowedExt && !isAllowedMime) {
+      return { error: 'Format foto tidak didukung. Gunakan JPG, PNG, GIF, WEBP, atau HEIC/HEIF' }
     }
     if (file.size > MAX_IMAGE_SIZE) {
       return { error: 'Ukuran foto maksimal 5MB' }

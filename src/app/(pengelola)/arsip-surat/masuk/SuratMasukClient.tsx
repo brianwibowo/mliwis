@@ -28,7 +28,7 @@ interface Props {
 
 export default function SuratMasukClient({ initialData, currentSearch, currentPage }: Props) {
   const router = useRouter()
-  const { addToast } = useToast()
+  const { addToast, removeToast } = useToast()
   const [isPending, startTransition] = useTransition()
   const [showModal, setShowModal] = useState(false)
   const [editData, setEditData] = useState<SuratData | null>(null)
@@ -42,17 +42,43 @@ export default function SuratMasukClient({ initialData, currentSearch, currentPa
   }
 
   const handleSubmit = async (formData: FormData) => {
+    // Client-side file size and type validation
+    const file = formData.get('file') as File | null
+    if (file && file.size > 0) {
+      if (file.size > 10 * 1024 * 1024) {
+        addToast('Ukuran file lampiran maksimal 10MB', 'error')
+        return
+      }
+      const ext = file.name.split('.').pop()?.toLowerCase() || ''
+      const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'heic', 'heif', 'webp', 'gif', 'svg', 'bmp', 'tiff']
+      if (!allowedExtensions.includes(ext) && !file.type.startsWith('image/') && file.type !== 'application/pdf') {
+        addToast('Format file lampiran tidak didukung. Gunakan PDF, JPG, PNG, HEIC, HEIF, dll.', 'error')
+        return
+      }
+    }
+
+    const toastId = addToast('Menyimpan surat masuk dan mengunggah lampiran...', 'info')
+
     startTransition(async () => {
-      const result = editData
-        ? await updateSuratMasuk(editData.id, formData)
-        : await createSuratMasuk(formData)
-      if (result.error) {
-        addToast(result.error, 'error')
-      } else {
-        addToast(editData ? 'Surat berhasil diperbarui' : 'Surat berhasil ditambahkan', 'success')
-        setShowModal(false)
-        setEditData(null)
-        router.refresh()
+      try {
+        const result = editData
+          ? await updateSuratMasuk(editData.id, formData)
+          : await createSuratMasuk(formData)
+
+        removeToast(toastId)
+
+        if (result.error) {
+          addToast(result.error, 'error')
+        } else {
+          addToast(editData ? 'Surat berhasil diperbarui!' : 'Surat berhasil ditambahkan!', 'success')
+          setShowModal(false)
+          setEditData(null)
+          router.refresh()
+        }
+      } catch (err: any) {
+        removeToast(toastId)
+        console.error('Client action error:', err)
+        addToast(err.message || 'Terjadi kesalahan sistem saat menyimpan surat', 'error')
       }
     })
   }

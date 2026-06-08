@@ -48,7 +48,7 @@ function getStatusBadgeClass(status: string) {
 
 export default function ProgramKerjaClient({ initialData, initialSearch, initialStatus }: Props) {
   const router = useRouter()
-  const { addToast } = useToast()
+  const { addToast, removeToast } = useToast()
   const [isPending, startTransition] = useTransition()
   const [showModal, setShowModal] = useState(false)
   const [editData, setEditData] = useState<ProgramKerjaData | null>(null)
@@ -104,6 +104,20 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
   }
 
   const handleSubmit = (formData: FormData) => {
+    // Client-side file size and type validation for documentation files
+    const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'heic', 'heif', 'webp', 'gif', 'svg', 'bmp', 'tiff']
+    for (const file of selectedFiles) {
+      if (file.size > 10 * 1024 * 1024) {
+        addToast(`Ukuran berkas "${file.name}" maksimal 10MB`, 'error')
+        return
+      }
+      const ext = file.name.split('.').pop()?.toLowerCase() || ''
+      if (!allowedExtensions.includes(ext) && !file.type.startsWith('image/')) {
+        addToast(`Format berkas "${file.name}" tidak didukung.`, 'error')
+        return
+      }
+    }
+
     // Remove the default file input entries and add our tracked files
     formData.delete('dokumentasi')
     selectedFiles.forEach(f => formData.append('dokumentasi', f))
@@ -112,19 +126,30 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
       formData.set('deletedDokumentasiIds', JSON.stringify(deletedDocIds))
     }
 
+    const toastId = addToast('Menyimpan program kerja dan mengunggah dokumentasi...', 'info')
+
     startTransition(async () => {
-      const r = editData
-        ? await updateProgramKerja(editData.id, formData)
-        : await createProgramKerja(formData)
-      if (r.error) {
-        addToast(r.error, 'error')
-      } else {
-        addToast(editData ? 'Program kerja diperbarui' : 'Program kerja ditambahkan', 'success')
-        setShowModal(false)
-        setEditData(null)
-        setSelectedFiles([])
-        setDeletedDocIds([])
-        router.refresh()
+      try {
+        const r = editData
+          ? await updateProgramKerja(editData.id, formData)
+          : await createProgramKerja(formData)
+
+        removeToast(toastId)
+
+        if (r.error) {
+          addToast(r.error, 'error')
+        } else {
+          addToast(editData ? 'Program kerja berhasil diperbarui!' : 'Program kerja berhasil ditambahkan!', 'success')
+          setShowModal(false)
+          setEditData(null)
+          setSelectedFiles([])
+          setDeletedDocIds([])
+          router.refresh()
+        }
+      } catch (err: any) {
+        removeToast(toastId)
+        console.error('Client action error:', err)
+        addToast(err.message || 'Terjadi kesalahan sistem saat menyimpan program kerja', 'error')
       }
     })
   }

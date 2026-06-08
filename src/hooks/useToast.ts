@@ -24,7 +24,7 @@ export interface Toast {
 
 interface ToastContextValue {
   toasts: Toast[];
-  addToast: (message: string, type: ToastType) => void;
+  addToast: (message: string, type: ToastType) => string;
   removeToast: (id: string) => void;
 }
 
