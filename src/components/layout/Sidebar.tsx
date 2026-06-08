@@ -118,7 +118,16 @@ export default function Sidebar({ isOpen, onClose, user, isCollapsed = false, on
                       'sidebar-menu-item',
                       item.subItems.some((sub) => isActive(sub.href)) && 'active'
                     )}
-                    onClick={() => toggleMenu(item.label)}
+                    onClick={() => {
+                      if (isCollapsed && onToggleCollapse) {
+                        onToggleCollapse()
+                        if (!expandedMenus.includes(item.label)) {
+                          toggleMenu(item.label)
+                        }
+                      } else {
+                        toggleMenu(item.label)
+                      }
+                    }}
                     title={isCollapsed ? item.label : undefined}
                   >
                     {Icon && <Icon size={20} className="menu-icon" />}

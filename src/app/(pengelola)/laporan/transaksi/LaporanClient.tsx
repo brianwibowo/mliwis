@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/useToast'
 const BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember']
 
 interface LaporanResult {
-  period: string; type: string; month: number; year: number; week?: number
+  period: string; type: string; month: number; year: number; week?: number; day?: number
   kasMasuk: { grouped: { jenis: string; total: number }[]; total: number }
   kasKeluar: { grouped: { jenis: string; total: number }[]; total: number }
   saldo: number; totalPengunjung: number; totalBooking: number
@@ -18,16 +18,23 @@ interface LaporanResult {
 export default function LaporanClient({ initialData }: { initialData: LaporanResult | null }) {
   const { addToast } = useToast()
   const [isPending, startTransition] = useTransition()
-  const [activeTab, setActiveTab] = useState<'bulanan' | 'mingguan'>('bulanan')
+  const [activeTab, setActiveTab] = useState<'bulanan' | 'mingguan' | 'harian'>('bulanan')
   const now = new Date()
   const [month, setMonth] = useState(initialData?.month ?? now.getMonth() + 1)
   const [year, setYear] = useState(initialData?.year ?? now.getFullYear())
   const [week, setWeek] = useState(1)
+  const [day, setDay] = useState(initialData?.day ?? now.getDate())
   const [data, setData] = useState<LaporanResult | null>(initialData)
 
   const fetchData = () => {
     startTransition(async () => {
-      const r = await getLaporanData(activeTab, month, year, activeTab === 'mingguan' ? week : undefined)
+      const r = await getLaporanData(
+        activeTab,
+        month,
+        year,
+        activeTab === 'mingguan' ? week : undefined,
+        activeTab === 'harian' ? day : undefined
+      )
       if (r && !('error' in r)) setData(r)
       else addToast('Gagal memuat data', 'error')
     })
@@ -47,6 +54,7 @@ export default function LaporanClient({ initialData }: { initialData: LaporanRes
           <div className="tabs mb-4">
             <button className={`tab ${activeTab === 'bulanan' ? 'active' : ''}`} onClick={() => setActiveTab('bulanan')}>Rekap Bulanan</button>
             <button className={`tab ${activeTab === 'mingguan' ? 'active' : ''}`} onClick={() => setActiveTab('mingguan')}>Rekap Mingguan</button>
+            <button className={`tab ${activeTab === 'harian' ? 'active' : ''}`} onClick={() => setActiveTab('harian')}>Rekap Harian</button>
           </div>
           <div className="flex gap-3 flex-wrap items-center">
             <select className="filter-select" value={month} onChange={(e) => setMonth(Number(e.target.value))}>
@@ -58,6 +66,13 @@ export default function LaporanClient({ initialData }: { initialData: LaporanRes
             {activeTab === 'mingguan' && (
               <select className="filter-select" value={week} onChange={(e) => setWeek(Number(e.target.value))}>
                 {[1, 2, 3, 4, 5].map((w) => <option key={w} value={w}>Minggu {w}</option>)}
+              </select>
+            )}
+            {activeTab === 'harian' && (
+              <select className="filter-select" value={day} onChange={(e) => setDay(Number(e.target.value))}>
+                {Array.from({ length: new Date(year, month, 0).getDate() }, (_, i) => i + 1).map((d) => (
+                  <option key={d} value={d}>Tanggal {d}</option>
+                ))}
               </select>
             )}
             <button className="btn btn-primary" onClick={fetchData} disabled={isPending}>{isPending ? 'Memuat...' : 'Tampilkan'}</button>
@@ -89,7 +104,6 @@ export default function LaporanClient({ initialData }: { initialData: LaporanRes
             <div className="stat-card"><div className="stat-icon green"><TrendingUp size={24} /></div><div className="stat-content"><div className="stat-value text-success" style={{ fontSize: 'var(--text-xl)' }}>{formatRupiah(data.kasMasuk.total)}</div><div className="stat-label">Total Pemasukan</div></div></div>
             <div className="stat-card"><div className="stat-icon red"><TrendingDown size={24} /></div><div className="stat-content"><div className="stat-value text-danger" style={{ fontSize: 'var(--text-xl)' }}>{formatRupiah(data.kasKeluar.total)}</div><div className="stat-label">Total Pengeluaran</div></div></div>
             <div className="stat-card"><div className="stat-icon blue"><Wallet size={24} /></div><div className="stat-content"><div className="stat-value" style={{ fontSize: 'var(--text-xl)', color: data.saldo >= 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>{formatRupiah(data.saldo)}</div><div className="stat-label">Saldo</div></div></div>
-            <div className="stat-card"><div className="stat-icon yellow"><Users size={24} /></div><div className="stat-content"><div className="stat-value" style={{ fontSize: 'var(--text-xl)' }}>{data.totalPengunjung.toLocaleString('id-ID')}</div><div className="stat-label">Total Pengunjung</div></div></div>
           </div>
 
           <div className="grid-2 mb-6">
