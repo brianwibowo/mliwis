@@ -55,7 +55,7 @@ export default function ProfilClient({ user }: { user: UserData }) {
       try {
         // Compress profile photo if it is an image
         if (file && file.size > 0) {
-          const compressedFile = await compressImageIfNeeded(file, 5 * 1024 * 1024)
+          const compressedFile = await compressImageIfNeeded(file, 1 * 1024 * 1024)
           formData.set('foto', compressedFile)
         }
 

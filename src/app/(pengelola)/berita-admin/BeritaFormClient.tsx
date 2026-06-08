@@ -182,17 +182,17 @@ export default function BeritaFormClient({ initialBerita }: Props) {
 
     startTransition(async () => {
       try {
-        // Compress cover image if needed (target 5MB limit)
+        // Compress cover image if needed (target 800KB limit)
         let finalCoverFile = coverFile
         if (coverFile) {
-          finalCoverFile = await compressImageIfNeeded(coverFile, 5 * 1024 * 1024)
+          finalCoverFile = await compressImageIfNeeded(coverFile, 800 * 1024)
         }
 
-        // Compress block image files if needed (target 5MB limit)
+        // Compress block image files if needed (target 800KB limit)
         const finalBlocks = await Promise.all(
           blocks.map(async (b) => {
             if (b.type === 'image' && b.file) {
-              const compressed = await compressImageIfNeeded(b.file, 5 * 1024 * 1024)
+              const compressed = await compressImageIfNeeded(b.file, 800 * 1024)
               return { ...b, file: compressed }
             }
             return b

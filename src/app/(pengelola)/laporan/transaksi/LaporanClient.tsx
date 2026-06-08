@@ -37,12 +37,12 @@ export default function LaporanClient({ initialData }: { initialData: LaporanRes
 
   return (
     <div>
-      <div className="page-header">
+      <div className="page-header no-print">
         <div className="page-header-left"><h1>Laporan Transaksi</h1><p>Rekap pemasukan dan pengeluaran</p></div>
-        {data && <button className="btn btn-outline" onClick={handlePrint}><Printer size={18} /> Cetak</button>}
+        {data && <button className="btn btn-outline" onClick={handlePrint}><FileText size={18} /> Unduh PDF</button>}
       </div>
 
-      <div className="card mb-6">
+      <div className="card mb-6 no-print">
         <div className="card-body">
           <div className="tabs mb-4">
             <button className={`tab ${activeTab === 'bulanan' ? 'active' : ''}`} onClick={() => setActiveTab('bulanan')}>Rekap Bulanan</button>
@@ -67,7 +67,23 @@ export default function LaporanClient({ initialData }: { initialData: LaporanRes
 
       {data && (
         <>
-          <div className="text-center mb-4"><p className="font-heading font-bold text-lg">{data.period}</p></div>
+          <div className="text-center mb-4 no-print"><p className="font-heading font-bold text-lg">{data.period}</p></div>
+
+          {/* Kop Laporan - Hanya muncul saat cetak/PDF */}
+          <div className="print-only report-header" style={{ marginBottom: '24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', borderBottom: '3px double #000', paddingBottom: '16px', marginBottom: '24px' }}>
+              <img src="/logo_mliwis.jpg" alt="Logo" style={{ width: '64px', height: '64px', objectFit: 'contain' }} />
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#0f172a' }}>Pemerintah Kabupaten Kebumen</h2>
+                <h3 style={{ margin: '2px 0 0', fontSize: '1.2rem', fontWeight: 700, textTransform: 'uppercase', color: '#1e293b' }}>Pengelola Obyek Wisata Pantai Mliwis</h3>
+                <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#475569' }}>Kecamatan Ambal, Kabupaten Kebumen, Jawa Tengah</p>
+              </div>
+            </div>
+            <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, textTransform: 'uppercase', color: '#0f172a' }}>Laporan Transaksi & Keuangan</h3>
+              <p style={{ margin: '4px 0 0', fontSize: '0.95rem', fontWeight: 600, color: '#334155' }}>Periode: {data.period}</p>
+            </div>
+          </div>
 
           <div className="stats-grid mb-6">
             <div className="stat-card"><div className="stat-icon green"><TrendingUp size={24} /></div><div className="stat-content"><div className="stat-value text-success" style={{ fontSize: 'var(--text-xl)' }}>{formatRupiah(data.kasMasuk.total)}</div><div className="stat-label">Total Pemasukan</div></div></div>
@@ -112,6 +128,19 @@ export default function LaporanClient({ initialData }: { initialData: LaporanRes
                 <div><p className="text-muted text-sm">Total Pemasukan</p><p className="font-bold text-lg text-success">{formatRupiah(data.kasMasuk.total)}</p></div>
                 <div><p className="text-muted text-sm">Total Pengeluaran</p><p className="font-bold text-lg text-danger">{formatRupiah(data.kasKeluar.total)}</p></div>
                 <div><p className="text-muted text-sm">Saldo Bersih</p><p className="font-bold text-lg" style={{ color: data.saldo >= 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>{formatRupiah(data.saldo)}</p></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Tanda Tangan - Hanya muncul saat cetak/PDF */}
+          <div className="print-only report-footer" style={{ marginTop: '40px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <div style={{ width: '250px', textAlign: 'center' }}>
+                <p style={{ margin: 0, fontSize: '0.9rem' }}>Kebumen, {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                <p style={{ margin: '4px 0 0', fontSize: '0.9rem', fontWeight: 600 }}>Pengelola Pantai Mliwis</p>
+                <div style={{ height: '64px' }}></div>
+                <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 700, borderBottom: '1px solid #000', display: 'inline-block', minWidth: '180px', height: '18px' }}></p>
+                <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: '#475569' }}>Staf Administrasi</p>
               </div>
             </div>
           </div>

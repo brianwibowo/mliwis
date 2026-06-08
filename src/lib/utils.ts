@@ -65,7 +65,7 @@ export function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(
  */
 export async function compressImageIfNeeded(
   file: File,
-  maxSizeBytes: number = 5 * 1024 * 1024
+  maxSizeBytes: number = 1 * 1024 * 1024
 ): Promise<File> {
   if (typeof window === 'undefined' || !file.type.startsWith('image/')) {
     return file;

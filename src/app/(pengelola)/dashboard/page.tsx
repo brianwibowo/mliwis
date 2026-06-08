@@ -24,7 +24,6 @@ export default async function DashboardPage() {
     totalPengunjungBulanIni,
     totalKasMasukBulanIni,
     bookingMenunggu,
-    totalBookingBulanIni,
     recentBookings,
     pengunjung7Hari,
     kasMasuk6Bulan,
@@ -44,10 +43,7 @@ export default async function DashboardPage() {
     prisma.booking.count({
       where: { status: 'menunggu' },
     }),
-    // Total booking bulan ini
-    prisma.booking.count({
-      where: { createdAt: { gte: startOfMonth } },
-    }),
+
     // 5 booking terbaru
     prisma.booking.findMany({
       take: 5,
@@ -103,7 +99,6 @@ export default async function DashboardPage() {
       totalPengunjung: totalPengunjungBulanIni._sum.jumlah || 0,
       totalPendapatan: Number(totalKasMasukBulanIni._sum.nominal || 0),
       bookingMenunggu,
-      totalBooking: totalBookingBulanIni,
     },
     pengunjung7Hari: pengunjung7Hari.map((p) => ({
       tanggal: p.tanggal.toISOString(),

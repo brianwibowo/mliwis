@@ -5,6 +5,7 @@ import PublicHeader from '@/components/layout/PublicHeader'
 import PublicFooter from '@/components/layout/PublicFooter'
 import { prisma } from '@/lib/prisma'
 import { formatTanggal } from '@/lib/format'
+import { getSession } from '@/lib/auth'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -17,8 +18,14 @@ export async function generateMetadata({ params }: Props) {
   })
   if (!item) return { title: 'Berita Tidak Ditemukan' }
 
+  const session = await getSession()
+  if (!item.published && !session) {
+    return { title: 'Berita Tidak Ditemukan' }
+  }
+
+  const prefix = item.published ? '' : '[DRAFT] '
   return {
-    title: `${item.judul} — Kabar Pantai Mliwis`,
+    title: `${prefix}${item.judul} — Kabar Pantai Mliwis`,
     description: item.ringkasan,
   }
 }
@@ -29,7 +36,12 @@ export default async function NewsDetailPage({ params }: Props) {
     where: { slug },
   })
 
-  if (!item || !item.published) {
+  if (!item) {
+    notFound()
+  }
+
+  const session = await getSession()
+  if (!item.published && !session) {
     notFound()
   }
 
@@ -61,6 +73,29 @@ export default async function NewsDetailPage({ params }: Props) {
             <Icons.ArrowLeft size={16} />
             <span>Kembali ke Berita</span>
           </Link>
+
+          {/* Draft Warning Banner */}
+          {!item.published && (
+            <div
+              style={{
+                backgroundColor: 'var(--color-warning-light, #fef3c7)',
+                border: '1px solid var(--color-warning, #f59e0b)',
+                color: 'var(--color-warning-dark, #92400e)',
+                padding: '16px 20px',
+                borderRadius: '16px',
+                marginBottom: '28px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+              }}
+            >
+              <Icons.AlertTriangle size={20} className="flex-shrink-0" style={{ color: 'var(--color-warning, #f59e0b)' }} />
+              <div>
+                <strong style={{ display: 'block', fontSize: '0.95rem', fontWeight: 700 }}>Pratinjau Draft</strong>
+                <span style={{ fontSize: '0.85rem' }}>Halaman ini hanya dapat dilihat oleh pengelola karena statusnya masih draft.</span>
+              </div>
+            </div>
+          )}
 
           {/* Category Badges & Meta */}
           <div style={{ marginBottom: '16px' }}>

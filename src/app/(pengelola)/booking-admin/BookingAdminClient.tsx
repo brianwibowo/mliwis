@@ -17,9 +17,10 @@ interface BookingData {
 interface Props {
   initialData: { data: BookingData[]; total: number; totalPages: number }
   currentSearch: string; currentStatus: string; currentPage: number
+  totalBookingBulanIni: number
 }
 
-export default function BookingAdminClient({ initialData, currentSearch, currentStatus, currentPage }: Props) {
+export default function BookingAdminClient({ initialData, currentSearch, currentStatus, currentPage, totalBookingBulanIni }: Props) {
   const router = useRouter()
   const { addToast } = useToast()
   const [isPending, startTransition] = useTransition()
@@ -48,8 +49,20 @@ export default function BookingAdminClient({ initialData, currentSearch, current
 
   return (
     <div>
-      <div className="page-header">
-        <div className="page-header-left"><h1>Data Booking</h1><p>Semua data booking acara Pantai Mliwis</p></div>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+        <div className="page-header-left">
+          <h1>Data Booking</h1>
+          <p>Semua data booking acara Pantai Mliwis</p>
+        </div>
+        <div className="stat-card" style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '12px', minWidth: '220px', marginBottom: 0 }}>
+          <div className="stat-icon red" style={{ width: '36px', height: '36px', borderRadius: '8px' }}>
+            <CalendarCheck size={18} />
+          </div>
+          <div>
+            <div className="stat-value" style={{ fontSize: '1.25rem', fontWeight: 800 }}>{totalBookingBulanIni}</div>
+            <div className="stat-label" style={{ fontSize: '0.75rem', marginTop: 0 }}>Total Booking Bulan Ini</div>
+          </div>
+        </div>
       </div>
 
       <div className="filter-bar">

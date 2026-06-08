@@ -12,7 +12,6 @@ interface DashboardData {
     totalPengunjung: number
     totalPendapatan: number
     bookingMenunggu: number
-    totalBooking: number
   }
   pengunjung7Hari: { tanggal: string; jumlah: number }[]
   monthlyKasMasuk: { bulan: string; total: number }[]
@@ -83,16 +82,6 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           <div className="stat-content">
             <div className="stat-value">{stats.bookingMenunggu}</div>
             <div className="stat-label">Booking Menunggu</div>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-icon red">
-            <TrendingUp size={24} />
-          </div>
-          <div className="stat-content">
-            <div className="stat-value">{stats.totalBooking}</div>
-            <div className="stat-label">Total Booking Bulan Ini</div>
           </div>
         </div>
       </div>

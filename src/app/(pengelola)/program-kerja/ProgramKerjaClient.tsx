@@ -126,7 +126,7 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
         // Compress selected files if needed (target 5MB limit)
         const compressedFiles = await Promise.all(
           selectedFiles.map(async (file) => {
-            return await compressImageIfNeeded(file, 5 * 1024 * 1024)
+            return await compressImageIfNeeded(file, 1 * 1024 * 1024)
           })
         )
 

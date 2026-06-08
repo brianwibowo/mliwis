@@ -23,7 +23,7 @@ import { NAV_ITEMS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { logoutAction } from '@/app/(auth)/actions'
 
-const iconMap: Record<string, React.ComponentType<{ size?: number }>> = {
+const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   LayoutDashboard,
   Mail,
   CalendarCheck,
@@ -83,7 +83,7 @@ export default function Sidebar({ isOpen, onClose, user, isCollapsed = false, on
         <div className="sidebar-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', overflow: 'hidden' }}>
             <img 
-              src="/logo_mliwis.png" 
+              src="/logo_mliwis.jpg" 
               alt="Logo" 
               className="sidebar-logo-img" 
               style={{ width: '36px', height: '36px', objectFit: 'contain', flexShrink: 0 }} 
@@ -121,7 +121,7 @@ export default function Sidebar({ isOpen, onClose, user, isCollapsed = false, on
                     onClick={() => toggleMenu(item.label)}
                     title={isCollapsed ? item.label : undefined}
                   >
-                    {Icon && <Icon size={20} />}
+                    {Icon && <Icon size={20} className="menu-icon" />}
                     <span style={{ flex: 1, textAlign: 'left' }}>{item.label}</span>
                     <ChevronDown
                       size={16}
@@ -166,7 +166,7 @@ export default function Sidebar({ isOpen, onClose, user, isCollapsed = false, on
                 onClick={onClose}
                 title={isCollapsed ? item.label : undefined}
               >
-                {Icon && <Icon size={20} />}
+                {Icon && <Icon size={20} className="menu-icon" />}
                 <span>{item.label}</span>
               </Link>
             )
@@ -191,7 +191,7 @@ export default function Sidebar({ isOpen, onClose, user, isCollapsed = false, on
           </Link>
           <form action={logoutAction}>
             <button type="submit" className="sidebar-menu-item" style={{ marginTop: 8 }} title={isCollapsed ? "Keluar" : undefined}>
-              <LogOut size={18} />
+              <LogOut size={18} className="menu-icon" />
               <span>Keluar</span>
             </button>
           </form>
