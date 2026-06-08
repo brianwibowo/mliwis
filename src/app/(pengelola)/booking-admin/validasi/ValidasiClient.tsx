@@ -59,7 +59,7 @@ export default function ValidasiClient({ bookings }: { bookings: BookingData[] }
               <h4 className="mb-2">{b.namaCustomer}</h4>
               <div className="flex items-center gap-2 mb-3 text-muted text-sm"><Phone size={14} /> {b.nomorHP}</div>
               <div className="grid-2 gap-3 mb-3">
-                <div><p className="text-xs text-muted">Jenis Acara</p><p className="font-semibold text-sm">{b.jenisAcara}</p></div>
+                <div><p className="text-xs text-muted">Keterangan Kegiatan</p><p className="font-semibold text-sm">{b.jenisAcara}</p></div>
                 <div><p className="text-xs text-muted">Tanggal</p><p className="text-sm">{formatTanggal(b.tanggalMulai)}{b.tanggalMulai !== b.tanggalSelesai && ` - ${formatTanggal(b.tanggalSelesai)}`}</p></div>
               </div>
               <div className="mb-4"><p className="text-xs text-muted mb-1">Fasilitas</p><div className="flex flex-wrap gap-1">{b.fasilitas.map((f) => <span key={f} className="badge badge-info badge-sm">{f}</span>)}</div></div>

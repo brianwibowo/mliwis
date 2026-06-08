@@ -82,7 +82,7 @@ export default function BookingAdminClient({ initialData, currentSearch, current
       <div className="card">
         <div className="table-container" style={{ border: 'none' }}>
           <table className="table">
-            <thead><tr><th>Kode</th><th>Customer</th><th>No HP</th><th>Tanggal</th><th>Jenis Acara</th><th>Fasilitas</th><th>Status</th><th>Aksi</th></tr></thead>
+            <thead><tr><th>Kode</th><th>Customer</th><th>No HP</th><th>Tanggal</th><th>Keterangan Kegiatan</th><th>Fasilitas</th><th>Status</th><th>Aksi</th></tr></thead>
             <tbody>
               {initialData.data.length === 0 && (
                 <tr><td colSpan={8}><div className="empty-state"><CalendarCheck size={48} className="empty-state-icon" /><p className="empty-state-title">Belum ada booking</p></div></td></tr>
@@ -127,7 +127,7 @@ export default function BookingAdminClient({ initialData, currentSearch, current
               <div><p className="text-muted text-xs">Nomor HP</p><p>{detail.nomorHP}</p></div>
               <div><p className="text-muted text-xs">Tanggal Mulai</p><p>{formatTanggal(detail.tanggalMulai)}</p></div>
               <div><p className="text-muted text-xs">Tanggal Selesai</p><p>{formatTanggal(detail.tanggalSelesai)}</p></div>
-              <div><p className="text-muted text-xs">Jenis Acara</p><p>{detail.jenisAcara}</p></div>
+              <div><p className="text-muted text-xs">Keterangan Kegiatan</p><p>{detail.jenisAcara}</p></div>
               <div><p className="text-muted text-xs">Tanggal Dibuat</p><p>{formatTanggal(detail.createdAt)}</p></div>
             </div>
             <div className="mb-4"><p className="text-muted text-xs mb-2">Fasilitas</p><div className="flex flex-wrap gap-2">{detail.fasilitas.map((f) => <span key={f} className="badge badge-info">{f}</span>)}</div></div>

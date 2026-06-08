@@ -85,7 +85,7 @@ export default function LaporanClient({ initialData }: { initialData: LaporanRes
             </div>
           </div>
 
-          <div className="stats-grid mb-6">
+          <div className="stats-grid mb-6 no-print">
             <div className="stat-card"><div className="stat-icon green"><TrendingUp size={24} /></div><div className="stat-content"><div className="stat-value text-success" style={{ fontSize: 'var(--text-xl)' }}>{formatRupiah(data.kasMasuk.total)}</div><div className="stat-label">Total Pemasukan</div></div></div>
             <div className="stat-card"><div className="stat-icon red"><TrendingDown size={24} /></div><div className="stat-content"><div className="stat-value text-danger" style={{ fontSize: 'var(--text-xl)' }}>{formatRupiah(data.kasKeluar.total)}</div><div className="stat-label">Total Pengeluaran</div></div></div>
             <div className="stat-card"><div className="stat-icon blue"><Wallet size={24} /></div><div className="stat-content"><div className="stat-value" style={{ fontSize: 'var(--text-xl)', color: data.saldo >= 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>{formatRupiah(data.saldo)}</div><div className="stat-label">Saldo</div></div></div>
@@ -122,7 +122,7 @@ export default function LaporanClient({ initialData }: { initialData: LaporanRes
             </div>
           </div>
 
-          <div className="card">
+          <div className="card no-print">
             <div className="card-body" style={{ textAlign: 'center', padding: 24 }}>
               <div className="grid-3 gap-6">
                 <div><p className="text-muted text-sm">Total Pemasukan</p><p className="font-bold text-lg text-success">{formatRupiah(data.kasMasuk.total)}</p></div>

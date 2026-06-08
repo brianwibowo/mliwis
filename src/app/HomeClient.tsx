@@ -558,7 +558,7 @@ export default function HomeClient({ initialNews }: HomeClientProps) {
               <p style={{ color: 'var(--color-text-muted)', margin: 0 }}>Admin akan segera memperbarui berita kegiatan terbaru.</p>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '30px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '30px' }}>
               {initialNews.map((news) => (
                 <article
                   key={news.id}

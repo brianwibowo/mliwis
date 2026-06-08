@@ -93,7 +93,7 @@ export default function NewsPage() {
           )}
 
           {loading ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '40px' }}>
               {[1, 2, 3].map((n) => (
                 <div
                   key={n}
@@ -119,7 +119,7 @@ export default function NewsPage() {
               <p style={{ color: 'var(--color-text-muted)' }}>Pantau terus halaman ini untuk mendapatkan informasi terbaru dari kami.</p>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '40px' }}>
               {beritaList.map((news) => (
                 <article
                   key={news.id}
