@@ -15,7 +15,7 @@ export default function FasilitasPage() {
       'aneka-kuliner': '/pedagang dan pembeli.jpg',
       'pendopo': '/pendopo 1.jpg',
       'sewa-tikar': '/mliwis8.jpg',
-      'kuda-pantai': '/kuda pantai 1.JPG',
+      'kuda-pantai': '/kuda-pantai-1.jpg',
       'gazebo': '/mliwis4.jpg',
       'sewa-ayunan': '/vibes_mliwis3.jpg',
       'parkir': '/area tiket masuk1.jpg',

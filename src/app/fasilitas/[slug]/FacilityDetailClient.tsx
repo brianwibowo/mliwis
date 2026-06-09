@@ -50,8 +50,8 @@ export default function FacilityDetailClient({ item }: Props) {
         '/vibes_mliwis2.jpg'
       ],
       'kuda-pantai': [
-        '/kuda pantai 1.JPG',
-        '/kuda pantai 2.JPG'
+        '/kuda-pantai-1.jpg',
+        '/kuda-pantai-2.jpg'
       ],
       'gazebo': [
         '/mliwis4.jpg',

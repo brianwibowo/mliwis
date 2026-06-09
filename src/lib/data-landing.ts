@@ -141,8 +141,8 @@ export const LIST_FASILITAS: FasilitasItem[] = [
       'Spot foto sangat ikonik di atas kuda dengan latar pantai'
     ],
     images: [
-      '/kuda pantai 1.JPG',
-      '/kuda pantai 2.JPG'
+      '/kuda-pantai-1.jpg',
+      '/kuda-pantai-2.jpg'
     ]
   },
   {

@@ -22,7 +22,7 @@ const CAROUSEL_IMAGES = [
 const GALLERY_IMAGES = [
   { src: '/vibes1.JPG', title: 'Pohon Cemara Udang', category: 'Alam' },
   { src: '/kolam renang 1.JPG', title: 'Kolam Renang Anak Pesisir', category: 'Wahana' },
-  { src: '/kuda pantai 1.JPG', title: 'Wisata Kuda Pantai', category: 'Aktivitas' },
+  { src: '/kuda-pantai-1.jpg', title: 'Wisata Kuda Pantai', category: 'Aktivitas' },
   { src: '/mobil pantai1.JPG', title: 'ATV & Mobil Pantai', category: 'Petualangan' },
   { src: '/payung pantai1.JPG', title: 'Area Teduh Payung Pantai', category: 'Fasilitas' },
   { src: '/vibes2.JPG', title: 'Suasana Sunset Romantis', category: 'Alam' }
@@ -234,7 +234,7 @@ export default function HomeClient({ initialNews }: HomeClientProps) {
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', paddingTop: '40px' }}>
                     <img
-                      src="/kuda pantai 1.JPG"
+                      src="/kuda-pantai-1.jpg"
                       alt="Kuda Pantai Mliwis"
                       style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '24px', boxShadow: 'var(--shadow-md)' }}
                       onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1534067783941-51c9c23eccfd?q=80&w=400' }}
