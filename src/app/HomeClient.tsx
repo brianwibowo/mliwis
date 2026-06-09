@@ -371,7 +371,7 @@ export default function HomeClient({ initialNews }: HomeClientProps) {
               pointerEvents: 'none'
             }} />
 
-            <ScrollReveal variant="zoom-in" duration={850}>
+            <ScrollReveal variant="zoom-in" duration={850} style={{ width: '100%', maxWidth: '320px' }}>
               <div className="phone-mockup" style={{ zIndex: 2 }}>
                 {/* Phone Notch/Island */}
                 <div className="phone-notch" />
