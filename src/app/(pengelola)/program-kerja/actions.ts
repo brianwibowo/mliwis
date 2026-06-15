@@ -33,7 +33,10 @@ async function uploadFile(file: File) {
   // Fallback to local file system
   const { writeFile, mkdir } = await import('fs/promises')
   const path = await import('path')
-  const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
+  const cwd = process.cwd()
+  const uploadsDir = (cwd.endsWith('.next/standalone') || cwd.includes('.next/standalone'))
+    ? path.join(cwd, '..', '..', 'public', 'uploads')
+    : path.join(cwd, 'public', 'uploads')
   await mkdir(uploadsDir, { recursive: true })
 
   const ext = path.extname(file.name)

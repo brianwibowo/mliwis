@@ -40,13 +40,27 @@ export default function LaporanClient({ initialData }: { initialData: LaporanRes
     })
   }
 
-  const handlePrint = () => window.print()
+  const handleDownloadPDF = () => {
+    if (!data) return
+    const params = new URLSearchParams({
+      type: activeTab,
+      month: String(month),
+      year: String(year),
+    })
+    if (activeTab === 'mingguan') {
+      params.append('week', String(week))
+    }
+    if (activeTab === 'harian') {
+      params.append('day', String(day))
+    }
+    window.location.href = `/api/laporan/transaksi/pdf?${params.toString()}`
+  }
 
   return (
     <div>
       <div className="page-header no-print">
         <div className="page-header-left"><h1>Laporan Transaksi</h1><p>Rekap pemasukan dan pengeluaran</p></div>
-        {data && <button className="btn btn-outline" onClick={handlePrint}><FileText size={18} /> Unduh PDF</button>}
+        {data && <button className="btn btn-outline" onClick={handleDownloadPDF}><FileText size={18} /> Unduh PDF</button>}
       </div>
 
       <div className="card mb-6 no-print">
@@ -116,7 +130,6 @@ export default function LaporanClient({ initialData }: { initialData: LaporanRes
                     {data.kasMasuk.grouped.map((g) => (<tr key={g.jenis}><td>{g.jenis}</td><td style={{ textAlign: 'right' }} className="font-semibold">{formatRupiah(g.total)}</td></tr>))}
                     {data.kasMasuk.grouped.length === 0 && <tr><td colSpan={2} className="text-center text-muted">Tidak ada data</td></tr>}
                   </tbody>
-                  <tfoot><tr style={{ fontWeight: 700, background: 'var(--color-success-light)' }}><td>TOTAL PEMASUKAN</td><td style={{ textAlign: 'right' }}>{formatRupiah(data.kasMasuk.total)}</td></tr></tfoot>
                 </table>
               </div>
             </div>
@@ -130,19 +143,36 @@ export default function LaporanClient({ initialData }: { initialData: LaporanRes
                     {data.kasKeluar.grouped.map((g) => (<tr key={g.jenis}><td>{g.jenis}</td><td style={{ textAlign: 'right' }} className="font-semibold">{formatRupiah(g.total)}</td></tr>))}
                     {data.kasKeluar.grouped.length === 0 && <tr><td colSpan={2} className="text-center text-muted">Tidak ada data</td></tr>}
                   </tbody>
-                  <tfoot><tr style={{ fontWeight: 700, background: 'var(--color-danger-light)' }}><td>TOTAL PENGELUARAN</td><td style={{ textAlign: 'right' }}>{formatRupiah(data.kasKeluar.total)}</td></tr></tfoot>
                 </table>
               </div>
             </div>
           </div>
 
-          <div className="card no-print">
-            <div className="card-body" style={{ textAlign: 'center', padding: 24 }}>
-              <div className="grid-3 gap-6">
-                <div><p className="text-muted text-sm">Total Pemasukan</p><p className="font-bold text-lg text-success">{formatRupiah(data.kasMasuk.total)}</p></div>
-                <div><p className="text-muted text-sm">Total Pengeluaran</p><p className="font-bold text-lg text-danger">{formatRupiah(data.kasKeluar.total)}</p></div>
-                <div><p className="text-muted text-sm">Saldo Bersih</p><p className="font-bold text-lg" style={{ color: data.saldo >= 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>{formatRupiah(data.saldo)}</p></div>
-              </div>
+          <div className="card mb-6">
+            <div className="card-header"><h3>Ringkasan Saldo</h3></div>
+            <div className="table-container" style={{ border: 'none', borderRadius: 0 }}>
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Keterangan</th>
+                    <th style={{ textAlign: 'right' }}>Jumlah</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Total Pemasukan</td>
+                    <td style={{ textAlign: 'right' }} className="font-semibold text-success">{formatRupiah(data.kasMasuk.total)}</td>
+                  </tr>
+                  <tr>
+                    <td>Total Pengeluaran</td>
+                    <td style={{ textAlign: 'right' }} className="font-semibold text-danger">{formatRupiah(data.kasKeluar.total)}</td>
+                  </tr>
+                  <tr style={{ fontWeight: 700 }}>
+                    <td>Saldo Bersih</td>
+                    <td style={{ textAlign: 'right' }} className={`font-bold ${data.saldo >= 0 ? 'text-success' : 'text-danger'}`}>{formatRupiah(data.saldo)}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 

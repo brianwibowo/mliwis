@@ -11,6 +11,14 @@ import { put } from '@vercel/blob'
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif']
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 5MB
 
+function getUploadsDir() {
+  const cwd = process.cwd()
+  if (cwd.endsWith('.next/standalone') || cwd.includes('.next/standalone')) {
+    return path.join(cwd, '..', '..', 'public', 'uploads')
+  }
+  return path.join(cwd, 'public', 'uploads')
+}
+
 export async function updateProfile(formData: FormData) {
   const session = await getSession()
   if (!session) return { error: 'Sesi habis, silakan login kembali' }
@@ -48,7 +56,7 @@ export async function updateProfile(formData: FormData) {
         updateData.foto = blob.url
       } else {
         // Save locally to public/uploads
-        const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
+        const uploadsDir = getUploadsDir()
         await mkdir(uploadsDir, { recursive: true })
 
         const ext = path.extname(file.name) || '.jpg'

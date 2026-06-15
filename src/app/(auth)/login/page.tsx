@@ -13,8 +13,8 @@ export default function LoginPage() {
   return (
     <div className="auth-card">
       <div className="auth-logo">
-        <h1 className="auth-title">SI-Mliwis</h1>
-        <p className="auth-subtitle">Sistem Informasi Manajemen Pantai Mliwis</p>
+        <h1 className="auth-title" style={{ fontSize: '1.6rem', lineHeight: '1.3' }}>Sistem Informasi Manajemen Pantai Mliwis</h1>
+        <p className="auth-subtitle">SI-Mliwis &mdash; Kebumen</p>
       </div>
 
       <form action={formAction} className="auth-form">
@@ -91,9 +91,16 @@ export default function LoginPage() {
         </Link>
       </div>
 
-      <p className="auth-footer-text" style={{ marginTop: '16px' }}>
+      <p className="auth-footer-text" style={{ marginTop: '16px', marginBottom: '8px' }}>
         Pantai Mliwis &mdash; Kebumen
       </p>
+
+      <div style={{ textAlign: 'center', marginTop: '16px', borderTop: '1px solid var(--color-border-subtle)', paddingTop: '16px' }}>
+        <p style={{ fontSize: '0.725rem', color: 'var(--color-text-muted)', lineHeight: '1.5', margin: 0 }}>
+          Pengembang:<br />
+          <strong style={{ color: 'var(--color-primary-700)' }}>Tim Pengabdian DPPM BIMA KEMDIKTISAINTEK UNNES 2026</strong>
+        </p>
+      </div>
     </div>
   )
 }

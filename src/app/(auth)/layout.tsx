@@ -16,8 +16,8 @@ export default function AuthLayout({
             <span>PORTAL RESMI PENGELOLA</span>
           </div>
           <h1 className="auth-panel-title" id="auth-portal-title">
-            Sistem Informasi <br />
-            <span className="auth-title-highlight">SI-Mliwis</span>
+            Sistem Informasi Manajemen <br />
+            <span className="auth-title-highlight">Pantai Mliwis</span>
           </h1>
           <p className="auth-panel-desc" id="auth-portal-desc">
             Platform manajemen satu pintu terintegrasi untuk pengelolaan arsip surat, reservasi camping & outbound, pelaporan kas keuangan, serta penginputan data harian pengunjung Pantai Mliwis, Kebumen secara akuntabel dan transparan.

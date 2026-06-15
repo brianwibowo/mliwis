@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
-import { Plus, Pencil, Trash2, Users, TrendingUp } from 'lucide-react'
+import { Plus, Pencil, Trash2, Users, TrendingUp, FileText } from 'lucide-react'
 import { createPengunjung, updatePengunjung, deletePengunjung } from './actions'
 import { formatTanggal } from '@/lib/format'
 import { useToast } from '@/hooks/useToast'
@@ -82,6 +82,14 @@ export default function PengunjungClient({ initialData }: Props) {
     })
   }
 
+  const handleDownloadPDF = () => {
+    const params = new URLSearchParams({
+      month: String(month),
+      year: String(year),
+    })
+    window.location.href = `/api/laporan/pengunjung/pdf?${params.toString()}`
+  }
+
   return (
     <div>
       <div className="page-header">
@@ -89,9 +97,16 @@ export default function PengunjungClient({ initialData }: Props) {
           <h1>Laporan Pengunjung</h1>
           <p>Laporan statistika & pengisian jumlah pengunjung harian Pantai Mliwis</p>
         </div>
-        <button className="btn btn-primary" onClick={() => { setEditData(null); setShowModal(true) }}>
-          <Plus size={18} /> Tambah Data
-        </button>
+        <div className="flex gap-2">
+          {data.length > 0 && (
+            <button className="btn btn-outline" onClick={handleDownloadPDF}>
+              <FileText size={18} /> Unduh PDF
+            </button>
+          )}
+          <button className="btn btn-primary" onClick={() => { setEditData(null); setShowModal(true) }}>
+            <Plus size={18} /> Tambah Data
+          </button>
+        </div>
       </div>
 
       {/* 5-Column Stats Grid */}

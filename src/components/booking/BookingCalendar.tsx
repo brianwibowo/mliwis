@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Tent, TreePine, Info, X, Clock, MapPin, AlignLeft } from 'lucide-react'
+import { getApprovedBookings } from '@/app/booking/actions'
 
 // Mock schedules for a premium realistic visual representation
 interface Schedule {
@@ -25,33 +26,27 @@ const HARI_MINGGU = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']
 export default function BookingCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null)
+  const [bookings, setBookings] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   const currentMonth = currentDate.getMonth()
   const currentYear = currentDate.getFullYear()
 
-  // Generate some premium realistic mock schedules specific to the month
-  const mockSchedules: Schedule[] = [
-    {
-      id: 1,
-      tanggalMulai: 12,
-      tanggalSelesai: 14,
-      nama: 'Camping Ceria Mandiri',
-      tipe: 'camping',
-      fasilitas: 'Area Camping Ground, Mushola Pantai',
-      jam: '08:00 (12 Jun) - 17:00 (14 Jun)',
-      deskripsi: 'Acara kemah bersama dan gathering keluarga besar karyawan Mandiri Jaya.',
-    },
-    {
-      id: 2,
-      tanggalMulai: 22,
-      tanggalSelesai: 22,
-      nama: 'Outbound Gathering BNI',
-      tipe: 'outbound',
-      fasilitas: 'Area Outbound, Pendopo / Aula Terbuka',
-      jam: '07:30 - 16:00 WIB',
-      deskripsi: 'Kegiatan team building, fun games, dan ramah tamah karyawan Bank BNI Cabang Kebumen.',
-    },
-  ]
+  useEffect(() => {
+    async function loadBookings() {
+      try {
+        const res = await getApprovedBookings()
+        if (res.data) {
+          setBookings(res.data)
+        }
+      } catch (e) {
+        console.error("Gagal memuat booking:", e)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadBookings()
+  }, [])
 
   // Get first day of the month (0 = Sunday, 1 = Monday, etc.)
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay()
@@ -80,7 +75,51 @@ export default function BookingCalendar() {
 
   // Helper to find if a day has a schedule
   const getSchedulesForDay = (day: number) => {
-    return mockSchedules.filter(s => day >= s.tanggalMulai && day <= s.tanggalSelesai)
+    const targetDate = new Date(currentYear, currentMonth, day)
+    targetDate.setHours(0, 0, 0, 0)
+
+    return bookings.map(b => {
+      const hasCamping = b.fasilitas.some((f: string) => f.toLowerCase().includes('camping'))
+      const hasOutbound = b.fasilitas.some((f: string) => f.toLowerCase().includes('outbound'))
+      const tipe: 'camping' | 'outbound' | 'event' = hasCamping ? 'camping' : (hasOutbound ? 'outbound' : 'event')
+
+      const formatTime = (date: Date) => {
+        return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
+      }
+
+      const start = new Date(b.tanggalMulai)
+      const end = new Date(b.tanggalSelesai)
+
+      const isSameDay = start.getDate() === end.getDate() && 
+                        start.getMonth() === end.getMonth() && 
+                        start.getFullYear() === end.getFullYear()
+
+      let jam = ''
+      if (isSameDay) {
+        jam = `${formatTime(start)} - ${formatTime(end)} WIB`
+      } else {
+        const formatDay = (d: Date) => `${d.getDate()} ${NAMA_BULAN[d.getMonth()].substring(0, 3)}`
+        jam = `${formatTime(start)} (${formatDay(start)}) - ${formatTime(end)} (${formatDay(end)})`
+      }
+
+      return {
+        id: b.id,
+        tanggalMulai: b.tanggalMulai,
+        tanggalSelesai: b.tanggalSelesai,
+        nama: `${b.jenisAcara} (${b.namaCustomer})`,
+        tipe,
+        fasilitas: b.fasilitas.join(', '),
+        jam,
+        deskripsi: b.catatanPengelola || 'Acara telah disetujui oleh pengelola Pantai Mliwis.'
+      } as Schedule
+    }).filter(s => {
+      const startDate = new Date(s.tanggalMulai)
+      startDate.setHours(0, 0, 0, 0)
+      const endDate = new Date(s.tanggalSelesai)
+      endDate.setHours(0, 0, 0, 0)
+
+      return targetDate >= startDate && targetDate <= endDate
+    })
   }
 
   return (
@@ -156,9 +195,18 @@ export default function BookingCalendar() {
                         e.stopPropagation()
                         setSelectedSchedule(sched)
                       }}
-                      style={{ cursor: 'pointer' }}
+                      style={{ 
+                        cursor: 'pointer',
+                        backgroundColor: sched.tipe === 'camping' ? '#f59e0b' : (sched.tipe === 'outbound' ? '#10b981' : '#3b82f6')
+                      }}
                     >
-                      {sched.tipe === 'camping' ? <Tent size={10} /> : <TreePine size={10} />}
+                      {sched.tipe === 'camping' ? (
+                        <Tent size={10} />
+                      ) : sched.tipe === 'outbound' ? (
+                        <TreePine size={10} />
+                      ) : (
+                        <CalendarIcon size={10} />
+                      )}
                       <span className="event-name">{sched.nama}</span>
                     </div>
                   ))}
@@ -179,12 +227,16 @@ export default function BookingCalendar() {
             <span>Tersedia / Kosong</span>
           </div>
           <div className="legend-item">
-            <span className="legend-color camping"></span>
+            <span className="legend-color camping" style={{ backgroundColor: '#f59e0b' }}></span>
             <span>Area Camping Terisi</span>
           </div>
           <div className="legend-item">
-            <span className="legend-color outbound"></span>
+            <span className="legend-color outbound" style={{ backgroundColor: '#10b981' }}></span>
             <span>Area Outbound Terisi</span>
+          </div>
+          <div className="legend-item">
+            <span className="legend-color event" style={{ backgroundColor: '#3b82f6' }}></span>
+            <span>Area Lainnya Terisi</span>
           </div>
         </div>
         <div className="calendar-notice">
@@ -257,7 +309,13 @@ export default function BookingCalendar() {
             {/* Header / Event Type */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
               <span
-                className={`badge ${selectedSchedule.tipe === 'camping' ? 'badge-success' : 'badge-info'}`}
+                className={`badge ${
+                  selectedSchedule.tipe === 'camping' 
+                    ? 'badge-success' 
+                    : selectedSchedule.tipe === 'outbound' 
+                      ? 'badge-info' 
+                      : 'badge-warning'
+                }`}
                 style={{
                   textTransform: 'uppercase',
                   fontWeight: 700,
@@ -267,7 +325,11 @@ export default function BookingCalendar() {
                   borderRadius: '20px',
                 }}
               >
-                {selectedSchedule.tipe === 'camping' ? 'Camping Ground' : 'Outbound Area'}
+                {selectedSchedule.tipe === 'camping' 
+                  ? 'Camping Ground' 
+                  : selectedSchedule.tipe === 'outbound' 
+                    ? 'Outbound Area' 
+                    : 'Event / Area Lainnya'}
               </span>
             </div>
 
@@ -292,10 +354,18 @@ export default function BookingCalendar() {
                 <div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>Rentang Tanggal</div>
                   <div style={{ fontSize: '0.925rem', fontWeight: 700, color: 'var(--color-primary-950)', marginTop: '2px' }}>
-                    {selectedSchedule.tanggalMulai === selectedSchedule.tanggalSelesai
-                      ? `${selectedSchedule.tanggalMulai} ${NAMA_BULAN[currentMonth]} ${currentYear}`
-                      : `${selectedSchedule.tanggalMulai} - ${selectedSchedule.tanggalSelesai} ${NAMA_BULAN[currentMonth]} ${currentYear}`
-                    }
+                    {(() => {
+                      const start = new Date(selectedSchedule.tanggalMulai)
+                      const end = new Date(selectedSchedule.tanggalSelesai)
+                      const isSameDayStr = start.getDate() === end.getDate() && 
+                                          start.getMonth() === end.getMonth() && 
+                                          start.getFullYear() === end.getFullYear()
+                      if (isSameDayStr) {
+                        return `${start.getDate()} ${NAMA_BULAN[start.getMonth()]} ${start.getFullYear()}`
+                      } else {
+                        return `${start.getDate()} ${NAMA_BULAN[start.getMonth()].substring(0, 3)} - ${end.getDate()} ${NAMA_BULAN[end.getMonth()]} ${end.getFullYear()}`
+                      }
+                    })()}
                   </div>
                 </div>
               </div>

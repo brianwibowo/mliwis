@@ -103,3 +103,42 @@ export async function getFasilitas() {
     ]
   }
 }
+
+export async function getApprovedBookings() {
+  try {
+    const data = await prisma.booking.findMany({
+      where: {
+        status: 'disetujui'
+      },
+      include: {
+        bookingFasilitas: {
+          include: {
+            fasilitas: true
+          }
+        }
+      },
+      orderBy: {
+        tanggalMulai: 'asc'
+      }
+    })
+
+    return {
+      data: data.map((b) => ({
+        id: b.id,
+        kodeBooking: b.kodeBooking,
+        namaCustomer: b.namaCustomer,
+        nomorHP: b.nomorHP,
+        jenisAcara: b.jenisAcara,
+        status: b.status,
+        tanggalMulai: b.tanggalMulai.toISOString(),
+        tanggalSelesai: b.tanggalSelesai.toISOString(),
+        catatanPengelola: b.catatanPengelola,
+        fasilitas: b.bookingFasilitas.map((bf) => bf.fasilitas.nama),
+      }))
+    }
+  } catch (err: any) {
+    console.error("Error getting approved bookings:", err)
+    return { error: 'Gagal mendapatkan data booking dari database.' }
+  }
+}
+
