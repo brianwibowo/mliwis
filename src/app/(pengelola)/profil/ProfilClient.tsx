@@ -66,7 +66,12 @@ export default function ProfilClient({ user }: { user: UserData }) {
         if (r.error) {
           addToast(r.error, 'error')
         } else {
-          addToast('Profil berhasil diperbarui!', 'success')
+          const hasPhoto = file && file.size > 0
+          if (hasPhoto) {
+            addToast('Foto profil & data diri berhasil diperbarui!', 'success')
+          } else {
+            addToast('Profil berhasil diperbarui!', 'success')
+          }
           // Reset password fields
           const oldPass = form.querySelector('input[name="oldPassword"]') as HTMLInputElement
           const newPass = form.querySelector('input[name="newPassword"]') as HTMLInputElement

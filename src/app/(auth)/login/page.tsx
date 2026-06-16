@@ -13,7 +13,7 @@ export default function LoginPage() {
   return (
     <div className="auth-card">
       <div className="auth-logo">
-        <h1 className="auth-title" style={{ fontSize: '1.6rem', lineHeight: '1.3' }}>Sistem Informasi Manajemen Pantai Mliwis</h1>
+        <h1 className="auth-title" style={{ fontSize: '1.6rem', lineHeight: '1.3' }}>Login</h1>
         <p className="auth-subtitle">SI-Mliwis &mdash; Kebumen</p>
       </div>
 
@@ -74,16 +74,16 @@ export default function LoginPage() {
       </form>
 
       <div style={{ textAlign: 'center', marginTop: '20px', borderTop: '1px solid var(--color-border-subtle)', paddingTop: '16px' }}>
-        <Link 
-          href="/" 
-          style={{ 
-            color: 'var(--color-primary-600)', 
-            fontSize: '0.9rem', 
-            fontWeight: 600, 
-            textDecoration: 'none', 
-            display: 'inline-flex', 
-            alignItems: 'center', 
-            gap: '6px' 
+        <Link
+          href="/"
+          style={{
+            color: 'var(--color-primary-600)',
+            fontSize: '0.9rem',
+            fontWeight: 600,
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px'
           }}
         >
           <ArrowLeft size={16} />
@@ -91,14 +91,9 @@ export default function LoginPage() {
         </Link>
       </div>
 
-      <p className="auth-footer-text" style={{ marginTop: '16px', marginBottom: '8px' }}>
-        Pantai Mliwis &mdash; Kebumen
-      </p>
-
       <div style={{ textAlign: 'center', marginTop: '16px', borderTop: '1px solid var(--color-border-subtle)', paddingTop: '16px' }}>
         <p style={{ fontSize: '0.725rem', color: 'var(--color-text-muted)', lineHeight: '1.5', margin: 0 }}>
-          Pengembang:<br />
-          <strong style={{ color: 'var(--color-primary-700)' }}>Tim Pengabdian DPPM BIMA KEMDIKTISAINTEK UNNES 2026</strong>
+          Pengembang: <strong style={{ color: 'var(--color-primary-700)' }}>Tim Pengabdian DPPM BIMA KEMDIKTISAINTEK UNNES 2026</strong>
         </p>
       </div>
     </div>
