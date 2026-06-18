@@ -264,7 +264,7 @@ async function uploadFile(file: File) {
   // If Vercel Blob token is configured, upload directly to Vercel Blob
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     try {
-      const blob = await put(file.name, file, { access: 'public' })
+      const blob = await put(file.name, file, { access: 'public', addRandomSuffix: true })
       return { filePath: blob.url, namaFile: file.name }
     } catch (e: any) {
       return { error: `Gagal upload ke cloud storage: ${e.message || e}` }

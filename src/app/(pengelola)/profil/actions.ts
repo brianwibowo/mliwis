@@ -52,7 +52,7 @@ export async function updateProfile(formData: FormData) {
     try {
       if (process.env.BLOB_READ_WRITE_TOKEN) {
         // Upload to Vercel Blob
-        const blob = await put(file.name, file, { access: 'public' })
+        const blob = await put(file.name, file, { access: 'public', addRandomSuffix: true })
         updateData.foto = blob.url
       } else {
         // Save locally to public/uploads

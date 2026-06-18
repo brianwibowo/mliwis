@@ -20,7 +20,7 @@ async function uploadFile(file: File) {
 
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     try {
-      const blob = await put(file.name, file, { access: 'public' })
+      const blob = await put(file.name, file, { access: 'public', addRandomSuffix: true })
       return { filePath: blob.url, namaFile: file.name }
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e)
