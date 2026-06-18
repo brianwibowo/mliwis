@@ -98,14 +98,14 @@ export default function PengunjungClient({ initialData }: Props) {
           <p>Laporan statistika & pengisian jumlah pengunjung harian Pantai Mliwis</p>
         </div>
         <div className="flex gap-2">
+          <button className="btn btn-primary" onClick={() => { setEditData(null); setShowModal(true) }}>
+            <Plus size={18} /> Tambah Data
+          </button>
           {data.length > 0 && (
             <button className="btn btn-outline" onClick={handleDownloadPDF}>
               <FileText size={18} /> Unduh PDF
             </button>
           )}
-          <button className="btn btn-primary" onClick={() => { setEditData(null); setShowModal(true) }}>
-            <Plus size={18} /> Tambah Data
-          </button>
         </div>
       </div>
 

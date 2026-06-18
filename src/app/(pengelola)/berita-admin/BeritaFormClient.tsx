@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Plus, Trash2, ArrowUp, ArrowDown, Upload, FileText, Image as ImageIcon, Check } from 'lucide-react'
 import { createBerita, updateBerita } from './actions'
-import { compressImageIfNeeded } from '@/lib/utils'
+import { compressImageIfNeeded, convertHeicToJpeg } from '@/lib/utils'
 import { useToast } from '@/hooks/useToast'
 
 interface Block {
@@ -74,11 +74,12 @@ export default function BeritaFormClient({ initialBerita }: Props) {
     return [{ id: 'init-0', type: 'text', value: '' }]
   })
 
-  const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
-      setCoverFile(file)
-      setCoverPreview(URL.createObjectURL(file))
+      const converted = await convertHeicToJpeg(file)
+      setCoverFile(converted)
+      setCoverPreview(URL.createObjectURL(converted))
       setKeepCover(true)
     }
   }
@@ -110,14 +111,15 @@ export default function BeritaFormClient({ initialBerita }: Props) {
     )
   }
 
-  const handleBlockImageChange = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBlockImageChange = async (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
-      const preview = URL.createObjectURL(file)
+      const converted = await convertHeicToJpeg(file)
+      const preview = URL.createObjectURL(converted)
       setBlocks((prev) =>
         prev.map((b) =>
           b.id === id
-            ? { ...b, file, previewUrl: preview, value: file.name }
+            ? { ...b, file: converted, previewUrl: preview, value: converted.name }
             : b
         )
       )

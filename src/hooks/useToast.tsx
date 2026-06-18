@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 import React from 'react';
+import { CheckCircle2, AlertTriangle, AlertCircle, Info, X } from 'lucide-react';
 
 // ============================================================
 // Toast Types
@@ -67,10 +68,37 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const value: ToastContextValue = { toasts, addToast, removeToast };
 
-  return React.createElement(
-    ToastContext.Provider,
-    { value },
-    children,
+  return (
+    <ToastContext.Provider value={value}>
+      {children}
+      <div className="toast-container">
+        {toasts.map((toast) => {
+          let Icon = Info;
+          if (toast.type === 'success') Icon = CheckCircle2;
+          else if (toast.type === 'error') Icon = AlertCircle;
+          else if (toast.type === 'warning') Icon = AlertTriangle;
+
+          return (
+            <div key={toast.id} className={`toast toast-${toast.type}`}>
+              <div className="toast-icon">
+                <Icon size={18} />
+              </div>
+              <div className="toast-content">
+                <p className="toast-message">{toast.message}</p>
+              </div>
+              <button
+                type="button"
+                className="toast-close"
+                onClick={() => removeToast(toast.id)}
+                aria-label="Close"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </ToastContext.Provider>
   );
 }
 
@@ -85,3 +113,4 @@ export function useToast(): ToastContextValue {
   }
   return ctx;
 }
+

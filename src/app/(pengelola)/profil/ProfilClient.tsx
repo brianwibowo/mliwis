@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { User, Lock, Upload, KeyRound } from 'lucide-react'
 import { updateProfile } from './actions'
 import { useToast } from '@/hooks/useToast'
-import { compressImageIfNeeded } from '@/lib/utils'
+import { compressImageIfNeeded, convertHeicToJpeg } from '@/lib/utils'
 
 interface UserData {
   id: number
@@ -22,10 +22,11 @@ export default function ProfilClient({ user }: { user: UserData }) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(user.foto)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      const url = URL.createObjectURL(file)
+      const converted = await convertHeicToJpeg(file)
+      const url = URL.createObjectURL(converted)
       setPreviewUrl(url)
     }
   }

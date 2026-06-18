@@ -28,7 +28,13 @@ export default function KasKeluarClient({ initialData }: Props) {
   const [editData, setEditData] = useState<KasData | null>(null)
   const [deleteId, setDeleteId] = useState<number | null>(null)
   const [selectedJenis, setSelectedJenis] = useState('')
+  const [nominalRaw, setNominalRaw] = useState('')
   const { data, totalNominal, month, year, totalPages } = initialData
+
+  const handleNominalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawVal = e.target.value.replace(/\D/g, '')
+    setNominalRaw(rawVal)
+  }
 
   const navigate = (m: number, y: number, p?: number) => {
     router.push(`/transaksi/kas-keluar?month=${m}&year=${y}${p && p > 1 ? `&page=${p}` : ''}`)
@@ -56,7 +62,7 @@ export default function KasKeluarClient({ initialData }: Props) {
     <div>
       <div className="page-header">
         <div className="page-header-left"><h1>Kas Keluar</h1><p>Pengeluaran Pantai Mliwis</p></div>
-        <button className="btn btn-primary" onClick={() => { setEditData(null); setSelectedJenis(''); setShowModal(true) }}><Plus size={18} /> Tambah Kas Keluar</button>
+        <button className="btn btn-primary" onClick={() => { setEditData(null); setSelectedJenis(''); setNominalRaw(''); setShowModal(true) }}><Plus size={18} /> Tambah Kas Keluar</button>
       </div>
 
       <div className="stat-card mb-6">
@@ -90,7 +96,7 @@ export default function KasKeluarClient({ initialData }: Props) {
                   <td>{k.jenisTransaksi}{k.keteranganLain && <span className="text-muted text-xs block">{k.keteranganLain}</span>}</td>
                   <td className="font-semibold text-danger">{formatRupiah(k.nominal)}</td>
                   <td className="text-sm text-muted">{k.keterangan || '—'}</td>
-                  <td><div className="table-actions"><button className="btn btn-ghost btn-sm btn-icon" onClick={() => { setEditData(k); setSelectedJenis(k.jenisTransaksi); setShowModal(true) }}><Pencil size={14} /></button><button className="btn btn-ghost btn-sm btn-icon text-danger" onClick={() => setDeleteId(k.id)}><Trash2 size={14} /></button></div></td>
+                  <td><div className="table-actions"><button className="btn btn-ghost btn-sm btn-icon" onClick={() => { setEditData(k); setSelectedJenis(k.jenisTransaksi); setNominalRaw(k.nominal.toString()); setShowModal(true) }}><Pencil size={14} /></button><button className="btn btn-ghost btn-sm btn-icon text-danger" onClick={() => setDeleteId(k.id)}><Trash2 size={14} /></button></div></td>
                 </tr>
               ))}
             </tbody>
@@ -103,11 +109,22 @@ export default function KasKeluarClient({ initialData }: Props) {
         )}
       </div>
 
-      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setEditData(null) }} title={editData ? 'Edit Kas Keluar' : 'Tambah Kas Keluar'}>
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setEditData(null); setNominalRaw('') }} title={editData ? 'Edit Kas Keluar' : 'Tambah Kas Keluar'}>
         <form action={handleSubmit}>
           <div className="form-row">
             <div className="form-group"><label className="form-label">Tanggal <span className="required">*</span></label><input name="tanggal" type="date" className="form-input" defaultValue={editData?.tanggal?.split('T')[0]} required /></div>
-            <div className="form-group"><label className="form-label">Nominal (Rp) <span className="required">*</span></label><input name="nominal" type="number" className="form-input" defaultValue={editData?.nominal} required /></div>
+            <div className="form-group">
+              <label className="form-label">Nominal (Rp) <span className="required">*</span></label>
+              <input 
+                type="text" 
+                className="form-input" 
+                value={nominalRaw ? Number(nominalRaw).toLocaleString('id-ID') : ''} 
+                onChange={handleNominalChange} 
+                placeholder="Contoh: 20.000" 
+                required 
+              />
+              <input name="nominal" type="hidden" value={nominalRaw} />
+            </div>
           </div>
           <div className="form-group">
             <label className="form-label">Jenis Transaksi <span className="required">*</span></label>

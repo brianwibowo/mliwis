@@ -8,7 +8,7 @@ import { createProgramKerja, updateProgramKerja, deleteProgramKerja } from './ac
 import { formatRupiah, formatTanggal } from '@/lib/format'
 import { STATUS_PROGRAM_KERJA } from '@/lib/constants'
 import { useToast } from '@/hooks/useToast'
-import { compressImageIfNeeded } from '@/lib/utils'
+import { compressImageIfNeeded, convertHeicToJpeg } from '@/lib/utils'
 import Modal from '@/components/ui/Modal'
 
 interface Dokumentasi {
@@ -58,8 +58,14 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
   const [statusFilter, setStatusFilter] = useState(initialStatus)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [deletedDocIds, setDeletedDocIds] = useState<number[]>([])
+  const [danaRaw, setDanaRaw] = useState('')
   const { data, totalPages } = initialData
   const [currentPage] = useState(1)
+
+  const handleDanaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawVal = e.target.value.replace(/\D/g, '')
+    setDanaRaw(rawVal)
+  }
 
   const navigate = (s?: string, st?: string, p?: number) => {
     const params = new URLSearchParams()
@@ -80,6 +86,7 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
     setEditData(null)
     setSelectedFiles([])
     setDeletedDocIds([])
+    setDanaRaw('')
     setShowModal(true)
   }
 
@@ -87,12 +94,17 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
     setEditData(pk)
     setSelectedFiles([])
     setDeletedDocIds([])
+    setDanaRaw(pk.jumlahDana.toString())
     setShowModal(true)
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setSelectedFiles(prev => [...prev, ...Array.from(e.target.files!)])
+      const filesArray = Array.from(e.target.files)
+      const convertedFiles = await Promise.all(
+        filesArray.map(f => convertHeicToJpeg(f))
+      )
+      setSelectedFiles(prev => [...prev, ...convertedFiles])
     }
   }
 
@@ -298,7 +310,7 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
       </div>
 
       {/* Modal Form Tambah/Edit */}
-      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setEditData(null) }} title={editData ? 'Edit Program Kerja' : 'Tambah Program Kerja'} size="lg">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setEditData(null); setDanaRaw('') }} title={editData ? 'Edit Program Kerja' : 'Tambah Program Kerja'} size="lg">
         <form action={handleSubmit}>
           <div className="form-row">
             <div className="form-group">
@@ -313,7 +325,15 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Jumlah Dana (Rp) <span className="required">*</span></label>
-              <input name="jumlahDana" type="number" className="form-input" defaultValue={editData?.jumlahDana} placeholder="0" required />
+              <input 
+                type="text" 
+                className="form-input" 
+                value={danaRaw ? Number(danaRaw).toLocaleString('id-ID') : ''} 
+                onChange={handleDanaChange} 
+                placeholder="Contoh: 5.000.000" 
+                required 
+              />
+              <input name="jumlahDana" type="hidden" value={danaRaw} />
             </div>
             <div className="form-group">
               <label className="form-label">Sumber Dana <span className="required">*</span></label>

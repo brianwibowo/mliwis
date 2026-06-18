@@ -60,6 +60,41 @@ export function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(
 }
 
 /**
+ * Konversi file HEIC/HEIF ke JPEG jika berjalan di browser.
+ */
+export async function convertHeicToJpeg(file: File): Promise<File> {
+  if (typeof window === 'undefined') return file;
+
+  const ext = file.name.split('.').pop()?.toLowerCase();
+  const isHeic =
+    ext === 'heic' ||
+    ext === 'heif' ||
+    file.type === 'image/heic' ||
+    file.type === 'image/heif';
+
+  if (!isHeic) return file;
+
+  try {
+    const heic2any = (await import('heic2any')).default;
+    const blob = await heic2any({
+      blob: file,
+      toType: 'image/jpeg',
+      quality: 0.8,
+    });
+
+    const convertedBlob = Array.isArray(blob) ? blob[0] : blob;
+    const newName = file.name.replace(/\.(heic|heif)$/i, '.jpg');
+    return new File([convertedBlob], newName, {
+      type: 'image/jpeg',
+      lastModified: Date.now(),
+    });
+  } catch (error) {
+    console.error('Gagal mengonversi HEIC ke JPEG:', error);
+    return file;
+  }
+}
+
+/**
  * Kompres file gambar jika ukurannya melebihi batas (default 5MB).
  * Hanya berjalan di lingkungan browser.
  */
@@ -67,12 +102,21 @@ export async function compressImageIfNeeded(
   file: File,
   maxSizeBytes: number = 1 * 1024 * 1024
 ): Promise<File> {
-  if (typeof window === 'undefined' || !file.type.startsWith('image/')) {
+  if (typeof window === 'undefined') {
     return file;
   }
 
-  if (file.size <= maxSizeBytes) {
-    return file;
+  // 1. Konversi HEIC ke JPEG jika berupa file HEIC/HEIF
+  const convertedFile = await convertHeicToJpeg(file);
+
+  // 2. Cek tipe file (harus gambar)
+  if (!convertedFile.type.startsWith('image/')) {
+    return convertedFile;
+  }
+
+  // 3. Cek ukuran file
+  if (convertedFile.size <= maxSizeBytes) {
+    return convertedFile;
   }
 
   return new Promise((resolve) => {
@@ -101,7 +145,7 @@ export async function compressImageIfNeeded(
 
         const ctx = canvas.getContext('2d');
         if (!ctx) {
-          resolve(file);
+          resolve(convertedFile);
           return;
         }
 
@@ -117,14 +161,14 @@ export async function compressImageIfNeeded(
                 if (blob.size > maxSizeBytes && q > 0.1) {
                   checkAndResolve(q - step);
                 } else {
-                  const compressedFile = new File([blob], file.name, {
+                  const compressedFile = new File([blob], convertedFile.name, {
                     type: 'image/jpeg',
                     lastModified: Date.now(),
                   });
                   resolve(compressedFile);
                 }
               } else {
-                resolve(file);
+                resolve(convertedFile);
               }
             },
             'image/jpeg',
@@ -134,10 +178,10 @@ export async function compressImageIfNeeded(
 
         checkAndResolve(quality);
       };
-      img.onerror = () => resolve(file);
+      img.onerror = () => resolve(convertedFile);
       img.src = e.target?.result as string;
     };
-    reader.onerror = () => resolve(file);
-    reader.readAsDataURL(file);
+    reader.onerror = () => resolve(convertedFile);
+    reader.readAsDataURL(convertedFile);
   });
 }
