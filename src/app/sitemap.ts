@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { LIST_FASILITAS, LIST_KULINER } from '@/lib/data-landing'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://pantaimliwis.com'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://pantai-mliwis.com'
 
   // 1. Static Pages
   const staticRoutes = [
