@@ -87,19 +87,19 @@ export async function getFasilitas() {
     console.error("Error getting fasilitas:", err)
     // Return a default mock set of facilities so the form doesn't crash if database is down
     return [
-      { id: 1, nama: 'Area Camping Ground', deskripsi: 'Area berkemah' },
-      { id: 2, nama: 'Sewa Payung Pantai', deskripsi: 'Payung teduh pantai' },
-      { id: 3, nama: 'Mushola Pantai', deskripsi: 'Tempat ibadah' },
-      { id: 4, nama: 'Area UMKM', deskripsi: 'Tempat jualan' },
-      { id: 5, nama: 'Pendopo/Aula Terbuka', deskripsi: 'Aula serbaguna' },
-      { id: 6, nama: 'Sewa Tikar Piknik', deskripsi: 'Tikar piknik' },
-      { id: 7, nama: 'Sewa Kuda Pantai', deskripsi: 'Kuda sewa' },
-      { id: 8, nama: 'Gazebo Pantai', deskripsi: 'Gazebo santai' },
-      { id: 9, nama: 'Area Ayunan', deskripsi: 'Ayunan bermain' },
-      { id: 10, nama: 'Kolam Renang Anak', deskripsi: 'Kolam renang anak' },
-      { id: 11, nama: 'Sewa ATV Pantai', deskripsi: 'Motor ATV' },
-      { id: 12, nama: 'Area Outbound', deskripsi: 'Area permainan' },
-      { id: 13, nama: 'Area Prewedding', deskripsi: 'Spot foto prewedding' }
+      { id: 1, nama: 'Area Camping Ground', deskripsi: 'Merasakan sensasi berkemah di bawah rindangnya cemara udang' },
+      { id: 2, nama: 'Sewa Payung Pantai', deskripsi: 'Payung teduh di sepanjang pantai untuk menikmati keindahan laut lepas' },
+      { id: 3, nama: 'Mushola Pantai', deskripsi: 'Fasilitas ibadah yang tenang, bersih, dan sejuk' },
+      { id: 4, nama: 'Pusat Aneka Kuliner', deskripsi: 'Kawasan kuliner yang menjajakan makanan laut segar dan hidangan tradisional' },
+      { id: 5, nama: 'Pendopo / Aula Terbuka', deskripsi: 'Pendopo tradisional berkapasitas besar dengan sirkulasi udara pantai alami' },
+      { id: 6, nama: 'Sewa Tikar Piknik', deskripsi: 'Tikar piknik praktis untuk berkumpul dan makan bersama keluarga' },
+      { id: 7, nama: 'Sewa Kuda Pantai', deskripsi: 'Menyusuri keindahan garis pantai selatan dengan menunggangi kuda' },
+      { id: 8, nama: 'Gazebo Pantai', deskripsi: 'Pondok kayu santai menghadap ke arah laut selatan' },
+      { id: 9, nama: 'Sewa & Area Ayunan', deskripsi: 'Fasilitas ayunan gantung di bawah pepohonan cemara yang teduh' },
+      { id: 10, nama: 'Parkir Luas (Jasa Penitipan)', deskripsi: 'Fasilitas area penitipan kendaraan yang sangat luas dan aman' },
+      { id: 11, nama: 'Kolam Renang Anak', deskripsi: 'Kolam renang air tawar mini yang aman dan menyenangkan' },
+      { id: 12, nama: 'Sewa ATV Pantai', deskripsi: 'Petualangan seru mengendarai motor ATV menyusuri hamparan pasir' },
+      { id: 13, nama: 'Hutan Cemara yang Sejuk', deskripsi: 'Kawasan hutan cemara udang yang rimbun, menyajikan keteduhan alami' }
     ]
   }
 }

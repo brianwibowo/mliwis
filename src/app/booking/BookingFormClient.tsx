@@ -6,44 +6,72 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { 
   Waves, Send, Copy, CheckCircle, Tent, TreePine, Building, Camera, Store, 
   Info, Phone, MapPin, ExternalLink, Umbrella, Grid, Smile, Droplet, Zap, 
-  Compass, Search, Clock, XCircle, ArrowLeft, Calendar 
+  Compass, Search, Clock, XCircle, ArrowLeft, Calendar, Shield
 } from 'lucide-react'
 import { createBooking, checkBookingStatus } from './actions'
 import { formatTanggal } from '@/lib/format'
 import PublicHeader from '@/components/layout/PublicHeader'
 import PublicFooter from '@/components/layout/PublicFooter'
 import BookingCalendar from '@/components/booking/BookingCalendar'
+import { LIST_FASILITAS } from '@/lib/data-landing'
 
 const facilityIcons: Record<string, React.ReactNode> = {
   'Area Camping Ground': <Tent size={20} />,
   'Sewa Payung Pantai': <Umbrella size={20} />,
   'Mushola Pantai': <Building size={20} />,
-  'Area UMKM': <Store size={20} />,
-  'Pendopo/Aula Terbuka': <Building size={20} />,
+  'Pusat Aneka Kuliner': <Store size={20} />,
+  'Pendopo / Aula Terbuka': <Building size={20} />,
   'Sewa Tikar Piknik': <Grid size={20} />,
   'Sewa Kuda Pantai': <Compass size={20} />,
   'Gazebo Pantai': <Building size={20} />,
-  'Area Ayunan': <Smile size={20} />,
+  'Sewa & Area Ayunan': <Smile size={20} />,
+  'Parkir Luas (Jasa Penitipan)': <Shield size={20} />,
   'Kolam Renang Anak': <Droplet size={20} />,
   'Sewa ATV Pantai': <Zap size={20} />,
-  'Area Outbound': <TreePine size={20} />,
-  'Area Prewedding': <Camera size={20} />,
+  'Hutan Cemara yang Sejuk': <TreePine size={20} />,
 }
 
 const facilitySlugMap: Record<string, string> = {
   'Area Camping Ground': 'camping-ground',
   'Sewa Payung Pantai': 'payung-pantai',
   'Mushola Pantai': 'musola',
-  'Area UMKM': 'aneka-kuliner',
-  'Pendopo/Aula Terbuka': 'pendopo',
+  'Pusat Aneka Kuliner': 'aneka-kuliner',
+  'Pendopo / Aula Terbuka': 'pendopo',
   'Sewa Tikar Piknik': 'sewa-tikar',
   'Sewa Kuda Pantai': 'kuda-pantai',
   'Gazebo Pantai': 'gazebo',
-  'Area Ayunan': 'sewa-ayunan',
+  'Sewa & Area Ayunan': 'sewa-ayunan',
+  'Parkir Luas (Jasa Penitipan)': 'parkir',
   'Kolam Renang Anak': 'kolam-renang-anak',
   'Sewa ATV Pantai': 'atv-pantai',
-  'Area Outbound': 'kuda-pantai',
-  'Area Prewedding': 'pendopo',
+  'Hutan Cemara yang Sejuk': 'pohon-cemara',
+}
+
+const getFacilityImage = (nama: string) => {
+  const slug = facilitySlugMap[nama]
+  if (!slug) return '/mliwis3.jpg'
+  
+  const found = LIST_FASILITAS.find(item => item.slug === slug)
+  if (found && found.images && found.images.length > 0) {
+    return found.images[0]
+  }
+
+  const fallbackList: Record<string, string> = {
+    'camping-ground': '/vibes1.JPG',
+    'payung-pantai': '/payung pantai1.JPG',
+    'musola': '/mushola.jpg',
+    'aneka-kuliner': '/pedagang dan pembeli.jpg',
+    'pendopo': '/pendopo 1.jpg',
+    'sewa-tikar': '/mliwis8.jpg',
+    'kuda-pantai': '/kuda-pantai-1.jpg',
+    'gazebo': '/mliwis4.jpg',
+    'sewa-ayunan': '/vibes_mliwis3.jpg',
+    'parkir': '/area tiket masuk1.jpg',
+    'kolam-renang-anak': '/kolam renang 1.JPG',
+    'atv-pantai': '/mobil pantai1.JPG',
+    'pohon-cemara': '/vibes_mliwis5.jpg'
+  }
+  return fallbackList[slug] || '/mliwis3.jpg'
 }
 
 interface Fasilitas {
@@ -851,7 +879,7 @@ Mohon bantuan untuk melakukan verifikasi pemesanan kami. Terima kasih!`
                         Centang satu atau beberapa area. Klik ikon <ExternalLink size={11} style={{ verticalAlign: 'middle' }} /> untuk melihat info lengkap fasilitas bersangkutan.
                       </p>
                       
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '12px' }}>
                         {fasilitas.map((f) => {
                           const slug = facilitySlugMap[f.nama]
                           const isChecked = selectedIds.includes(f.id)
@@ -861,13 +889,14 @@ Mohon bantuan untuk melakukan verifikasi pemesanan kami. Terima kasih!`
                                 style={{
                                   display: 'flex',
                                   alignItems: 'center',
-                                  padding: '12px',
+                                  padding: '10px',
                                   border: isChecked ? '2px solid #14a2ba' : '2px solid var(--color-border-subtle)',
                                   borderRadius: '14px',
                                   cursor: 'pointer',
                                   backgroundColor: isChecked ? 'rgba(20, 162, 186, 0.05)' : 'white',
                                   transition: 'all 0.2s ease',
-                                  gap: '8px'
+                                  gap: '10px',
+                                  height: '100%'
                                 }}
                               >
                                 <input
@@ -878,17 +907,45 @@ Mohon bantuan untuk melakukan verifikasi pemesanan kami. Terima kasih!`
                                     accentColor: '#14a2ba', 
                                     cursor: 'pointer',
                                     width: '16px',
-                                    height: '16px'
+                                    height: '16px',
+                                    flexShrink: 0
                                   }}
                                 />
-                                <span style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
-                                  <span style={{ color: isChecked ? '#14a2ba' : 'var(--color-text-muted)' }}>
-                                    {facilityIcons[f.nama] || <Tent size={20} />}
-                                  </span>
-                                  <span style={{ fontSize: '0.825rem', fontWeight: 600, color: '#0f2556' }}>
+                                
+                                {/* Mini Image Preview */}
+                                <div style={{ 
+                                  width: '50px', 
+                                  height: '50px', 
+                                  borderRadius: '8px', 
+                                  overflow: 'hidden', 
+                                  flexShrink: 0,
+                                  backgroundColor: 'var(--color-surface-alt)',
+                                  border: '1px solid var(--color-border-subtle)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
+                                }}>
+                                  <img 
+                                    src={getFacilityImage(f.nama)} 
+                                    alt={f.nama}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    onError={(e) => {
+                                      ;(e.target as HTMLImageElement).src = '/mliwis3.jpg'
+                                    }}
+                                  />
+                                </div>
+
+                                <span style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
+                                  <span style={{ fontSize: '0.825rem', fontWeight: 600, color: '#0f2556', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                                     {f.nama}
                                   </span>
+                                  {f.deskripsi && (
+                                    <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                                      {f.deskripsi}
+                                    </span>
+                                  )}
                                 </span>
+                                
                                 {slug && (
                                   <a
                                     href={`/fasilitas/${slug}`}
@@ -899,7 +956,8 @@ Mohon bantuan untuk melakukan verifikasi pemesanan kami. Terima kasih!`
                                       color: 'var(--color-primary-500)',
                                       display: 'flex',
                                       alignItems: 'center',
-                                      padding: '4px',
+                                      padding: '6px',
+                                      flexShrink: 0
                                     }}
                                     title={`Lihat info ${f.nama}`}
                                   >

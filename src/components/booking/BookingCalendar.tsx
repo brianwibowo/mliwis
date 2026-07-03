@@ -80,7 +80,13 @@ export default function BookingCalendar() {
 
     return bookings.map(b => {
       const hasCamping = b.fasilitas.some((f: string) => f.toLowerCase().includes('camping'))
-      const hasOutbound = b.fasilitas.some((f: string) => f.toLowerCase().includes('outbound'))
+      const hasOutbound = b.fasilitas.some((f: string) => 
+        f.toLowerCase().includes('outbound') || 
+        f.toLowerCase().includes('atv') || 
+        f.toLowerCase().includes('kuda') || 
+        f.toLowerCase().includes('ayunan') ||
+        f.toLowerCase().includes('cemara')
+      )
       const tipe: 'camping' | 'outbound' | 'event' = hasCamping ? 'camping' : (hasOutbound ? 'outbound' : 'event')
 
       const formatTime = (date: Date) => {

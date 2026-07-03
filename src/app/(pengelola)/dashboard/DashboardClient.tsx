@@ -2,7 +2,7 @@
 
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  LineChart, Line, PieChart, Pie, Cell,
+  LineChart, Line, PieChart, Pie, Cell, Legend,
 } from 'recharts'
 import { Users, Wallet, CalendarCheck, TrendingUp } from 'lucide-react'
 import { formatRupiah, formatTanggal } from '@/lib/format'
@@ -141,13 +141,14 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
                   outerRadius={75}
                   paddingAngle={4}
                   dataKey="value"
-                  label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                  label={({ name, percent, value }) => value > 0 ? `${name} ${((percent ?? 0) * 100).toFixed(0)}%` : ''}
                 >
                   {pieData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index]} />
                   ))}
                 </Pie>
                 <Tooltip />
+                <Legend iconType="circle" layout="horizontal" verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: 12, paddingTop: 10 }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
