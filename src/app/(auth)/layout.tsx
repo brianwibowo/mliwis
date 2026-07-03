@@ -20,9 +20,9 @@ export default function AuthLayout({
             <span className="auth-title-highlight">Pantai Mliwis</span>
           </h1>
           <p className="auth-panel-desc" id="auth-portal-desc">
-            Platform manajemen satu pintu terintegrasi untuk pengelolaan arsip surat, reservasi camping & outbound, pelaporan kas keuangan, serta penginputan data harian pengunjung Pantai Mliwis, Kebumen secara akuntabel dan transparan.
+            Halaman khusus bagi petugas pengelola untuk mengatur arsip surat, reservasi tempat, laporan keuangan, dan pencatatan pengunjung harian Pantai Mliwis secara mudah dan rapi.
           </p>
-          
+
           <div className="auth-panel-features" id="auth-portal-features">
             <div className="auth-feature-item" id="auth-feature-speed">
               <span className="auth-feature-icon">
@@ -30,7 +30,7 @@ export default function AuthLayout({
               </span>
               <div>
                 <h4>Layanan Cepat</h4>
-                <p>Verifikasi data & laporan real-time</p>
+                <p>Pengolahan data dan pembuatan laporan jadi lebih praktis</p>
               </div>
             </div>
             <div className="auth-feature-item" id="auth-feature-security">
@@ -39,7 +39,7 @@ export default function AuthLayout({
               </span>
               <div>
                 <h4>Data Aman</h4>
-                <p>Otentikasi aman berbasis JWT berlapis</p>
+                <p>Akses masuk yang aman khusus untuk pengelola</p>
               </div>
             </div>
           </div>

@@ -240,7 +240,7 @@ export default function Sidebar({ isOpen, onClose, user, isCollapsed = false, on
         }
       >
         <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', margin: 0, lineHeight: 1.5 }}>
-          Apakah Anda yakin ingin keluar dari sistem **SI-Mliwis**? Anda harus masuk kembali untuk mengelola data operasional pantai.
+          Apakah Anda yakin ingin keluar dari sistem SI-Mliwis? Anda harus masuk kembali untuk mengelola data operasional pantai.
         </p>
       </Modal>
     </>
