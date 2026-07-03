@@ -9,6 +9,7 @@ import PublicHeader from '@/components/layout/PublicHeader'
 import PublicFooter from '@/components/layout/PublicFooter'
 import { formatTanggal } from '@/lib/format'
 import ScrollReveal from '@/components/ui/ScrollReveal'
+import { getLatestNews } from '@/app/berita-kegiatan/actions'
 
 const CAROUSEL_IMAGES = [
   '/mliwis1.jpg',
@@ -39,14 +40,12 @@ interface NewsItem {
   createdAt: string
 }
 
-interface HomeClientProps {
-  initialNews: NewsItem[]
-}
-
-export default function HomeClient({ initialNews }: HomeClientProps) {
+export default function HomeClient() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+  const [newsList, setNewsList] = useState<NewsItem[]>([])
+  const [loadingNews, setLoadingNews] = useState(true)
 
   // Autoplay carousel slides every 4 seconds
   useEffect(() => {
@@ -54,6 +53,22 @@ export default function HomeClient({ initialNews }: HomeClientProps) {
       setCurrentSlide((prev) => (prev + 1) % CAROUSEL_IMAGES.length)
     }, 4500)
     return () => clearInterval(timer)
+  }, [])
+
+  useEffect(() => {
+    async function loadNews() {
+      try {
+        const r = await getLatestNews(3)
+        if (r && r.data) {
+          setNewsList(r.data)
+        }
+      } catch (err) {
+        console.error('Gagal mengambil berita:', err)
+      } finally {
+        setLoadingNews(false)
+      }
+    }
+    loadNews()
   }, [])
 
   const handleOpenLightbox = (idx: number) => {
@@ -577,7 +592,32 @@ export default function HomeClient({ initialNews }: HomeClientProps) {
           </ScrollReveal>
 
           {/* News Cards */}
-          {initialNews.length === 0 ? (
+          {loadingNews ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '30px', width: '100%' }}>
+              {[1, 2, 3].map((n) => (
+                <div
+                  key={n}
+                  className="skeleton-card"
+                  style={{
+                    height: '400px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    padding: '0',
+                    overflow: 'hidden'
+                  }}
+                >
+                  <div className="skeleton" style={{ height: '200px', width: '100%', borderRadius: '24px 24px 0 0' }} />
+                  <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div className="skeleton" style={{ height: '14px', width: '100px' }} />
+                    <div className="skeleton" style={{ height: '24px', width: '80%', marginBottom: '8px' }} />
+                    <div className="skeleton-text" />
+                    <div className="skeleton-text" />
+                    <div className="skeleton-text short" style={{ margin: 0 }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : newsList.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 20px', backgroundColor: 'var(--color-surface-alt)', borderRadius: '24px', border: '1px solid var(--color-border)' }}>
               <Icons.FileText size={48} className="text-muted" style={{ margin: '0 auto 16px' }} />
               <h3 style={{ color: 'var(--color-primary-950)', fontWeight: 700, fontSize: '1.25rem', marginBottom: '8px' }}>Belum Ada Berita Terbaru</h3>
@@ -585,7 +625,7 @@ export default function HomeClient({ initialNews }: HomeClientProps) {
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '30px' }}>
-              {initialNews.map((news, idx) => (
+              {newsList.map((news, idx) => (
                 <ScrollReveal
                   key={news.id}
                   variant="fade-up"

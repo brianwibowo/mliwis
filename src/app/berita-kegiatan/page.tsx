@@ -97,18 +97,23 @@ export default function NewsPage() {
               {[1, 2, 3].map((n) => (
                 <div
                   key={n}
+                  className="skeleton-card"
                   style={{
-                    backgroundColor: 'white',
-                    borderRadius: '24px',
                     height: '400px',
-                    border: '1px solid var(--color-border-subtle)',
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    opacity: 0.6,
+                    flexDirection: 'column',
+                    padding: '0',
+                    overflow: 'hidden'
                   }}
                 >
-                  <div className="spinner" />
+                  <div className="skeleton" style={{ height: '200px', width: '100%', borderRadius: '24px 24px 0 0' }} />
+                  <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div className="skeleton" style={{ height: '14px', width: '100px' }} />
+                    <div className="skeleton" style={{ height: '24px', width: '80%', marginBottom: '8px' }} />
+                    <div className="skeleton-text" />
+                    <div className="skeleton-text" />
+                    <div className="skeleton-text short" style={{ margin: 0 }} />
+                  </div>
                 </div>
               ))}
             </div>

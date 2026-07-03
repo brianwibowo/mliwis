@@ -351,9 +351,27 @@ Mohon bantuan untuk melakukan verifikasi pemesanan kami. Terima kasih!`
 
             {/* Loading State */}
             {isSearchingStatus && (
-              <div className="card text-center" style={{ padding: '60px 24px', borderRadius: '24px', border: '1px solid var(--color-border-subtle)' }}>
-                <div className="spinner" style={{ margin: '0 auto 20px' }} />
-                <p className="text-muted" style={{ fontWeight: 500 }}>Mengambil data status booking Anda...</p>
+              <div className="card" style={{ padding: '32px', borderRadius: '24px', border: '1px solid var(--color-border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
+                <div className="skeleton" style={{ height: '28px', width: '200px', marginBottom: '24px' }} />
+                <div className="grid-2" style={{ gap: '20px', marginBottom: '24px' }}>
+                  <div>
+                    <div className="skeleton" style={{ height: '12px', width: '80px', marginBottom: '8px' }} />
+                    <div className="skeleton" style={{ height: '18px', width: '140px' }} />
+                  </div>
+                  <div>
+                    <div className="skeleton" style={{ height: '12px', width: '80px', marginBottom: '8px' }} />
+                    <div className="skeleton" style={{ height: '18px', width: '100px' }} />
+                  </div>
+                  <div>
+                    <div className="skeleton" style={{ height: '12px', width: '80px', marginBottom: '8px' }} />
+                    <div className="skeleton" style={{ height: '18px', width: '150px' }} />
+                  </div>
+                  <div>
+                    <div className="skeleton" style={{ height: '12px', width: '80px', marginBottom: '8px' }} />
+                    <div className="skeleton" style={{ height: '18px', width: '120px' }} />
+                  </div>
+                </div>
+                <div className="skeleton" style={{ height: '80px', width: '100%', borderRadius: '16px' }} />
               </div>
             )}
 
