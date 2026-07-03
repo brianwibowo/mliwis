@@ -4,8 +4,9 @@ import * as Icons from 'lucide-react'
 import PublicHeader from '@/components/layout/PublicHeader'
 import PublicFooter from '@/components/layout/PublicFooter'
 import ScrollReveal from '@/components/ui/ScrollReveal'
+import Image from 'next/image'
 
-export default function TentangMliwisPage() {
+export default function TentangPage() {
   return (
     <div style={{ background: 'var(--color-surface)', minHeight: '100vh' }}>
       {/* Header */}
@@ -16,7 +17,7 @@ export default function TentangMliwisPage() {
         style={{
           position: 'relative',
           height: '100vh',
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url("/mliwis2.jpg")',
+          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url("/mliwis5.jpg")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           display: 'flex',
@@ -45,11 +46,11 @@ export default function TentangMliwisPage() {
                 letterSpacing: '0.05em',
               }}
             >
-              <Icons.Info size={14} />
-              <span>Mengenal Lebih Dekat</span>
+              <Icons.Compass size={14} />
+              <span>Jelajahi Sejarah</span>
             </span>
           </ScrollReveal>
-          
+
           <ScrollReveal variant="fade-up" delay={250}>
             <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em', color: 'white' }}>
               Tentang Pantai Mliwis
@@ -58,25 +59,20 @@ export default function TentangMliwisPage() {
 
           <ScrollReveal variant="fade-up" delay={400}>
             <p style={{ opacity: 0.9, fontSize: '1.05rem', marginTop: '12px', lineHeight: '1.5' }}>
-              Sejarah panjang, gotong royong warga desa, kebudayaan lokal, dan rute perjalanan menuju Pantai Mliwis.
+              Menelusuri keasrian alam pesisir selatan Kebumen yang dibangun dari semangat gotong royong dan kemandirian masyarakat Desa Kenoyojayan.
             </p>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* Sejarah Pantai Mliwis Section */}
-      <section className="landing-section" id="sejarah" style={{ padding: '90px 0', backgroundColor: 'var(--color-surface)' }}>
+      {/* History and Legend Section */}
+      <section style={{ padding: '80px 0', backgroundColor: 'white' }}>
         <div className="landing-container">
-          <div className="landing-section-header" style={{ textAlign: 'center', marginBottom: '64px' }}>
-            <ScrollReveal variant="fade-up">
-              <span className="landing-tagline" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: '30px', backgroundColor: 'var(--color-primary-50)', color: 'var(--color-primary-600)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '16px' }}>
-                <Icons.History size={14} />
-                <span>Jejak Sejarah & Kultur</span>
-              </span>
-            </ScrollReveal>
-            
+          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
             <ScrollReveal variant="fade-up" delay={150}>
-              <h2 style={{ fontSize: '2.5rem', color: 'var(--color-primary-950)', fontWeight: 700, letterSpacing: '-0.02em' }}>Sejarah Pantai Mliwis</h2>
+              <h2 style={{ fontSize: '2rem', color: 'var(--color-primary-950)', fontWeight: 800, margin: 0 }}>
+                Sejarah & Asal Usul
+              </h2>
             </ScrollReveal>
 
             <ScrollReveal variant="fade-up" delay={300}>
@@ -91,13 +87,14 @@ export default function TentangMliwisPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '48px', alignItems: 'center' }}>
               <ScrollReveal variant="fade-right" duration={800}>
                 <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px' }}>
-                  <img
+                  <Image
                     src="/vibes_mliwis.jpg"
                     alt="Asal Usul Nama Pantai Mliwis"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=600' }}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    style={{ objectFit: 'cover' }}
                   />
-                  <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', color: 'white', padding: '6px 14px', borderRadius: '10px', fontSize: '0.825rem' }}>
+                  <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', color: 'white', padding: '6px 14px', borderRadius: '10px', fontSize: '0.825rem', zIndex: 2 }}>
                     Ilustrasi Burung Belibis (Mliwis)
                   </div>
                 </div>
@@ -136,13 +133,16 @@ export default function TentangMliwisPage() {
               
               <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px', order: 1 }}>
                 <ScrollReveal variant="fade-right" duration={800}>
-                  <img
-                    src="/gotong royong.jpg"
-                    alt="Pembangunan Swadaya Warga"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600' }}
-                  />
-                  <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', color: 'white', padding: '6px 14px', borderRadius: '10px', fontSize: '0.825rem' }}>
+                  <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                    <Image
+                      src="/gotong royong.jpg"
+                      alt="Pembangunan Swadaya Warga"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
+                  <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', color: 'white', padding: '6px 14px', borderRadius: '10px', fontSize: '0.825rem', zIndex: 2 }}>
                     Gotong Royong Warga Kenoyojayan
                   </div>
                 </ScrollReveal>
@@ -153,13 +153,14 @@ export default function TentangMliwisPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '48px', alignItems: 'center' }}>
               <ScrollReveal variant="fade-right" duration={800}>
                 <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px' }}>
-                  <img
+                  <Image
                     src="/grebek.webp"
                     alt="Tradisi Grebeg Rolasan"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=600' }}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    style={{ objectFit: 'cover' }}
                   />
-                  <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', color: 'white', padding: '6px 14px', borderRadius: '10px', fontSize: '0.825rem' }}>
+                  <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', color: 'white', padding: '6px 14px', borderRadius: '10px', fontSize: '0.825rem', zIndex: 2 }}>
                     Pentas Grebeg Rolasan Pesisir
                   </div>
                 </div>
@@ -198,12 +199,16 @@ export default function TentangMliwisPage() {
               
               <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px', order: 1 }}>
                 <ScrollReveal variant="fade-right" duration={800}>
-                  <img
-                    src="/parkiran motor.jpg"
-                    alt="Akses Jalan dan JPK"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                  <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', color: 'white', padding: '6px 14px', borderRadius: '10px', fontSize: '0.825rem' }}>
+                  <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                    <Image
+                      src="/parkiran motor.jpg"
+                      alt="Akses Jalan dan JPK"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
+                  <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', color: 'white', padding: '6px 14px', borderRadius: '10px', fontSize: '0.825rem', zIndex: 2 }}>
                     Akses Jalan Masuk Pantai Mliwis
                   </div>
                 </ScrollReveal>

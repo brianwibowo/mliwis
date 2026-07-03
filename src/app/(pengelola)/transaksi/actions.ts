@@ -3,6 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
+import { logAudit } from '@/lib/audit'
 
 // ==================== KAS MASUK ====================
 
@@ -43,6 +44,9 @@ export async function createKasMasuk(formData: FormData) {
   await prisma.kasMasuk.create({
     data: { tanggal: new Date(tanggal), jenisTransaksi, nominal, keterangan: keterangan || null, keteranganLain: keteranganLain || null, userId: session.userId },
   })
+  
+  await logAudit('CREATE_KAS_MASUK', `Pemasukan baru ditambahkan: "${jenisTransaksi}" sebesar Rp${nominal.toLocaleString('id-ID')}`)
+  
   revalidatePath('/transaksi/kas-masuk')
   return { success: true }
 }
@@ -51,7 +55,7 @@ export async function updateKasMasuk(id: number, formData: FormData) {
   const session = await getSession()
   if (!session) return { error: 'Unauthorized' }
 
-  await prisma.kasMasuk.update({
+  const updated = await prisma.kasMasuk.update({
     where: { id },
     data: {
       tanggal: new Date(formData.get('tanggal') as string),
@@ -61,6 +65,9 @@ export async function updateKasMasuk(id: number, formData: FormData) {
       keteranganLain: (formData.get('keteranganLain') as string) || null,
     },
   })
+  
+  await logAudit('UPDATE_KAS_MASUK', `Pemasukan ID ${id} diubah menjadi: "${updated.jenisTransaksi}" sebesar Rp${Number(updated.nominal).toLocaleString('id-ID')}`)
+  
   revalidatePath('/transaksi/kas-masuk')
   return { success: true }
 }
@@ -68,7 +75,14 @@ export async function updateKasMasuk(id: number, formData: FormData) {
 export async function deleteKasMasuk(id: number) {
   const session = await getSession()
   if (!session) return { error: 'Unauthorized' }
+  
+  const old = await prisma.kasMasuk.findUnique({ where: { id } })
   await prisma.kasMasuk.delete({ where: { id } })
+  
+  if (old) {
+    await logAudit('DELETE_KAS_MASUK', `Pemasukan ID ${id} ("${old.jenisTransaksi}") senilai Rp${Number(old.nominal).toLocaleString('id-ID')} dihapus`)
+  }
+  
   revalidatePath('/transaksi/kas-masuk')
   return { success: true }
 }
@@ -112,6 +126,9 @@ export async function createKasKeluar(formData: FormData) {
   await prisma.kasKeluar.create({
     data: { tanggal: new Date(tanggal), jenisTransaksi, nominal, keterangan: keterangan || null, keteranganLain: keteranganLain || null, userId: session.userId },
   })
+  
+  await logAudit('CREATE_KAS_KELUAR', `Pengeluaran baru ditambahkan: "${jenisTransaksi}" sebesar Rp${nominal.toLocaleString('id-ID')}`)
+  
   revalidatePath('/transaksi/kas-keluar')
   return { success: true }
 }
@@ -120,7 +137,7 @@ export async function updateKasKeluar(id: number, formData: FormData) {
   const session = await getSession()
   if (!session) return { error: 'Unauthorized' }
 
-  await prisma.kasKeluar.update({
+  const updated = await prisma.kasKeluar.update({
     where: { id },
     data: {
       tanggal: new Date(formData.get('tanggal') as string),
@@ -130,6 +147,9 @@ export async function updateKasKeluar(id: number, formData: FormData) {
       keteranganLain: (formData.get('keteranganLain') as string) || null,
     },
   })
+  
+  await logAudit('UPDATE_KAS_KELUAR', `Pengeluaran ID ${id} diubah menjadi: "${updated.jenisTransaksi}" sebesar Rp${Number(updated.nominal).toLocaleString('id-ID')}`)
+  
   revalidatePath('/transaksi/kas-keluar')
   return { success: true }
 }
@@ -137,7 +157,14 @@ export async function updateKasKeluar(id: number, formData: FormData) {
 export async function deleteKasKeluar(id: number) {
   const session = await getSession()
   if (!session) return { error: 'Unauthorized' }
+  
+  const old = await prisma.kasKeluar.findUnique({ where: { id } })
   await prisma.kasKeluar.delete({ where: { id } })
+  
+  if (old) {
+    await logAudit('DELETE_KAS_KELUAR', `Pengeluaran ID ${id} ("${old.jenisTransaksi}") senilai Rp${Number(old.nominal).toLocaleString('id-ID')} dihapus`)
+  }
+  
   revalidatePath('/transaksi/kas-keluar')
   return { success: true }
 }

@@ -2,15 +2,16 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, Trash2, Eye, CalendarCheck } from 'lucide-react'
-import { deleteBooking } from './actions'
+import { Search, Trash2, Eye, CalendarCheck, ExternalLink } from 'lucide-react'
+import { deleteBooking, updatePaymentStatus } from './actions'
 import { formatTanggal } from '@/lib/format'
 import { useToast } from '@/hooks/useToast'
 import Modal from '@/components/ui/Modal'
 
 interface BookingData {
   id: number; kodeBooking: string; namaCustomer: string; nomorHP: string
-  jenisAcara: string; status: string; tanggalMulai: string; tanggalSelesai: string
+  jenisAcara: string; status: string; statusPembayaran: string; buktiPembayaran: string | null
+  tanggalMulai: string; tanggalSelesai: string
   catatanPengelola: string | null; fasilitas: string[]; createdAt: string
 }
 
@@ -24,6 +25,7 @@ export default function BookingAdminClient({ initialData, currentSearch, current
   const router = useRouter()
   const { addToast } = useToast()
   const [isPending, startTransition] = useTransition()
+  const [isUpdatingPayment, startPaymentTransition] = useTransition()
   const [search, setSearch] = useState(currentSearch)
   const [status, setStatus] = useState(currentStatus)
   const [detail, setDetail] = useState<BookingData | null>(null)
@@ -35,6 +37,19 @@ export default function BookingAdminClient({ initialData, currentSearch, current
     if (st) params.set('status', st)
     if (p && p > 1) params.set('page', String(p))
     router.push(`/booking-admin?${params.toString()}`)
+  }
+
+  const handleUpdatePayment = (id: number, val: string) => {
+    startPaymentTransition(async () => {
+      const res = await updatePaymentStatus(id, val)
+      if (res.error) {
+        addToast(res.error, 'error')
+      } else {
+        addToast('Status pembayaran diperbarui', 'success')
+        setDetail((prev) => prev && prev.id === id ? { ...prev, statusPembayaran: val } : prev)
+        router.refresh()
+      }
+    })
   }
 
   const handleDelete = async () => {
@@ -82,7 +97,7 @@ export default function BookingAdminClient({ initialData, currentSearch, current
       <div className="card">
         <div className="table-container" style={{ border: 'none' }}>
           <table className="table">
-            <thead><tr><th>Kode</th><th>Customer</th><th>No HP</th><th>Tanggal</th><th>Keterangan Kegiatan</th><th>Fasilitas</th><th>Status</th><th>Aksi</th></tr></thead>
+            <thead><tr><th>Kode</th><th>Customer</th><th>No HP</th><th>Tanggal</th><th>Fasilitas</th><th>Status</th><th>Pembayaran</th><th>Aksi</th></tr></thead>
             <tbody>
               {initialData.data.length === 0 && (
                 <tr><td colSpan={8}><div className="empty-state"><CalendarCheck size={48} className="empty-state-icon" /><p className="empty-state-title">Belum ada booking</p></div></td></tr>
@@ -93,9 +108,19 @@ export default function BookingAdminClient({ initialData, currentSearch, current
                   <td>{b.namaCustomer}</td>
                   <td>{b.nomorHP}</td>
                   <td className="text-sm">{formatTanggal(b.tanggalMulai)}{b.tanggalMulai !== b.tanggalSelesai && <><br /><span className="text-muted">s/d {formatTanggal(b.tanggalSelesai)}</span></>}</td>
-                  <td>{b.jenisAcara}</td>
                   <td><div className="flex flex-wrap gap-1">{b.fasilitas.map((f) => <span key={f} className="badge badge-info badge-sm">{f}</span>)}</div></td>
                   <td><span className={`badge badge-${b.status}`}>{b.status}</span></td>
+                  <td>
+                    <span 
+                      className={`badge ${
+                        b.statusPembayaran === 'lunas' ? 'badge-disetujui' : 
+                        b.statusPembayaran === 'dp' ? 'badge-info' : 'badge-ditolak'
+                      }`}
+                    >
+                      {b.statusPembayaran === 'lunas' ? 'Lunas' : 
+                       b.statusPembayaran === 'dp' ? 'DP' : 'Belum Bayar'}
+                    </span>
+                  </td>
                   <td>
                     <div className="table-actions">
                       <button className="btn btn-ghost btn-sm btn-icon" onClick={() => setDetail(b)} title="Detail"><Eye size={14} /></button>
@@ -122,13 +147,51 @@ export default function BookingAdminClient({ initialData, currentSearch, current
           <div>
             <div className="grid-2 gap-4 mb-4">
               <div><p className="text-muted text-xs">Kode Booking</p><p className="font-bold font-mono">{detail.kodeBooking}</p></div>
-              <div><p className="text-muted text-xs">Status</p><span className={`badge badge-${detail.status}`}>{detail.status}</span></div>
+              <div><p className="text-muted text-xs">Status Validasi</p><span className={`badge badge-${detail.status}`}>{detail.status}</span></div>
               <div><p className="text-muted text-xs">Nama Customer</p><p className="font-semibold">{detail.namaCustomer}</p></div>
               <div><p className="text-muted text-xs">Nomor HP</p><p>{detail.nomorHP}</p></div>
               <div><p className="text-muted text-xs">Tanggal Mulai</p><p>{formatTanggal(detail.tanggalMulai)}</p></div>
               <div><p className="text-muted text-xs">Tanggal Selesai</p><p>{formatTanggal(detail.tanggalSelesai)}</p></div>
               <div><p className="text-muted text-xs">Keterangan Kegiatan</p><p>{detail.jenisAcara}</p></div>
               <div><p className="text-muted text-xs">Tanggal Dibuat</p><p>{formatTanggal(detail.createdAt)}</p></div>
+
+              {/* Status & Bukti Pembayaran */}
+              <div>
+                <p className="text-muted text-xs mb-1">Status Pembayaran</p>
+                <select 
+                  className="filter-select" 
+                  value={detail.statusPembayaran} 
+                  disabled={isUpdatingPayment}
+                  onChange={(e) => handleUpdatePayment(detail.id, e.target.value)}
+                  style={{ padding: '4px 8px', fontSize: '0.875rem', width: '100%', minHeight: '34px' }}
+                >
+                  <option value="belum_dibayar">Belum Dibayar</option>
+                  <option value="dp">DP (Uang Muka)</option>
+                  <option value="lunas">Lunas</option>
+                </select>
+              </div>
+
+              <div>
+                <p className="text-muted text-xs">Bukti Pembayaran</p>
+                {detail.buktiPembayaran ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <a 
+                      href={detail.buktiPembayaran} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      style={{ color: 'var(--color-primary-600)', textDecoration: 'underline', fontSize: '0.85rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                    >
+                      <span>Lihat Bukti Transfer</span>
+                      <ExternalLink size={12} />
+                    </a>
+                    <div style={{ width: '80px', height: '60px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--color-border)' }}>
+                      <img src={detail.buktiPembayaran} alt="Bukti Transfer" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-muted text-sm italic" style={{ margin: 0 }}>Belum ada bukti transfer diunggah</p>
+                )}
+              </div>
             </div>
             <div className="mb-4"><p className="text-muted text-xs mb-2">Fasilitas</p><div className="flex flex-wrap gap-2">{detail.fasilitas.map((f) => <span key={f} className="badge badge-info">{f}</span>)}</div></div>
             {detail.catatanPengelola && <div><p className="text-muted text-xs mb-1">Catatan Pengelola</p><p className="p-3" style={{ background: 'var(--color-surface-alt)', borderRadius: 'var(--radius-lg)' }}>{detail.catatanPengelola}</p></div>}

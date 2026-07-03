@@ -8,7 +8,7 @@ import {
   Info, Phone, MapPin, ExternalLink, Umbrella, Grid, Smile, Droplet, Zap, 
   Compass, Search, Clock, XCircle, ArrowLeft, Calendar, Shield
 } from 'lucide-react'
-import { createBooking, checkBookingStatus } from './actions'
+import { createBooking, checkBookingStatus, uploadBuktiPembayaranAction } from './actions'
 import { formatTanggal } from '@/lib/format'
 import PublicHeader from '@/components/layout/PublicHeader'
 import PublicFooter from '@/components/layout/PublicFooter'
@@ -86,6 +86,8 @@ interface BookingResult {
   nomorHP: string
   jenisAcara: string
   status: string
+  statusPembayaran: string
+  buktiPembayaran: string | null
   tanggalMulai: string
   tanggalSelesai: string
   catatanPengelola: string | null
@@ -145,6 +147,12 @@ export default function BookingFormClient({ fasilitas }: { fasilitas: Fasilitas[
   const [statusError, setStatusError] = useState('')
   const [isSearchingStatus, startSearchTransition] = useTransition()
   const [searchCodeInput, setSearchCodeInput] = useState('')
+
+  // Upload proof state
+  const [uploadFile, setUploadFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [uploadSuccess, setUploadSuccess] = useState('')
+  const [uploadError, setUploadError] = useState('')
 
   // Handle URL change to fetch status details dynamically
   useEffect(() => {
@@ -274,7 +282,39 @@ Mohon bantuan untuk melakukan verifikasi pemesanan kami. Terima kasih!`
     setResult(null)
     setSelectedIds([])
     setError('')
+    setUploadFile(null)
+    setUploadError('')
+    setUploadSuccess('')
     router.push('/booking')
+  }
+
+  const handleUploadBukti = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!uploadFile || !statusResult) return
+
+    setUploading(true)
+    setUploadError('')
+    setUploadSuccess('')
+
+    try {
+      const formData = new FormData()
+      formData.append('file', uploadFile)
+
+      const res = await uploadBuktiPembayaranAction(statusResult.kodeBooking, formData)
+      if (res.error) {
+        setUploadError(res.error)
+      } else if (res.success && res.filePath) {
+        setUploadSuccess('Bukti transfer berhasil dikirim!')
+        setUploadFile(null)
+        // Refresh statusResult in local state
+        setStatusResult(prev => prev ? { ...prev, buktiPembayaran: res.filePath } : null)
+      }
+    } catch (err) {
+      console.error(err)
+      setUploadError('Gagal mengunggah bukti pembayaran. Silakan coba kembali.')
+    } finally {
+      setUploading(false)
+    }
   }
 
   // Render Status View
@@ -473,6 +513,125 @@ Mohon bantuan untuk melakukan verifikasi pemesanan kami. Terima kasih!`
                           {statusResult.catatanPengelola}
                         </p>
                       </div>
+                    </div>
+                  )}
+
+                  {/* Alur Pembayaran (Upload Bukti) */}
+                  {(statusResult.status === 'menunggu' || statusResult.status === 'disetujui') && (
+                    <div style={{ marginTop: '28px', borderTop: '1px solid var(--color-border-light)', paddingTop: '20px' }}>
+                      <h4 style={{ fontSize: '1rem', color: '#0f2556', fontWeight: 700, marginBottom: '12px' }}>
+                        Status & Bukti Pembayaran
+                      </h4>
+                      <div className="grid-2 gap-4">
+                        <div>
+                          <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)', margin: '0 0 4px' }}>
+                            Status Pembayaran
+                          </p>
+                          <span 
+                            style={{ 
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              fontSize: '0.8rem',
+                              fontWeight: 700,
+                              padding: '6px 14px',
+                              borderRadius: '20px',
+                              backgroundColor: 
+                                statusResult.statusPembayaran === 'lunas' ? 'rgba(34, 197, 94, 0.15)' : 
+                                statusResult.statusPembayaran === 'dp' ? 'rgba(20, 162, 186, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                              color: 
+                                statusResult.statusPembayaran === 'lunas' ? '#16a34a' : 
+                                statusResult.statusPembayaran === 'dp' ? '#0d8ca1' : '#dc2626',
+                              border: '1px solid currentColor'
+                            }}
+                          >
+                            {statusResult.statusPembayaran === 'lunas' ? 'Lunas' : 
+                             statusResult.statusPembayaran === 'dp' ? 'DP (Uang Muka)' : 'Belum Dibayar'}
+                          </span>
+                        </div>
+
+                        <div>
+                          <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)', margin: '0 0 4px' }}>
+                            Bukti Transfer
+                          </p>
+                          {statusResult.buktiPembayaran ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                              <a 
+                                href={statusResult.buktiPembayaran} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                style={{
+                                  fontSize: '0.85rem',
+                                  color: '#14a2ba',
+                                  fontWeight: 600,
+                                  textDecoration: 'underline',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px'
+                                }}
+                              >
+                                <span>Lihat Bukti Transfer</span>
+                                <ExternalLink size={14} />
+                              </a>
+                              {/* Display Small Preview */}
+                              <div style={{ width: '120px', height: '80px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--color-border-subtle)' }}>
+                                <img src={statusResult.buktiPembayaran} alt="Preview Bukti" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              </div>
+                            </div>
+                          ) : (
+                            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', margin: 0, fontStyle: 'italic' }}>
+                              Belum mengunggah bukti transfer
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Form Upload Bukti */}
+                      {statusResult.statusPembayaran !== 'lunas' && (
+                        <div style={{ marginTop: '20px', padding: '16px', backgroundColor: 'var(--color-surface-alt)', borderRadius: '16px', border: '1px dashed var(--color-border)' }}>
+                          <h5 style={{ margin: '0 0 8px', fontSize: '0.875rem', fontWeight: 700, color: '#0f2556' }}>
+                            Unggah Bukti Transfer (Opsional)
+                          </h5>
+                          <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', margin: '0 0 12px', lineHeight: 1.4 }}>
+                            Silakan lakukan transfer sesuai dengan koordinasi pengelola, lalu unggah foto bukti transfer di bawah ini jika ingin memproses secara online. **Pilihan ini bersifat opsional, Anda tetap dapat mengirimkan bukti langsung ke pengelola via WhatsApp.**
+                          </p>
+
+                          {uploadError && (
+                            <div style={{ padding: '8px 12px', backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#dc2626', borderRadius: '8px', fontSize: '0.8rem', marginBottom: '12px', fontWeight: 600 }}>
+                              {uploadError}
+                            </div>
+                          )}
+
+                          {uploadSuccess && (
+                            <div style={{ padding: '8px 12px', backgroundColor: 'rgba(34, 197, 94, 0.1)', color: '#16a34a', borderRadius: '8px', fontSize: '0.8rem', marginBottom: '12px', fontWeight: 600 }}>
+                              {uploadSuccess}
+                            </div>
+                          )}
+
+                          <form onSubmit={handleUploadBukti} style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                            <input 
+                              type="file" 
+                              accept="image/*"
+                              onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                  setUploadFile(e.target.files[0])
+                                  setUploadError('')
+                                  setUploadSuccess('')
+                                }
+                              }}
+                              style={{ fontSize: '0.8rem' }}
+                            />
+                            <button 
+                              type="submit" 
+                              className="btn btn-primary btn-sm"
+                              disabled={uploading || !uploadFile}
+                              style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '0.8rem', minHeight: '36px' }}
+                            >
+                              {uploading ? 'Mengunggah...' : 'Kirim Bukti'}
+                            </button>
+                          </form>
+                        </div>
+                      )}
                     </div>
                   )}
 

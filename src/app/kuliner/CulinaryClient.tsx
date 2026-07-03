@@ -6,6 +6,7 @@ import PublicHeader from '@/components/layout/PublicHeader'
 import PublicFooter from '@/components/layout/PublicFooter'
 import { LIST_KULINER } from '@/lib/data-landing'
 import ScrollReveal from '@/components/ui/ScrollReveal'
+import Image from 'next/image'
 
 export default function CulinaryClient() {
   return (
@@ -85,22 +86,13 @@ export default function CulinaryClient() {
                   }}
                 >
                   <div style={{ width: '100%', height: '200px', overflow: 'hidden', position: 'relative' }}>
-                    <img
+                    <Image
                       src={item.images[0] || "/mliwis6.jpg"}
                       alt={item.title}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      onError={(e) => {
-                        const fallbacks = [
-                          '/sate ambal1.jpeg',
-                          '/emping melinjo1.jpeg',
-                          '/nasi pecel 1.jpg',
-                          '/mendoan1.jpeg',
-                          '/bakwan 1.jpeg',
-                          '/tahu isi1.jpg'
-                        ]
-                        const indexFallback = LIST_KULINER.findIndex(k => k.slug === item.slug)
-                        ;(e.target as HTMLImageElement).src = fallbacks[indexFallback !== -1 ? indexFallback % fallbacks.length : 0]
-                      }}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      style={{ objectFit: 'cover' }}
+                      priority={index < 3}
                     />
                   </div>
                   <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column' }}>

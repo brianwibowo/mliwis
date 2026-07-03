@@ -103,6 +103,8 @@ model Booking {
   jenisAcara       String
   status           String   @default("menunggu") // "menunggu" | "disetujui" | "ditolak"
   catatanPengelola String?  @db.Text
+  buktiPembayaran  String?  @db.Text
+  statusPembayaran String   @default("belum_dibayar") // "belum_dibayar" | "dp" | "lunas"
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -247,5 +249,19 @@ model Berita {
   @@index([slug])
   @@index([published])
   @@map("berita")
+}
+
+// ==========================================
+// AUDIT LOG AKTIVITAS
+// ==========================================
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  username  String
+  action    String
+  target    String
+  createdAt DateTime @default(now())
+
+  @@map("audit_logs")
 }
 

@@ -1,17 +1,31 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { MapPin, Phone } from 'lucide-react'
+import { MapPin, Phone, ChevronUp } from 'lucide-react'
 
 export default function PublicFooter() {
-  const quickLinks = [
-    { label: 'Beranda', href: '/' },
-    { label: 'Tentang Mliwis', href: '/tentang-mliwis' },
-    { label: 'Fasilitas', href: '/fasilitas' },
-    { label: 'Aneka Kuliner', href: '/kuliner' },
-    { label: 'Berita Kegiatan', href: '/berita-kegiatan' },
-    { label: 'Booking Tempat', href: '/booking' },
-  ]
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const toggleVisibility = () => {
+      if (window.scrollY > 300) {
+        setIsVisible(true)
+      } else {
+        setIsVisible(false)
+      }
+    }
+
+    window.addEventListener('scroll', toggleVisibility)
+    return () => window.removeEventListener('scroll', toggleVisibility)
+  }, [])
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
 
   return (
     <footer className="landing-footer" id="main-footer" style={{ backgroundColor: 'var(--color-primary-900)', color: 'white', padding: '80px 0 32px' }}>
@@ -155,6 +169,43 @@ export default function PublicFooter() {
           </p>
         </div>
       </div>
+
+      {/* Scroll To Top Button */}
+      <button
+        onClick={scrollToTop}
+        style={{
+          position: 'fixed',
+          bottom: '30px',
+          right: '30px',
+          backgroundColor: '#14a2ba',
+          color: 'white',
+          border: 'none',
+          borderRadius: '50%',
+          width: '46px',
+          height: '46px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          boxShadow: '0 4px 14px rgba(20, 162, 186, 0.4)',
+          zIndex: 99,
+          opacity: isVisible ? 1 : 0,
+          transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(10px) scale(0.9)',
+          pointerEvents: isVisible ? 'all' : 'none',
+          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = '#108ba1'
+          e.currentTarget.style.transform = 'translateY(-3px) scale(1.05)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = '#14a2ba'
+          e.currentTarget.style.transform = 'translateY(0) scale(1)'
+        }}
+        title="Kembali ke atas"
+      >
+        <ChevronUp size={24} strokeWidth={2.5} />
+      </button>
     </footer>
   )
 }

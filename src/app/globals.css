@@ -2760,6 +2760,10 @@ button {
   border-color: white;
 }
 
+.mobile-nav-toggle {
+  display: none;
+}
+
 /* Navbar - Scrolled State */
 .landing-navbar.scrolled {
   background: rgba(255, 255, 255, 0.85);
@@ -3380,6 +3384,14 @@ button {
 
 /* Responsive adjustment for landing page */
 @media (max-width: 1024px) {
+  .landing-navbar .landing-nav-links {
+    display: none !important;
+  }
+
+  .mobile-nav-toggle {
+    display: flex !important;
+  }
+
   .landing-hero-container {
     grid-template-columns: 1fr;
     text-align: center;

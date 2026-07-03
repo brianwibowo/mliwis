@@ -22,6 +22,7 @@ import { useState } from 'react'
 import { NAV_ITEMS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { logoutAction } from '@/app/(auth)/actions'
+import Modal from '@/components/ui/Modal'
 
 const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   LayoutDashboard,
@@ -51,6 +52,7 @@ interface SidebarProps {
 export default function Sidebar({ isOpen, onClose, user, isCollapsed = false, onToggleCollapse }: SidebarProps) {
   const pathname = usePathname()
   const [expandedMenus, setExpandedMenus] = useState<string[]>([])
+  const [showLogoutModal, setShowLogoutModal] = useState(false)
 
   const toggleMenu = (label: string) => {
     setExpandedMenus((prev) =>
@@ -198,14 +200,49 @@ export default function Sidebar({ isOpen, onClose, user, isCollapsed = false, on
               </div>
             </div>
           </Link>
-          <form action={logoutAction}>
-            <button type="submit" className="sidebar-menu-item" style={{ marginTop: 8 }} title={isCollapsed ? "Keluar" : undefined}>
-              <LogOut size={18} className="menu-icon" />
-              <span>Keluar</span>
-            </button>
-          </form>
+          <button
+            type="button"
+            className="sidebar-menu-item"
+            style={{ marginTop: 8, width: '100%', border: 'none', background: 'none', cursor: 'pointer', textAlign: 'left' }}
+            title={isCollapsed ? "Keluar" : undefined}
+            onClick={() => setShowLogoutModal(true)}
+          >
+            <LogOut size={18} className="menu-icon" />
+            <span>Keluar</span>
+          </button>
         </div>
       </aside>
+
+      <Modal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        title="Konfirmasi Keluar"
+        size="sm"
+        footer={
+          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', width: '100%' }}>
+            <button 
+              className="btn btn-outline btn-sm" 
+              onClick={() => setShowLogoutModal(false)}
+              type="button"
+            >
+              Batal
+            </button>
+            <form action={logoutAction} style={{ margin: 0 }}>
+              <button 
+                className="btn btn-danger btn-sm" 
+                type="submit"
+                style={{ backgroundColor: 'var(--color-danger)', color: 'white', border: 'none' }}
+              >
+                Keluar
+              </button>
+            </form>
+          </div>
+        }
+      >
+        <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', margin: 0, lineHeight: 1.5 }}>
+          Apakah Anda yakin ingin keluar dari sistem **SI-Mliwis**? Anda harus masuk kembali untuk mengelola data operasional pantai.
+        </p>
+      </Modal>
     </>
   )
 }

@@ -5,6 +5,7 @@ import { getSession } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
 import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from '@/lib/constants'
 import { put, del } from '@vercel/blob'
+import { logAudit } from '@/lib/audit'
 
 async function uploadFile(file: File) {
   const fileExt = file.name.split('.').pop()?.toLowerCase() || ''
@@ -224,6 +225,8 @@ export async function createBerita(formData: FormData) {
       }
     })
 
+    await logAudit('CREATE_NEWS', `Berita baru dibuat: "${judul}" oleh penulis "${penulis}"`)
+
     revalidatePath('/berita-admin')
     revalidatePath('/berita-kegiatan')
     return { success: true }
@@ -343,6 +346,8 @@ export async function updateBerita(id: number, formData: FormData) {
       }
     })
 
+    await logAudit('UPDATE_NEWS', `Berita ID ${id} ("${judul}") diperbarui`)
+
     revalidatePath('/berita-admin')
     revalidatePath('/berita-kegiatan')
     revalidatePath(`/berita-kegiatan/${slug}`)
@@ -375,6 +380,8 @@ export async function deleteBerita(id: number) {
     }
 
     await prisma.berita.delete({ where: { id } })
+
+    await logAudit('DELETE_NEWS', `Berita ID ${id} ("${b.judul}") dihapus dari sistem`)
 
     revalidatePath('/berita-admin')
     revalidatePath('/berita-kegiatan')

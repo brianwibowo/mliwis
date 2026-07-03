@@ -6,6 +6,7 @@ import PublicHeader from '@/components/layout/PublicHeader'
 import PublicFooter from '@/components/layout/PublicFooter'
 import { LIST_FASILITAS } from '@/lib/data-landing'
 import ScrollReveal from '@/components/ui/ScrollReveal'
+import Image from 'next/image'
 
 export default function FasilitasPage() {
   const getFacilityFallback = (slug: string) => {
@@ -121,13 +122,13 @@ export default function FasilitasPage() {
                     }}
                   >
                     <div style={{ width: '100%', height: '170px', overflow: 'hidden', position: 'relative' }}>
-                      <img
+                      <Image
                         src={imageSrc}
                         alt={item.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        onError={(e) => {
-                          ;(e.target as HTMLImageElement).src = getFacilityFallback(item.slug)
-                        }}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        style={{ objectFit: 'cover' }}
+                        priority={index < 3}
                       />
                     </div>
                     <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column' }}>

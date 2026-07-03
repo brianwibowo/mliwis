@@ -8,10 +8,11 @@ import { useToast } from '@/hooks/useToast'
 import Modal from '@/components/ui/Modal'
 
 interface UserData { id: number; username: string; namaLengkap: string; role: string; createdAt: string }
+interface AuditLogData { id: number; username: string; action: string; target: string; createdAt: string }
 
-interface Props { isAdmin: boolean; users: UserData[]; currentUserId: number }
+interface Props { isAdmin: boolean; users: UserData[]; currentUserId: number; auditLogs?: AuditLogData[] }
 
-export default function PengaturanClient({ isAdmin, users, currentUserId }: Props) {
+export default function PengaturanClient({ isAdmin, users, currentUserId, auditLogs = [] }: Props) {
   const router = useRouter()
   const { addToast } = useToast()
   const [isPending, startTransition] = useTransition()
@@ -65,6 +66,43 @@ export default function PengaturanClient({ isAdmin, users, currentUserId }: Prop
                         {u.id !== currentUserId && <button className="btn btn-ghost btn-sm btn-icon text-danger" onClick={() => setDeleteId(u.id)}><Trash2 size={14} /></button>}
                       </div>
                     </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Log Audit (Admin Only) */}
+      {isAdmin && auditLogs.length > 0 && (
+        <div className="card" style={{ marginTop: '24px' }}>
+          <div className="card-header">
+            <h3>Log Audit Aktivitas Pengelola (50 Terakhir)</h3>
+          </div>
+          <div className="table-container" style={{ border: 'none', borderRadius: 0, maxHeight: '350px', overflowY: 'auto' }}>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Waktu</th>
+                  <th>Pengelola</th>
+                  <th>Aksi</th>
+                  <th>Keterangan</th>
+                </tr>
+              </thead>
+              <tbody>
+                {auditLogs.map((log) => (
+                  <tr key={log.id}>
+                    <td className="text-sm text-muted" style={{ whiteSpace: 'nowrap' }}>
+                      {new Date(log.createdAt).toLocaleString('id-ID')}
+                    </td>
+                    <td><strong>{log.username}</strong></td>
+                    <td>
+                      <span className="badge badge-info" style={{ fontSize: '0.75rem', padding: '4px 8px' }}>
+                        {log.action}
+                      </span>
+                    </td>
+                    <td className="text-sm">{log.target}</td>
                   </tr>
                 ))}
               </tbody>

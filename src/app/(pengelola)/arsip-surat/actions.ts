@@ -7,6 +7,7 @@ import { writeFile, mkdir, unlink } from 'fs/promises'
 import path from 'path'
 import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from '@/lib/constants'
 import { put, del } from '@vercel/blob'
+import { logAudit } from '@/lib/audit'
 
 // ==================== SURAT MASUK ====================
 
@@ -82,6 +83,8 @@ export async function createSuratMasuk(formData: FormData) {
     },
   })
 
+  await logAudit('CREATE_SURAT_MASUK', `Surat masuk baru didaftarkan: No. "${nomorSurat}" dari "${pengirim}"`)
+
   revalidatePath('/arsip-surat/masuk')
   return { success: true }
 }
@@ -113,6 +116,9 @@ export async function updateSuratMasuk(id: number, formData: FormData) {
   }
 
   await prisma.suratMasuk.update({ where: { id }, data: updateData })
+  
+  await logAudit('UPDATE_SURAT_MASUK', `Surat masuk ID ${id} (No. "${nomorSurat}") diperbarui`)
+
   revalidatePath('/arsip-surat/masuk')
   return { success: true }
 }
@@ -131,6 +137,9 @@ export async function deleteSuratMasuk(id: number) {
   }
 
   await prisma.suratMasuk.delete({ where: { id } })
+  
+  await logAudit('DELETE_SURAT_MASUK', `Surat masuk ID ${id} (No. "${surat?.nomorSurat || ''}") dihapus dari arsip`)
+
   revalidatePath('/arsip-surat/masuk')
   return { success: true }
 }
@@ -200,6 +209,8 @@ export async function createSuratKeluar(formData: FormData) {
     data: { nomorSurat, tanggalSurat: new Date(tanggalSurat), pengirim, tujuan, perihal, filePath, namaFile, userId: session.userId },
   })
 
+  await logAudit('CREATE_SURAT_KELUAR', `Surat keluar baru didaftarkan: No. "${nomorSurat}" ke "${tujuan}"`)
+
   revalidatePath('/arsip-surat/keluar')
   return { success: true }
 }
@@ -225,6 +236,9 @@ export async function updateSuratKeluar(id: number, formData: FormData) {
   }
 
   await prisma.suratKeluar.update({ where: { id }, data: updateData })
+  
+  await logAudit('UPDATE_SURAT_KELUAR', `Surat keluar ID ${id} (No. "${nomorSurat}") diperbarui`)
+
   revalidatePath('/arsip-surat/keluar')
   return { success: true }
 }
@@ -243,6 +257,9 @@ export async function deleteSuratKeluar(id: number) {
   }
 
   await prisma.suratKeluar.delete({ where: { id } })
+  
+  await logAudit('DELETE_SURAT_KELUAR', `Surat keluar ID ${id} (No. "${surat?.nomorSurat || ''}") dihapus dari arsip`)
+
   revalidatePath('/arsip-surat/keluar')
   return { success: true }
 }
@@ -261,7 +278,6 @@ async function uploadFile(file: File) {
     return { error: 'Ukuran file maksimal 10MB' }
   }
 
-  // If Vercel Blob token is configured, upload directly to Vercel Blob
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     try {
       const blob = await put(file.name, file, { access: 'public', addRandomSuffix: true })
@@ -271,7 +287,6 @@ async function uploadFile(file: File) {
     }
   }
 
-  // Fallback to local file system (e.g. during local development)
   const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
   await mkdir(uploadsDir, { recursive: true })
 
