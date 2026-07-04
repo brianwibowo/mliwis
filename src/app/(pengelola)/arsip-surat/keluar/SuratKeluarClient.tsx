@@ -229,7 +229,7 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
           <button className="btn btn-primary" onClick={handleOpenTemplate} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <FilePlus2 size={18} /> Buat Surat
           </button>
-          <button className="btn btn-ghost" onClick={() => { setEditData(null); setShowModal(true) }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <button className="btn btn-outline" onClick={() => { setEditData(null); setShowModal(true) }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Plus size={18} /> Arsipkan Manual
           </button>
         </div>

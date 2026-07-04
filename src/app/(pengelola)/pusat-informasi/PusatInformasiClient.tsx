@@ -192,6 +192,13 @@ export default function PusatInformasiClient() {
             Halaman ini memuat panduan bagi staf dan admin Pokdarwis agar dapat mengoperasikan aplikasi dengan mudah. 
             Setiap modul dirancang untuk mempermudah operasional wisata di Pantai Mliwis. Gunakan kotak pencarian di bawah untuk menyaring panduan.
           </p>
+          <div style={{ marginTop: '14px', padding: '12px 16px', backgroundColor: 'rgba(245, 158, 11, 0.08)', borderRadius: '8px', border: '1px solid rgba(245, 158, 11, 0.2)', fontSize: '0.825rem' }}>
+            <span style={{ fontWeight: 700, color: '#d97706', display: 'block', marginBottom: '4px' }}>💡 Tips & Catatan Penting:</span>
+            <ul style={{ margin: 0, paddingLeft: '16px', color: 'var(--color-text-muted)', display: 'flex', flexDirection: 'column', gap: '4px', listStyleType: 'disc' }}>
+              <li><strong>Proses Simpan / Unggah File:</strong> Jangan khawatir jika proses unggah file lampiran atau menyimpan data terasa lambat. Harap bersabar menunggu proses selesai dan pastikan Anda memiliki koneksi internet dengan sinyal yang kuat dan stabil.</li>
+              <li><strong>Rekomendasi Perangkat Kerja:</strong> Tampilan sistem ini sudah sepenuhnya responsif dan mendukung HP/tablet. Namun, untuk kenyamanan menginput data, manajemen arsip, serta mencetak laporan, <strong>sangat direkomendasikan menggunakan laptop atau komputer</strong>.</li>
+            </ul>
+          </div>
         </div>
       </div>
 

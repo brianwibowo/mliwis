@@ -147,13 +147,13 @@ export const NAV_ITEMS: NavItem[] = [
     href: '/berita-admin',
   },
   {
-    icon: 'HelpCircle',
-    label: 'Pusat Informasi',
-    href: '/pusat-informasi',
-  },
-  {
     icon: 'Settings',
     label: 'Pengaturan',
     href: '/pengaturan',
+  },
+  {
+    icon: 'HelpCircle',
+    label: 'Pusat Informasi',
+    href: '/pusat-informasi',
   },
 ];
