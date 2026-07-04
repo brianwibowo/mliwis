@@ -172,50 +172,24 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
         body: JSON.stringify(templateForm),
       })
 
+      const result = await response.json()
+
       if (!response.ok) {
-        const errData = await response.json().catch(() => ({}))
-        throw new Error(errData.error || 'Gagal meng-generate PDF')
+        throw new Error(result.error || 'Gagal meng-generate PDF')
       }
 
-      // Buka PDF di tab baru
-      const blob = await response.blob()
-      const url = URL.createObjectURL(blob)
-      window.open(url, '_blank')
+      // Buka PDF yang sudah tersimpan di server/cloud di tab baru
+      window.open(result.filePath, '_blank')
 
-      // Simpan ke arsip surat keluar
-      await handleSaveToArchive()
+      addToast('Surat berhasil di-generate dan tersimpan di arsip!', 'success')
+      setShowPreviewModal(false)
+      setTemplateForm({ ...defaultTemplateForm })
+      router.refresh()
     } catch (err: any) {
       console.error('Gagal generate PDF:', err)
       addToast(err.message || 'Gagal meng-generate PDF surat', 'error')
     } finally {
       setIsGenerating(false)
-    }
-  }
-
-  const handleSaveToArchive = async () => {
-    setIsSaving(true)
-    try {
-      const formData = new FormData()
-      formData.set('nomorSurat', templateForm.nomorSurat)
-      formData.set('tanggalSurat', templateForm.tanggalSurat)
-      formData.set('pengirim', 'Pengelola Pantai Mliwis')
-      formData.set('tujuan', templateForm.tujuan)
-      formData.set('perihal', templateForm.perihal)
-
-      const result = await createSuratKeluar(formData)
-
-      if (result.error) {
-        addToast('PDF berhasil di-generate, tetapi gagal menyimpan ke arsip: ' + result.error, 'warning')
-      } else {
-        addToast('Surat berhasil di-generate dan tersimpan di arsip!', 'success')
-        setShowPreviewModal(false)
-        setTemplateForm({ ...defaultTemplateForm })
-        router.refresh()
-      }
-    } catch (err: any) {
-      addToast('PDF berhasil di-generate, tetapi gagal menyimpan ke arsip', 'warning')
-    } finally {
-      setIsSaving(false)
     }
   }
 

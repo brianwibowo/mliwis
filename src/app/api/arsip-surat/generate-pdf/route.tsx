@@ -249,11 +249,21 @@ const SuratPDFDocument = ({ data, logoPath, hasLogo }: { data: SuratData; logoPa
   );
 };
 
+import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
+import { logAudit } from '@/lib/audit';
+import { put } from '@vercel/blob';
+
 // ============================================================
-// POST Handler
+// POST Handler — Generate, Save, & Archive PDF
 // ============================================================
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json();
 
     const requiredFields = ['nomorSurat', 'perihal', 'tanggalSurat', 'tujuan', 'isiSurat', 'namaPenandatangan', 'jabatanPenandatangan'];
@@ -284,28 +294,57 @@ export async function POST(request: NextRequest) {
       <SuratPDFDocument data={data} logoPath={logoPath} hasLogo={hasLogo} />
     );
 
-    // Convert Node.js stream to Web ReadableStream
-    const webStream = new ReadableStream({
-      start(controller) {
-        nodeStream.on('data', (chunk) => controller.enqueue(chunk));
-        nodeStream.on('end', () => controller.close());
-        nodeStream.on('error', (err) => controller.error(err));
-      },
-    });
+    // Convert stream to Buffer
+    const chunks: any[] = [];
+    for await (const chunk of nodeStream) {
+      chunks.push(chunk);
+    }
+    const buffer = Buffer.concat(chunks);
 
     const safeNomor = data.nomorSurat.replace(/[^a-zA-Z0-9\-]/g, '_');
-    const filename = `Surat-Keluar-${safeNomor}.pdf`;
+    const filename = `Surat-Keluar-${safeNomor}-${Date.now()}.pdf`;
+    let savedFilePath = '';
 
-    return new NextResponse(webStream, {
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `inline; filename="${filename}"`,
+    // Upload/Save file to storage
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      const blob = await put(`uploads/${filename}`, buffer, {
+        access: 'public',
+        contentType: 'application/pdf',
+      });
+      savedFilePath = blob.url;
+    } else {
+      const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+      await fs.promises.mkdir(uploadsDir, { recursive: true });
+      const fullPath = path.join(uploadsDir, filename);
+      await fs.promises.writeFile(fullPath, buffer);
+      savedFilePath = `/uploads/${filename}`;
+    }
+
+    // Save record to Database
+    await prisma.suratKeluar.create({
+      data: {
+        nomorSurat: data.nomorSurat,
+        tanggalSurat: new Date(data.tanggalSurat),
+        pengirim: 'Pengelola Pantai Mliwis',
+        tujuan: data.tujuan,
+        perihal: data.perihal,
+        filePath: savedFilePath,
+        namaFile: filename,
+        userId: session.userId,
       },
     });
+
+    // Write audit log
+    await logAudit(
+      'CREATE_SURAT_KELUAR',
+      `Surat keluar otomatis dibuat: No. "${data.nomorSurat}" ke "${data.tujuan}"`
+    );
+
+    return NextResponse.json({ success: true, filePath: savedFilePath });
   } catch (error: any) {
-    console.error('Gagal men-generate PDF surat keluar:', error);
+    console.error('Gagal memproses pembuatan surat keluar otomatis:', error);
     return NextResponse.json(
-      { error: 'Gagal memproses file PDF surat keluar.' },
+      { error: error.message || 'Gagal memproses file PDF surat keluar.' },
       { status: 500 }
     );
   }
