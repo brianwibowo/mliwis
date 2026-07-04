@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   },
   tujuanTempat: {
     fontSize: 12,
-    marginLeft: 48,
+    marginLeft: 0,
   },
   // -- Isi Surat --
   bodyText: {
