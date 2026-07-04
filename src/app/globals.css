@@ -4468,6 +4468,11 @@ button {
   font-weight: 800;
   border: 1.5px solid var(--color-primary-200);
   transition: all var(--transition-fast);
+  cursor: pointer;
+  padding: 0;
+  margin-left: 6px;
+  vertical-align: middle;
+  flex-shrink: 0;
 }
 
 .tooltip-icon:hover {

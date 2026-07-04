@@ -19,6 +19,7 @@ export default function PengaturanClient({ isAdmin, users, currentUserId, auditL
   const [showUserModal, setShowUserModal] = useState(false)
   const [editUser, setEditUser] = useState<UserData | null>(null)
   const [deleteId, setDeleteId] = useState<number | null>(null)
+  const [showRoleInfo, setShowRoleInfo] = useState(false)
 
   // Audit Logs pagination state
   const [logs, setLogs] = useState<AuditLogData[]>(auditLogs)
@@ -79,17 +80,24 @@ export default function PengaturanClient({ isAdmin, users, currentUserId, auditL
             <h3>
               <Shield size={18} style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />
               Kelola Akun Pengelola
-              <span className="tooltip-container">
-                <span className="tooltip-icon">!</span>
-                <span className="tooltip-content">
-                  <strong>Makna Role Pengelola:</strong><br />
-                  • <strong>Admin:</strong> Memiliki akses penuh termasuk mengelola akun staf, melihat log audit aktivitas, dan mengonfigurasi pengaturan sistem.<br />
-                  • <strong>Staff:</strong> Hanya dapat mengelola operasional (booking, surat masuk/keluar, kas, berita) dan tidak dapat mengakses pengaturan pengguna atau log audit.
-                </span>
-              </span>
+              <button
+                type="button"
+                className="tooltip-icon"
+                onClick={() => setShowRoleInfo(!showRoleInfo)}
+                aria-label="Info role pengelola"
+              >!</button>
             </h3>
             <button className="btn btn-primary btn-sm" onClick={() => { setEditUser(null); setShowUserModal(true) }}><Plus size={16} /> Tambah</button>
           </div>
+          {showRoleInfo && (
+            <div style={{ padding: '12px 20px', background: 'var(--color-primary-50)', borderBottom: '1px solid var(--color-border-light)', fontSize: '0.82rem', lineHeight: 1.6, color: 'var(--color-text)' }}>
+              <strong style={{ color: 'var(--color-primary-700)' }}>Makna Role Pengelola:</strong>
+              <ul style={{ margin: '6px 0 0 16px', padding: 0, listStyleType: 'disc', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <li><strong>Admin:</strong> Memiliki akses penuh termasuk mengelola akun staf, melihat log audit aktivitas, dan mengonfigurasi pengaturan sistem.</li>
+                <li><strong>Staff:</strong> Hanya dapat mengelola operasional (booking, surat masuk/keluar, kas, berita) dan tidak dapat mengakses pengaturan pengguna atau log audit.</li>
+              </ul>
+            </div>
+          )}
           <div className="table-container" style={{ border: 'none', borderRadius: 0 }}>
             <table className="table">
               <thead><tr><th>Username</th><th>Nama Lengkap</th><th>Role</th><th>Aksi</th></tr></thead>
@@ -170,19 +178,26 @@ export default function PengaturanClient({ isAdmin, users, currentUserId, auditL
           <div className="form-group">
             <label className="form-label" style={{ display: 'flex', alignItems: 'center' }}>
               Role <span className="required" style={{ marginRight: 2 }}>*</span>
-              <span className="tooltip-container">
-                <span className="tooltip-icon">!</span>
-                <span className="tooltip-content">
-                  <strong>Makna Role Pengelola:</strong><br />
-                  • <strong>Admin:</strong> Memiliki akses penuh termasuk mengelola akun staf, melihat log audit aktivitas, dan mengonfigurasi pengaturan sistem.<br />
-                  • <strong>Staff:</strong> Hanya dapat mengelola operasional (booking, surat masuk/keluar, kas, berita) dan tidak dapat mengakses pengaturan pengguna atau log audit.
-                </span>
-              </span>
+              <button
+                type="button"
+                className="tooltip-icon"
+                onClick={() => setShowRoleInfo(!showRoleInfo)}
+                aria-label="Info role pengelola"
+              >!</button>
             </label>
             <select name="role" className="form-select" defaultValue={editUser?.role || 'staff'} required>
               <option value="staff">Staff</option>
               <option value="admin">Admin</option>
             </select>
+            {showRoleInfo && (
+              <div style={{ marginTop: 8, padding: '10px 12px', background: 'var(--color-primary-50)', borderRadius: 8, fontSize: '0.8rem', lineHeight: 1.6, color: 'var(--color-text)', border: '1px solid var(--color-border-light)' }}>
+                <strong style={{ color: 'var(--color-primary-700)' }}>Makna Role:</strong>
+                <ul style={{ margin: '4px 0 0 16px', padding: 0, listStyleType: 'disc', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <li><strong>Admin:</strong> Akses penuh (kelola akun, log audit, pengaturan).</li>
+                  <li><strong>Staff:</strong> Operasional saja (booking, surat, kas, berita).</li>
+                </ul>
+              </div>
+            )}
           </div>
           <div className="form-group"><label className="form-label">Password {editUser ? '(kosongkan jika tidak diubah)' : <span className="required">*</span>}</label><input name="password" type="password" className="form-input" required={!editUser} minLength={6} />{!editUser && <p className="form-hint">Minimal 6 karakter</p>}</div>
           <div className="flex-end gap-3"><button type="button" className="btn btn-ghost" onClick={() => { setShowUserModal(false); setEditUser(null) }}>Batal</button><button type="submit" className="btn btn-primary" disabled={isPending}>{isPending ? 'Menyimpan...' : 'Simpan'}</button></div>
