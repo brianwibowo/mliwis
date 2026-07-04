@@ -52,6 +52,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   } catch (err) {
     console.error('Error generating dynamic news sitemap:', err)
+  } finally {
+    await prisma.$disconnect()
   }
 
   return [...staticRoutes, ...culinaryRoutes, ...facilityRoutes, ...newsRoutes]
