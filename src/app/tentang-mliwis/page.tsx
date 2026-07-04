@@ -131,22 +131,20 @@ export default function TentangPage() {
                 </ScrollReveal>
               </div>
               
-              <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px', order: 1 }}>
-                <ScrollReveal variant="fade-right" duration={800}>
-                  <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                    <Image
-                      src="/gotong royong.jpg"
-                      alt="Pembangunan Swadaya Warga"
-                      fill
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      style={{ objectFit: 'cover' }}
-                    />
-                  </div>
+              <ScrollReveal variant="fade-right" duration={800} style={{ order: 1 }}>
+                <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px' }}>
+                  <Image
+                    src="/gotong royong.jpg"
+                    alt="Pembangunan Swadaya Warga"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    style={{ objectFit: 'cover' }}
+                  />
                   <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', color: 'white', padding: '6px 14px', borderRadius: '10px', fontSize: '0.825rem', zIndex: 2 }}>
                     Gotong Royong Warga Kenoyojayan
                   </div>
-                </ScrollReveal>
-              </div>
+                </div>
+              </ScrollReveal>
             </div>
 
             {/* Row 3: Tradisi Budaya */}
@@ -197,22 +195,20 @@ export default function TentangPage() {
                 </ScrollReveal>
               </div>
               
-              <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px', order: 1 }}>
-                <ScrollReveal variant="fade-right" duration={800}>
-                  <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                    <Image
-                      src="/parkiran motor.jpg"
-                      alt="Akses Jalan dan JPK"
-                      fill
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      style={{ objectFit: 'cover' }}
-                    />
-                  </div>
+              <ScrollReveal variant="fade-right" duration={800} style={{ order: 1 }}>
+                <div style={{ position: 'relative', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: '320px' }}>
+                  <Image
+                    src="/parkiran motor.jpg"
+                    alt="Akses Jalan dan JPK"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    style={{ objectFit: 'cover' }}
+                  />
                   <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', color: 'white', padding: '6px 14px', borderRadius: '10px', fontSize: '0.825rem', zIndex: 2 }}>
                     Akses Jalan Masuk Pantai Mliwis
                   </div>
-                </ScrollReveal>
-              </div>
+                </div>
+              </ScrollReveal>
             </div>
           </div>
         </div>
