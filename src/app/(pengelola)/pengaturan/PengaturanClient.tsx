@@ -76,7 +76,18 @@ export default function PengaturanClient({ isAdmin, users, currentUserId, auditL
       {isAdmin && (
         <div className="card">
           <div className="card-header">
-            <h3><Shield size={18} style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />Kelola Akun Pengelola</h3>
+            <h3>
+              <Shield size={18} style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />
+              Kelola Akun Pengelola
+              <span className="tooltip-container">
+                <span className="tooltip-icon">!</span>
+                <span className="tooltip-content">
+                  <strong>Makna Role Pengelola:</strong><br />
+                  • <strong>Admin:</strong> Memiliki akses penuh termasuk mengelola akun staf, melihat log audit aktivitas, dan mengonfigurasi pengaturan sistem.<br />
+                  • <strong>Staff:</strong> Hanya dapat mengelola operasional (booking, surat masuk/keluar, kas, berita) dan tidak dapat mengakses pengaturan pengguna atau log audit.
+                </span>
+              </span>
+            </h3>
             <button className="btn btn-primary btn-sm" onClick={() => { setEditUser(null); setShowUserModal(true) }}><Plus size={16} /> Tambah</button>
           </div>
           <div className="table-container" style={{ border: 'none', borderRadius: 0 }}>
@@ -157,7 +168,17 @@ export default function PengaturanClient({ isAdmin, users, currentUserId, auditL
           {!editUser && <div className="form-group"><label className="form-label">Username <span className="required">*</span></label><input name="username" className="form-input" required /></div>}
           <div className="form-group"><label className="form-label">Nama Lengkap <span className="required">*</span></label><input name="namaLengkap" className="form-input" defaultValue={editUser?.namaLengkap} required /></div>
           <div className="form-group">
-            <label className="form-label">Role <span className="required">*</span></label>
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center' }}>
+              Role <span className="required" style={{ marginRight: 2 }}>*</span>
+              <span className="tooltip-container">
+                <span className="tooltip-icon">!</span>
+                <span className="tooltip-content">
+                  <strong>Makna Role Pengelola:</strong><br />
+                  • <strong>Admin:</strong> Memiliki akses penuh termasuk mengelola akun staf, melihat log audit aktivitas, dan mengonfigurasi pengaturan sistem.<br />
+                  • <strong>Staff:</strong> Hanya dapat mengelola operasional (booking, surat masuk/keluar, kas, berita) dan tidak dapat mengakses pengaturan pengguna atau log audit.
+                </span>
+              </span>
+            </label>
             <select name="role" className="form-select" defaultValue={editUser?.role || 'staff'} required>
               <option value="staff">Staff</option>
               <option value="admin">Admin</option>

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Pencil, Trash2, Download, Search, FileText } from 'lucide-react'
+import { Plus, Pencil, Trash2, Download, Search, FileText, FilePlus2, ArrowLeft, Loader2, Eye } from 'lucide-react'
 import { createSuratKeluar, updateSuratKeluar, deleteSuratKeluar } from '../actions'
 import { formatTanggal } from '@/lib/format'
 import { useToast } from '@/hooks/useToast'
@@ -19,6 +19,44 @@ interface Props {
   currentSearch: string; currentPage: number
 }
 
+// Nama bulan untuk format tanggal di preview
+const NAMA_BULAN = [
+  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+]
+
+function formatTanggalSurat(dateStr: string): string {
+  const d = new Date(dateStr)
+  return `${d.getDate()} ${NAMA_BULAN[d.getMonth()]} ${d.getFullYear()}`
+}
+
+// Default values untuk form template surat
+interface TemplateSuratForm {
+  nomorSurat: string
+  lampiran: string
+  perihal: string
+  tanggalSurat: string
+  tempatSurat: string
+  tujuan: string
+  tujuanAlamat: string
+  isiSurat: string
+  namaPenandatangan: string
+  jabatanPenandatangan: string
+}
+
+const defaultTemplateForm: TemplateSuratForm = {
+  nomorSurat: '',
+  lampiran: '-',
+  perihal: '',
+  tanggalSurat: new Date().toISOString().split('T')[0],
+  tempatSurat: 'Kebumen',
+  tujuan: '',
+  tujuanAlamat: '',
+  isiSurat: '',
+  namaPenandatangan: '',
+  jabatanPenandatangan: 'Ketua Pokdarwis',
+}
+
 export default function SuratKeluarClient({ initialData, currentSearch, currentPage }: Props) {
   const router = useRouter()
   const { addToast, removeToast } = useToast()
@@ -27,6 +65,13 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
   const [editData, setEditData] = useState<SuratData | null>(null)
   const [deleteId, setDeleteId] = useState<number | null>(null)
   const [search, setSearch] = useState(currentSearch)
+
+  // Template surat state
+  const [showTemplateModal, setShowTemplateModal] = useState(false)
+  const [showPreviewModal, setShowPreviewModal] = useState(false)
+  const [templateForm, setTemplateForm] = useState<TemplateSuratForm>({ ...defaultTemplateForm })
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   const handleSearch = () => {
     const params = new URLSearchParams()
@@ -90,11 +135,104 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
     })
   }
 
+  // ==================== TEMPLATE SURAT HANDLERS ====================
+
+  const updateTemplateField = (field: keyof TemplateSuratForm, value: string) => {
+    setTemplateForm(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleOpenTemplate = () => {
+    setTemplateForm({ ...defaultTemplateForm })
+    setShowTemplateModal(true)
+  }
+
+  const handleShowPreview = () => {
+    // Validasi field wajib
+    if (!templateForm.nomorSurat.trim()) { addToast('Nomor surat wajib diisi', 'error'); return }
+    if (!templateForm.perihal.trim()) { addToast('Perihal wajib diisi', 'error'); return }
+    if (!templateForm.tujuan.trim()) { addToast('Tujuan/Kepada wajib diisi', 'error'); return }
+    if (!templateForm.isiSurat.trim()) { addToast('Isi surat wajib diisi', 'error'); return }
+    if (!templateForm.namaPenandatangan.trim()) { addToast('Nama penandatangan wajib diisi', 'error'); return }
+
+    setShowTemplateModal(false)
+    setShowPreviewModal(true)
+  }
+
+  const handleBackToEdit = () => {
+    setShowPreviewModal(false)
+    setShowTemplateModal(true)
+  }
+
+  const handleDownloadPDF = async () => {
+    setIsGenerating(true)
+    try {
+      const response = await fetch('/api/arsip-surat/generate-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(templateForm),
+      })
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}))
+        throw new Error(errData.error || 'Gagal meng-generate PDF')
+      }
+
+      // Buka PDF di tab baru
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      window.open(url, '_blank')
+
+      // Simpan ke arsip surat keluar
+      await handleSaveToArchive()
+    } catch (err: any) {
+      console.error('Gagal generate PDF:', err)
+      addToast(err.message || 'Gagal meng-generate PDF surat', 'error')
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  const handleSaveToArchive = async () => {
+    setIsSaving(true)
+    try {
+      const formData = new FormData()
+      formData.set('nomorSurat', templateForm.nomorSurat)
+      formData.set('tanggalSurat', templateForm.tanggalSurat)
+      formData.set('pengirim', 'Pengelola Pantai Mliwis')
+      formData.set('tujuan', templateForm.tujuan)
+      formData.set('perihal', templateForm.perihal)
+
+      const result = await createSuratKeluar(formData)
+
+      if (result.error) {
+        addToast('PDF berhasil di-generate, tetapi gagal menyimpan ke arsip: ' + result.error, 'warning')
+      } else {
+        addToast('Surat berhasil di-generate dan tersimpan di arsip!', 'success')
+        setShowPreviewModal(false)
+        setTemplateForm({ ...defaultTemplateForm })
+        router.refresh()
+      }
+    } catch (err: any) {
+      addToast('PDF berhasil di-generate, tetapi gagal menyimpan ke arsip', 'warning')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  // ==================== RENDER ====================
+
   return (
     <div>
       <div className="page-header">
         <div className="page-header-left"><h1>Surat Keluar</h1><p>Kelola arsip surat keluar Pantai Mliwis</p></div>
-        <button className="btn btn-primary" onClick={() => { setEditData(null); setShowModal(true) }}><Plus size={18} /> Tambah Surat</button>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <button className="btn btn-primary" onClick={handleOpenTemplate} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <FilePlus2 size={18} /> Buat Surat
+          </button>
+          <button className="btn btn-ghost" onClick={() => { setEditData(null); setShowModal(true) }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Plus size={18} /> Arsipkan Manual
+          </button>
+        </div>
       </div>
 
       <div className="filter-bar">
@@ -141,7 +279,8 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
         )}
       </div>
 
-      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setEditData(null) }} title={editData ? 'Edit Surat Keluar' : 'Tambah Surat Keluar'} size="lg">
+      {/* ==================== MODAL: Arsipkan Manual (existing) ==================== */}
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setEditData(null) }} title={editData ? 'Edit Surat Keluar' : 'Arsipkan Surat Keluar'} size="lg">
         <form action={handleSubmit}>
           <div className="form-row">
             <div className="form-group"><label className="form-label">Nomor Surat <span className="required">*</span></label><input name="nomorSurat" className="form-input" defaultValue={editData?.nomorSurat} required /></div>
@@ -155,9 +294,241 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
         </form>
       </Modal>
 
+      {/* ==================== MODAL: Hapus Surat ==================== */}
       <Modal isOpen={deleteId !== null} onClose={() => setDeleteId(null)} title="Hapus Surat" size="sm">
         <p>Apakah Anda yakin ingin menghapus surat ini?</p>
         <div className="flex-end gap-3 mt-6"><button className="btn btn-ghost" onClick={() => setDeleteId(null)}>Batal</button><button className="btn btn-danger" onClick={handleDelete} disabled={isPending}>{isPending ? 'Menghapus...' : 'Hapus'}</button></div>
+      </Modal>
+
+      {/* ==================== MODAL: Form Template Surat Keluar ==================== */}
+      <Modal isOpen={showTemplateModal} onClose={() => setShowTemplateModal(false)} title="Buat Surat Keluar" size="lg">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="form-row">
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label">Nomor Surat <span className="required">*</span></label>
+              <input
+                className="form-input"
+                placeholder="Contoh: 001/POKDARWIS/VII/2026"
+                value={templateForm.nomorSurat}
+                onChange={(e) => updateTemplateField('nomorSurat', e.target.value)}
+              />
+            </div>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label">Lampiran</label>
+              <input
+                className="form-input"
+                placeholder="Contoh: 1 Berkas"
+                value={templateForm.lampiran}
+                onChange={(e) => updateTemplateField('lampiran', e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label">Tanggal Surat <span className="required">*</span></label>
+              <input
+                type="date"
+                className="form-input"
+                value={templateForm.tanggalSurat}
+                onChange={(e) => updateTemplateField('tanggalSurat', e.target.value)}
+              />
+            </div>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label">Tempat Surat</label>
+              <input
+                className="form-input"
+                placeholder="Kebumen"
+                value={templateForm.tempatSurat}
+                onChange={(e) => updateTemplateField('tempatSurat', e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Perihal <span className="required">*</span></label>
+            <input
+              className="form-input"
+              placeholder="Contoh: Undangan Rapat Koordinasi"
+              value={templateForm.perihal}
+              onChange={(e) => updateTemplateField('perihal', e.target.value)}
+            />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label">Kepada / Tujuan <span className="required">*</span></label>
+              <input
+                className="form-input"
+                placeholder="Contoh: Seluruh Anggota Pokdarwis"
+                value={templateForm.tujuan}
+                onChange={(e) => updateTemplateField('tujuan', e.target.value)}
+              />
+            </div>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label">Alamat Tujuan</label>
+              <input
+                className="form-input"
+                placeholder="Contoh: Tempat"
+                value={templateForm.tujuanAlamat}
+                onChange={(e) => updateTemplateField('tujuanAlamat', e.target.value)}
+              />
+              <p className="form-hint">Opsional. Akan tampil sebagai &ldquo;di [alamat]&rdquo;</p>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Isi Surat <span className="required">*</span></label>
+            <textarea
+              className="form-textarea"
+              rows={8}
+              placeholder={"Dengan hormat,\n\nBersama surat ini kami sampaikan bahwa...\n\nDemikian surat ini kami sampaikan, atas perhatian dan kerjasamanya kami ucapkan terima kasih."}
+              value={templateForm.isiSurat}
+              onChange={(e) => updateTemplateField('isiSurat', e.target.value)}
+              style={{ minHeight: '180px', resize: 'vertical' }}
+            />
+            <p className="form-hint">Gunakan Enter 2 kali untuk membuat paragraf baru. Setiap paragraf akan otomatis diindentasi.</p>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label">Nama Penandatangan <span className="required">*</span></label>
+              <input
+                className="form-input"
+                placeholder="Contoh: Warni"
+                value={templateForm.namaPenandatangan}
+                onChange={(e) => updateTemplateField('namaPenandatangan', e.target.value)}
+              />
+            </div>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label">Jabatan Penandatangan</label>
+              <input
+                className="form-input"
+                placeholder="Contoh: Ketua Pokdarwis"
+                value={templateForm.jabatanPenandatangan}
+                onChange={(e) => updateTemplateField('jabatanPenandatangan', e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="flex-end gap-3" style={{ marginTop: '8px' }}>
+            <button type="button" className="btn btn-ghost" onClick={() => setShowTemplateModal(false)}>Batal</button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleShowPreview}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+            >
+              <Eye size={16} /> Lihat Preview
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* ==================== MODAL: Preview Surat ==================== */}
+      <Modal isOpen={showPreviewModal} onClose={() => setShowPreviewModal(false)} title="Preview Surat Keluar" size="xl">
+        <div style={{ maxHeight: '70vh', overflowY: 'auto', padding: '8px' }}>
+          <div className="surat-preview">
+            {/* Kop Surat */}
+            <div className="surat-preview-kop">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo_mliwis.jpg" alt="Logo" />
+              <div className="surat-preview-kop-text">
+                <h2>Pemerintah Kabupaten Kebumen</h2>
+                <h3>Pengelola Obyek Wisata Pantai Mliwis</h3>
+                <p>Kecamatan Ambal, Kabupaten Kebumen, Jawa Tengah</p>
+              </div>
+            </div>
+
+            {/* Detail Surat */}
+            <div className="surat-preview-meta">
+              <div className="surat-preview-meta-left">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>Nomor</td>
+                      <td>:</td>
+                      <td>{templateForm.nomorSurat}</td>
+                    </tr>
+                    <tr>
+                      <td>Lampiran</td>
+                      <td>:</td>
+                      <td>{templateForm.lampiran || '-'}</td>
+                    </tr>
+                    <tr>
+                      <td>Perihal</td>
+                      <td>:</td>
+                      <td>{templateForm.perihal}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="surat-preview-meta-right">
+                {templateForm.tempatSurat}, {formatTanggalSurat(templateForm.tanggalSurat)}
+              </div>
+            </div>
+
+            {/* Tujuan */}
+            <div className="surat-preview-tujuan">
+              <p className="tujuan-label">Kepada Yth.</p>
+              <p className="tujuan-nama">{templateForm.tujuan}</p>
+              {templateForm.tujuanAlamat && (
+                <p className="tujuan-tempat">di {templateForm.tujuanAlamat}</p>
+              )}
+            </div>
+
+            {/* Isi Surat */}
+            <div>
+              {templateForm.isiSurat
+                .split(/\n\s*\n/)
+                .map(p => p.trim())
+                .filter(p => p.length > 0)
+                .map((para, index) => (
+                  <div key={index} className="surat-preview-body">
+                    {para}
+                  </div>
+                ))}
+            </div>
+
+            {/* Tanda Tangan */}
+            <div className="surat-preview-ttd">
+              <div className="surat-preview-ttd-box">
+                <div className="ttd-tempat-tanggal">
+                  {templateForm.tempatSurat}, {formatTanggalSurat(templateForm.tanggalSurat)}
+                </div>
+                <div className="ttd-jabatan">{templateForm.jabatanPenandatangan}</div>
+                <div className="ttd-nama">{templateForm.namaPenandatangan}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Buttons */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--color-border-light)' }}>
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={handleBackToEdit}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            <ArrowLeft size={16} /> Kembali Edit
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={handleDownloadPDF}
+            disabled={isGenerating || isSaving}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            {isGenerating ? (
+              <><Loader2 size={16} className="animate-spin" /> Membuat PDF...</>
+            ) : isSaving ? (
+              <><Loader2 size={16} className="animate-spin" /> Menyimpan Arsip...</>
+            ) : (
+              <><Download size={16} /> Download PDF</>
+            )}
+          </button>
+        </div>
       </Modal>
     </div>
   )
