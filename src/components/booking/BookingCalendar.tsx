@@ -28,11 +28,13 @@ export default function BookingCalendar() {
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null)
   const [bookings, setBookings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [mounted, setMounted] = useState(false)
 
   const currentMonth = currentDate.getMonth()
   const currentYear = currentDate.getFullYear()
 
   useEffect(() => {
+    setMounted(true)
     async function loadBookings() {
       try {
         const res = await getApprovedBookings()
@@ -126,6 +128,14 @@ export default function BookingCalendar() {
 
       return targetDate >= startDate && targetDate <= endDate
     })
+  }
+
+  if (!mounted) {
+    return (
+      <div className="calendar-card card" style={{ position: 'relative', minHeight: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="skeleton" style={{ height: '350px', width: '100%', borderRadius: '16px' }} />
+      </div>
+    )
   }
 
   return (

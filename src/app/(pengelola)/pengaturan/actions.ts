@@ -14,13 +14,14 @@ export async function getUsers() {
   return { data: users.map((u) => ({ ...u, createdAt: u.createdAt.toISOString() })) }
 }
 
-export async function getAuditLogs() {
+export async function getAuditLogs(skip: number = 0, limit: number = 20) {
   const session = await getSession()
   if (!session || session.role !== 'admin') return { error: 'Unauthorized' }
 
   const logs = await prisma.auditLog.findMany({
     orderBy: { createdAt: 'desc' },
-    take: 50,
+    skip,
+    take: limit,
   })
   return { data: logs.map((l) => ({ ...l, createdAt: l.createdAt.toISOString() })) }
 }

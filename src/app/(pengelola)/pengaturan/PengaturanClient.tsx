@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, Pencil, Trash2, Shield } from 'lucide-react'
-import { createUser, updateUser, deleteUser } from './actions'
+import { createUser, updateUser, deleteUser, getAuditLogs } from './actions'
 import { useToast } from '@/hooks/useToast'
 import Modal from '@/components/ui/Modal'
 
@@ -19,6 +19,34 @@ export default function PengaturanClient({ isAdmin, users, currentUserId, auditL
   const [showUserModal, setShowUserModal] = useState(false)
   const [editUser, setEditUser] = useState<UserData | null>(null)
   const [deleteId, setDeleteId] = useState<number | null>(null)
+
+  // Audit Logs pagination state
+  const [logs, setLogs] = useState<AuditLogData[]>(auditLogs)
+  const [hasMore, setHasMore] = useState(auditLogs.length === 20)
+  const [loadingLogs, setLoadingLogs] = useState(false)
+
+  const handleLoadMoreLogs = async () => {
+    if (loadingLogs) return
+    setLoadingLogs(true)
+    try {
+      const res = await getAuditLogs(logs.length, 20)
+      if (res.data) {
+        if (res.data.length > 0) {
+          setLogs(prev => [...prev, ...res.data])
+          if (res.data.length < 20) {
+            setHasMore(false)
+          }
+        } else {
+          setHasMore(false)
+        }
+      }
+    } catch (err) {
+      console.error('Gagal mengambil log audit:', err)
+      addToast('Gagal mengambil data log', 'error')
+    } finally {
+      setLoadingLogs(false)
+    }
+  }
 
   const handleUserSubmit = (formData: FormData) => {
     startTransition(async () => {
@@ -75,10 +103,10 @@ export default function PengaturanClient({ isAdmin, users, currentUserId, auditL
       )}
 
       {/* Log Audit (Admin Only) */}
-      {isAdmin && auditLogs.length > 0 && (
+      {isAdmin && logs.length > 0 && (
         <div className="card" style={{ marginTop: '24px' }}>
           <div className="card-header">
-            <h3>Log Audit Aktivitas Pengelola (50 Terakhir)</h3>
+            <h3>Log Audit Aktivitas Pengelola</h3>
           </div>
           <div className="table-container" style={{ border: 'none', borderRadius: 0, maxHeight: '350px', overflowY: 'auto' }}>
             <table className="table">
@@ -91,7 +119,7 @@ export default function PengaturanClient({ isAdmin, users, currentUserId, auditL
                 </tr>
               </thead>
               <tbody>
-                {auditLogs.map((log) => (
+                {logs.map((log) => (
                   <tr key={log.id}>
                     <td className="text-sm text-muted" style={{ whiteSpace: 'nowrap' }}>
                       {new Date(log.createdAt).toLocaleString('id-ID')}
@@ -108,6 +136,18 @@ export default function PengaturanClient({ isAdmin, users, currentUserId, auditL
               </tbody>
             </table>
           </div>
+          {hasMore && (
+            <div style={{ padding: '16px', display: 'flex', justifyContent: 'center', borderTop: '1px solid var(--color-border-light)' }}>
+              <button 
+                onClick={handleLoadMoreLogs} 
+                className="btn btn-secondary btn-sm" 
+                disabled={loadingLogs}
+                style={{ minWidth: '160px' }}
+              >
+                {loadingLogs ? 'Memuat...' : 'Muat Lebih Banyak'}
+              </button>
+            </div>
+          )}
         </div>
       )}
 
