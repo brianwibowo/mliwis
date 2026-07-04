@@ -2,6 +2,10 @@ import { MetadataRoute } from 'next'
 import { prisma } from '@/lib/prisma'
 import { LIST_FASILITAS, LIST_KULINER } from '@/lib/data-landing'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://pantai-mliwis.com'
 

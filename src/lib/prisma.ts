@@ -18,9 +18,9 @@ function createPrismaClient(): PrismaClient {
     user,
     password,
     database,
-    connectionLimit: 2,
-    idleTimeout: 10000, // Close idle connections after 10 seconds to free slots
-    acquireTimeout: 15000, // Allow 15 seconds to wait for a connection slot before throwing
+    connectionLimit: 1,
+    idleTimeout: 5000, // Close idle connections after 5 seconds to free slots
+    acquireTimeout: 10000, // Allow 10 seconds to wait for a connection slot before throwing
   })
 
   return new PrismaClient({ adapter })
