@@ -3454,29 +3454,42 @@ button {
   }
 
   .calendar-body-grid {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    /* Smooth iOS swipe support */
+    overflow-x: visible;
   }
 
   .calendar-weekdays,
   .calendar-days {
-    min-width: 620px;
-    /* Prevents squishing and clipping of dates */
+    min-width: 100%;
   }
 
   .calendar-day {
-    min-height: 60px;
+    min-height: 58px;
     padding: 4px;
+    justify-content: flex-start;
+    gap: 4px;
   }
 
   .day-number {
     font-size: var(--text-xs);
+    margin-bottom: 2px;
+  }
+
+  .available-indicator {
+    display: none !important;
   }
 
   .day-event-tag {
-    font-size: 8px;
-    padding: 1px 2px;
+    padding: 2px;
+    justify-content: center;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    align-self: center;
+  }
+
+  .day-event-tag .event-name {
+    display: none !important;
   }
 
   /* Auth Split Layout Mobile Collapsing */
