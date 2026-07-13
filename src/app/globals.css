@@ -1212,7 +1212,7 @@ button {
 }
 
 .surat-preview-tujuan {
-  margin-bottom: 24px;
+  margin-bottom: 8px;
   font-size: 12pt;
 }
 
@@ -1238,7 +1238,7 @@ button {
   text-indent: 48px;
   font-size: 12pt;
   line-height: 1.8;
-  margin-bottom: 32px;
+  margin-bottom: 8px;
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: pre-wrap;
@@ -1248,6 +1248,18 @@ button {
   display: flex;
   justify-content: flex-end;
   margin-top: 16px;
+}
+
+.surat-preview-ttd-double {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.surat-preview-ttd-center {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
 }
 
 .surat-preview-ttd-box {

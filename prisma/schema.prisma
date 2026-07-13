@@ -72,6 +72,18 @@ model SuratKeluar {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  // Fields for generated letter template
+  isiSurat              String?  @db.Text
+  tempatSurat           String?
+  tujuanAlamat          String?
+  lampiran              String?
+  namaPenandatangan     String?
+  jabatanPenandatangan  String?
+  namaPenandatangan2    String?
+  jabatanPenandatangan2 String?
+  namaPenandatangan3    String?
+  jabatanPenandatangan3 String?
+
   user User @relation(fields: [userId], references: [id])
 
   @@index([tanggalSurat])

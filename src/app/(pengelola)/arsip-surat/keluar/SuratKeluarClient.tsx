@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Pencil, Trash2, Download, Search, FileText, FilePlus2, ArrowLeft, Loader2, Eye } from 'lucide-react'
+import { Plus, Pencil, Trash2, Download, Search, FileText, FilePlus2, ArrowLeft, Loader2, Eye, FileDown } from 'lucide-react'
 import { createSuratKeluar, updateSuratKeluar, deleteSuratKeluar } from '../actions'
 import { formatTanggal } from '@/lib/format'
 import { useToast } from '@/hooks/useToast'
@@ -12,6 +12,16 @@ import Modal from '@/components/ui/Modal'
 interface SuratData {
   id: number; nomorSurat: string; tanggalSurat: string; pengirim: string; tujuan: string; perihal: string
   filePath: string | null; namaFile: string | null; user: { namaLengkap: string }
+  isiSurat?: string | null;
+  tempatSurat?: string | null;
+  tujuanAlamat?: string | null;
+  lampiran?: string | null;
+  namaPenandatangan?: string | null;
+  jabatanPenandatangan?: string | null;
+  namaPenandatangan2?: string | null;
+  jabatanPenandatangan2?: string | null;
+  namaPenandatangan3?: string | null;
+  jabatanPenandatangan3?: string | null;
 }
 
 interface Props {
@@ -30,8 +40,71 @@ function formatTanggalSurat(dateStr: string): string {
   return `${d.getDate()} ${NAMA_BULAN[d.getMonth()]} ${d.getFullYear()}`
 }
 
+function parseParagraphContent(text: string) {
+  const lines = text.split('\n');
+  const blocks: any[] = [];
+  let currentDetails: any[] = [];
+
+  for (const line of lines) {
+    const colonIndex = line.indexOf(':');
+    let isDetail = false;
+    let key = '';
+    let val = '';
+
+    if (colonIndex > 0) {
+      key = line.substring(0, colonIndex).trim();
+      val = line.substring(colonIndex + 1).trim();
+      if (key.length > 0 && key.length <= 25 && val.length > 0) {
+        const firstWord = key.split(' ')[0].toLowerCase();
+        const commonParagraphWords = ['dengan', 'bahwa', 'sehubungan', 'kami', 'saya', 'adalah'];
+        if (!commonParagraphWords.includes(firstWord)) {
+          isDetail = true;
+        }
+      }
+    }
+
+    if (isDetail) {
+      currentDetails.push({ key, value: val });
+    } else {
+      if (currentDetails.length > 0) {
+        blocks.push({ type: 'details', items: currentDetails });
+        currentDetails = [];
+      }
+      blocks.push({ type: 'text', content: line });
+    }
+  }
+
+  if (currentDetails.length > 0) {
+    blocks.push({ type: 'details', items: currentDetails });
+  }
+
+  return blocks;
+}
+
+function capitalizeWords(str: string): string {
+  if (!str) return ''
+  const prepositions = ['di', 'ke', 'yang', 'dan', 'untuk', 'dari', 'pada', 'dengan']
+  return str
+    .split(' ')
+    .map((word, index) => {
+      if (!word) return ''
+      const cleanedWord = word.toLowerCase()
+      if (index > 0 && prepositions.includes(cleanedWord)) {
+        return cleanedWord
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1)
+    })
+    .join(' ')
+}
+
+function capitalizeParagraph(str: string): string {
+  if (!str) return ''
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
 // Default values untuk form template surat
 interface TemplateSuratForm {
+  id?: number
   nomorSurat: string
   lampiran: string
   perihal: string
@@ -42,6 +115,10 @@ interface TemplateSuratForm {
   isiSurat: string
   namaPenandatangan: string
   jabatanPenandatangan: string
+  namaPenandatangan2: string
+  jabatanPenandatangan2: string
+  namaPenandatangan3: string
+  jabatanPenandatangan3: string
 }
 
 const defaultTemplateForm: TemplateSuratForm = {
@@ -55,6 +132,10 @@ const defaultTemplateForm: TemplateSuratForm = {
   isiSurat: '',
   namaPenandatangan: '',
   jabatanPenandatangan: 'Ketua Pokdarwis',
+  namaPenandatangan2: '',
+  jabatanPenandatangan2: '',
+  namaPenandatangan3: '',
+  jabatanPenandatangan3: '',
 }
 
 export default function SuratKeluarClient({ initialData, currentSearch, currentPage }: Props) {
@@ -70,6 +151,7 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
   const [showTemplateModal, setShowTemplateModal] = useState(false)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
   const [templateForm, setTemplateForm] = useState<TemplateSuratForm>({ ...defaultTemplateForm })
+  const [activeSignaturesCount, setActiveSignaturesCount] = useState(1)
   const [isGenerating, setIsGenerating] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
@@ -81,6 +163,15 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
 
   const handleSubmit = async (formData: FormData) => {
     // Client-side file size and type validation
+    // Capitalize fields in manual archive form
+    const tujuanManual = formData.get('tujuan') as string
+    const perihalManual = formData.get('perihal') as string
+    const pengirimManual = formData.get('pengirim') as string
+    
+    if (tujuanManual) formData.set('tujuan', capitalizeWords(tujuanManual))
+    if (perihalManual) formData.set('perihal', capitalizeWords(perihalManual))
+    if (pengirimManual) formData.set('pengirim', capitalizeWords(pengirimManual))
+
     const file = formData.get('file') as File | null
     if (file && file.size > 0) {
       if (file.size > 20 * 1024 * 1024) {
@@ -138,11 +229,21 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
   // ==================== TEMPLATE SURAT HANDLERS ====================
 
   const updateTemplateField = (field: keyof TemplateSuratForm, value: string) => {
-    setTemplateForm(prev => ({ ...prev, [field]: value }))
+    let formattedValue = value
+    if (field === 'isiSurat') {
+      formattedValue = capitalizeParagraph(value)
+    } else if (
+      field !== 'tanggalSurat' && 
+      field !== 'id'
+    ) {
+      formattedValue = capitalizeWords(value)
+    }
+    setTemplateForm(prev => ({ ...prev, [field]: formattedValue }))
   }
 
   const handleOpenTemplate = () => {
     setTemplateForm({ ...defaultTemplateForm })
+    setActiveSignaturesCount(1)
     setShowTemplateModal(true)
   }
 
@@ -152,7 +253,32 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
     if (!templateForm.perihal.trim()) { addToast('Perihal wajib diisi', 'error'); return }
     if (!templateForm.tujuan.trim()) { addToast('Tujuan/Kepada wajib diisi', 'error'); return }
     if (!templateForm.isiSurat.trim()) { addToast('Isi surat wajib diisi', 'error'); return }
-    if (!templateForm.namaPenandatangan.trim()) { addToast('Nama penandatangan wajib diisi', 'error'); return }
+    if (!templateForm.namaPenandatangan.trim()) { addToast('Nama penandatangan 1 wajib diisi', 'error'); return }
+
+    if (activeSignaturesCount >= 2 && !templateForm.namaPenandatangan2.trim()) {
+      addToast('Nama penandatangan 2 wajib diisi', 'error');
+      return;
+    }
+    if (activeSignaturesCount === 3 && !templateForm.namaPenandatangan3.trim()) {
+      addToast('Nama penandatangan 3 wajib diisi', 'error');
+      return;
+    }
+
+    // Capitalize inputs automatically
+    setTemplateForm(prev => ({
+      ...prev,
+      perihal: capitalizeWords(prev.perihal),
+      tujuan: capitalizeWords(prev.tujuan),
+      tujuanAlamat: capitalizeWords(prev.tujuanAlamat),
+      tempatSurat: capitalizeWords(prev.tempatSurat),
+      lampiran: capitalizeWords(prev.lampiran),
+      namaPenandatangan: capitalizeWords(prev.namaPenandatangan),
+      jabatanPenandatangan: capitalizeWords(prev.jabatanPenandatangan),
+      namaPenandatangan2: prev.namaPenandatangan2 ? capitalizeWords(prev.namaPenandatangan2) : '',
+      jabatanPenandatangan2: prev.jabatanPenandatangan2 ? capitalizeWords(prev.jabatanPenandatangan2) : '',
+      namaPenandatangan3: prev.namaPenandatangan3 ? capitalizeWords(prev.namaPenandatangan3) : '',
+      jabatanPenandatangan3: prev.jabatanPenandatangan3 ? capitalizeWords(prev.jabatanPenandatangan3) : '',
+    }))
 
     setShowTemplateModal(false)
     setShowPreviewModal(true)
@@ -163,33 +289,94 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
     setShowTemplateModal(true)
   }
 
-  const handleDownloadPDF = async () => {
+  const handleSaveLetter = async (openNewTab = true) => {
     setIsGenerating(true)
     try {
+      // Filter payload based on active signatures count
+      const payload = {
+        ...templateForm,
+        namaPenandatangan2: activeSignaturesCount >= 2 ? templateForm.namaPenandatangan2 : '',
+        jabatanPenandatangan2: activeSignaturesCount >= 2 ? templateForm.jabatanPenandatangan2 : '',
+        namaPenandatangan3: activeSignaturesCount === 3 ? templateForm.namaPenandatangan3 : '',
+        jabatanPenandatangan3: activeSignaturesCount === 3 ? templateForm.jabatanPenandatangan3 : '',
+      }
+
       const response = await fetch('/api/arsip-surat/generate-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(templateForm),
+        body: JSON.stringify(payload),
       })
 
       const result = await response.json()
 
       if (!response.ok) {
-        throw new Error(result.error || 'Gagal meng-generate PDF')
+        throw new Error(result.error || 'Gagal menyimpan surat')
       }
 
-      // Buka PDF yang sudah tersimpan di server/cloud di tab baru
-      window.open(result.filePath, '_blank')
+      if (openNewTab) {
+        // Buka PDF yang sudah tersimpan di server/cloud di tab baru
+        window.open(result.filePath, '_blank')
+        addToast('Surat berhasil disimpan ke arsip dan diunduh!', 'success')
+      } else {
+        addToast('Surat berhasil disimpan ke arsip!', 'success')
+      }
 
-      addToast('Surat berhasil di-generate dan tersimpan di arsip!', 'success')
       setShowPreviewModal(false)
       setTemplateForm({ ...defaultTemplateForm })
+      setEditData(null)
+      setActiveSignaturesCount(1)
       router.refresh()
     } catch (err: any) {
-      console.error('Gagal generate PDF:', err)
-      addToast(err.message || 'Gagal meng-generate PDF surat', 'error')
+      console.error('Gagal menyimpan surat:', err)
+      addToast(err.message || 'Gagal menyimpan surat', 'error')
     } finally {
       setIsGenerating(false)
+    }
+  }
+
+  const handleDownloadDocx = async () => {
+    try {
+      const { generateAndDownloadDocx } = await import('./docxGenerator')
+      await generateAndDownloadDocx(templateForm, activeSignaturesCount)
+      addToast('File Word (DOCX) berhasil diunduh!', 'success')
+    } catch (err: any) {
+      console.error('Gagal generate Word:', err)
+      addToast('Gagal men-generate file Word (DOCX)', 'error')
+    }
+  }
+
+  const handleEditClick = (s: SuratData) => {
+    if (s.isiSurat) {
+      setEditData(s)
+      setTemplateForm({
+        id: s.id,
+        nomorSurat: s.nomorSurat,
+        lampiran: s.lampiran || '-',
+        perihal: s.perihal,
+        tanggalSurat: s.tanggalSurat.substring(0, 10),
+        tempatSurat: s.tempatSurat || 'Kebumen',
+        tujuan: s.tujuan,
+        tujuanAlamat: s.tujuanAlamat || '',
+        isiSurat: s.isiSurat || '',
+        namaPenandatangan: s.namaPenandatangan || '',
+        jabatanPenandatangan: s.jabatanPenandatangan || '',
+        namaPenandatangan2: s.namaPenandatangan2 || '',
+        jabatanPenandatangan2: s.jabatanPenandatangan2 || '',
+        namaPenandatangan3: s.namaPenandatangan3 || '',
+        jabatanPenandatangan3: s.jabatanPenandatangan3 || '',
+      })
+      
+      if (s.namaPenandatangan3) {
+        setActiveSignaturesCount(3)
+      } else if (s.namaPenandatangan2) {
+        setActiveSignaturesCount(2)
+      } else {
+        setActiveSignaturesCount(1)
+      }
+      setShowTemplateModal(true)
+    } else {
+      setEditData(s)
+      setShowModal(true)
     }
   }
 
@@ -235,7 +422,7 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
                   <td>{s.filePath ? <a href={s.filePath} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm"><Download size={14} /></a> : <span className="text-muted text-xs">—</span>}</td>
                   <td>
                     <div className="table-actions">
-                      <button className="btn btn-ghost btn-sm btn-icon" onClick={() => { setEditData(s); setShowModal(true) }}><Pencil size={14} /></button>
+                      <button className="btn btn-ghost btn-sm btn-icon" onClick={() => handleEditClick(s)}><Pencil size={14} /></button>
                       <button className="btn btn-ghost btn-sm btn-icon text-danger" onClick={() => setDeleteId(s.id)}><Trash2 size={14} /></button>
                     </div>
                   </td>
@@ -260,9 +447,9 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
             <div className="form-group"><label className="form-label">Nomor Surat <span className="required">*</span></label><input name="nomorSurat" className="form-input" defaultValue={editData?.nomorSurat} required /></div>
             <div className="form-group"><label className="form-label">Tanggal Surat <span className="required">*</span></label><input name="tanggalSurat" type="date" className="form-input" defaultValue={editData?.tanggalSurat?.split('T')[0]} required /></div>
           </div>
-          <div className="form-group"><label className="form-label">Pengirim <span className="required">*</span></label><input name="pengirim" className="form-input" defaultValue={editData?.pengirim || 'Pengelola Pantai Mliwis'} required /></div>
-          <div className="form-group"><label className="form-label">Tujuan <span className="required">*</span></label><input name="tujuan" className="form-input" defaultValue={editData?.tujuan} required /></div>
-          <div className="form-group"><label className="form-label">Perihal <span className="required">*</span></label><textarea name="perihal" className="form-textarea" defaultValue={editData?.perihal} required /></div>
+          <div className="form-group"><label className="form-label">Pengirim <span className="required">*</span></label><input name="pengirim" className="form-input" defaultValue={editData?.pengirim || 'Pengelola Pantai Mliwis'} style={{ textTransform: 'capitalize' }} required /></div>
+          <div className="form-group"><label className="form-label">Tujuan <span className="required">*</span></label><input name="tujuan" className="form-input" defaultValue={editData?.tujuan} style={{ textTransform: 'capitalize' }} required /></div>
+          <div className="form-group"><label className="form-label">Perihal <span className="required">*</span></label><textarea name="perihal" className="form-textarea" defaultValue={editData?.perihal} style={{ textTransform: 'capitalize', minHeight: '80px' }} required /></div>
           <div className="form-group"><label className="form-label">File Lampiran</label><input name="file" type="file" className="form-input" accept=".pdf,.jpg,.jpeg,.png,.heic,.heif" /><p className="form-hint">Format: PDF, JPG, PNG, HEIC, HEIF. Maks 10MB.</p>{editData?.namaFile && <p className="form-hint">File saat ini: {editData.namaFile}</p>}</div>
           <div className="flex-end gap-3"><button type="button" className="btn btn-ghost" onClick={() => { setShowModal(false); setEditData(null) }}>Batal</button><button type="submit" className="btn btn-primary" disabled={isPending}>{isPending ? 'Menyimpan...' : 'Simpan'}</button></div>
         </form>
@@ -293,6 +480,7 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
                 className="form-input"
                 placeholder="Contoh: 1 Berkas"
                 value={templateForm.lampiran}
+                style={{ textTransform: 'capitalize' }}
                 onChange={(e) => updateTemplateField('lampiran', e.target.value)}
               />
             </div>
@@ -314,6 +502,7 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
                 className="form-input"
                 placeholder="Kebumen"
                 value={templateForm.tempatSurat}
+                style={{ textTransform: 'capitalize' }}
                 onChange={(e) => updateTemplateField('tempatSurat', e.target.value)}
               />
             </div>
@@ -325,6 +514,7 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
               className="form-input"
               placeholder="Contoh: Undangan Rapat Koordinasi"
               value={templateForm.perihal}
+              style={{ textTransform: 'capitalize' }}
               onChange={(e) => updateTemplateField('perihal', e.target.value)}
             />
           </div>
@@ -336,6 +526,7 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
                 className="form-input"
                 placeholder="Contoh: Seluruh Anggota Pokdarwis"
                 value={templateForm.tujuan}
+                style={{ textTransform: 'capitalize' }}
                 onChange={(e) => updateTemplateField('tujuan', e.target.value)}
               />
             </div>
@@ -345,6 +536,7 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
                 className="form-input"
                 placeholder="Contoh: Tempat"
                 value={templateForm.tujuanAlamat}
+                style={{ textTransform: 'capitalize' }}
                 onChange={(e) => updateTemplateField('tujuanAlamat', e.target.value)}
               />
               <p className="form-hint">Opsional. Akan tampil sebagai &ldquo;di [alamat]&rdquo;</p>
@@ -364,24 +556,118 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
             <p className="form-hint">Gunakan Enter 2 kali untuk membuat paragraf baru. Setiap paragraf akan otomatis diindentasi.</p>
           </div>
 
-          <div className="form-row">
-            <div className="form-group" style={{ flex: 1 }}>
-              <label className="form-label">Nama Penandatangan <span className="required">*</span></label>
-              <input
-                className="form-input"
-                placeholder="Contoh: Warni"
-                value={templateForm.namaPenandatangan}
-                onChange={(e) => updateTemplateField('namaPenandatangan', e.target.value)}
-              />
+          {/* Tanda Tangan Section */}
+          <div style={{ borderTop: '1px solid var(--color-border-subtle)', paddingTop: '16px', marginTop: '16px' }}>
+            <h4 style={{ color: 'var(--color-primary-950)', marginBottom: '12px', fontWeight: 600 }}>Pengaturan Tanda Tangan</h4>
+            
+            {/* TTD 1 (Wajib) */}
+            <div className="form-row" style={{ marginBottom: '16px' }}>
+              <div className="form-group" style={{ flex: 1 }}>
+                <label className="form-label">Nama Penandatangan 1 <span className="required">*</span></label>
+                <input
+                  className="form-input"
+                  placeholder="Contoh: Warni"
+                  value={templateForm.namaPenandatangan}
+                  style={{ textTransform: 'capitalize' }}
+                  onChange={(e) => updateTemplateField('namaPenandatangan', e.target.value)}
+                />
+              </div>
+              <div className="form-group" style={{ flex: 1 }}>
+                <label className="form-label">Jabatan Penandatangan 1</label>
+                <input
+                  className="form-input"
+                  placeholder="Contoh: Ketua Pokdarwis"
+                  value={templateForm.jabatanPenandatangan}
+                  style={{ textTransform: 'capitalize' }}
+                  onChange={(e) => updateTemplateField('jabatanPenandatangan', e.target.value)}
+                />
+              </div>
             </div>
-            <div className="form-group" style={{ flex: 1 }}>
-              <label className="form-label">Jabatan Penandatangan</label>
-              <input
-                className="form-input"
-                placeholder="Contoh: Ketua Pokdarwis"
-                value={templateForm.jabatanPenandatangan}
-                onChange={(e) => updateTemplateField('jabatanPenandatangan', e.target.value)}
-              />
+
+            {/* TTD 2 (Opsional) */}
+            {activeSignaturesCount >= 2 && (
+              <div className="form-row" style={{ marginBottom: '16px', padding: '12px', backgroundColor: 'var(--color-surface-alt)', borderRadius: '12px' }}>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label className="form-label">Nama Penandatangan 2 <span className="required">*</span></label>
+                  <input
+                    className="form-input"
+                    placeholder="Contoh: Budi"
+                    value={templateForm.namaPenandatangan2}
+                    style={{ textTransform: 'capitalize' }}
+                    onChange={(e) => updateTemplateField('namaPenandatangan2', e.target.value)}
+                  />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label className="form-label">Jabatan Penandatangan 2</label>
+                  <input
+                    className="form-input"
+                    placeholder="Contoh: Sekretaris"
+                    value={templateForm.jabatanPenandatangan2}
+                    style={{ textTransform: 'capitalize' }}
+                    onChange={(e) => updateTemplateField('jabatanPenandatangan2', e.target.value)}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* TTD 3 (Opsional) */}
+            {activeSignaturesCount === 3 && (
+              <div className="form-row" style={{ marginBottom: '16px', padding: '12px', backgroundColor: 'var(--color-surface-alt)', borderRadius: '12px' }}>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label className="form-label">Nama Penandatangan 3 <span className="required">*</span></label>
+                  <input
+                    className="form-input"
+                    placeholder="Contoh: Surip"
+                    value={templateForm.namaPenandatangan3}
+                    style={{ textTransform: 'capitalize' }}
+                    onChange={(e) => updateTemplateField('namaPenandatangan3', e.target.value)}
+                  />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label className="form-label">Jabatan Penandatangan 3</label>
+                  <input
+                    className="form-input"
+                    placeholder="Contoh: Kepala Desa Kenoyojayan"
+                    value={templateForm.jabatanPenandatangan3}
+                    style={{ textTransform: 'capitalize' }}
+                    onChange={(e) => updateTemplateField('jabatanPenandatangan3', e.target.value)}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Add / Remove Buttons */}
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+              {activeSignaturesCount < 3 && (
+                <button
+                  type="button"
+                  className="btn btn-sm btn-ghost"
+                  onClick={() => setActiveSignaturesCount(prev => prev + 1)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--color-primary-600)', padding: '4px 8px', fontSize: '0.825rem' }}
+                >
+                  + Tambah Tanda Tangan ({activeSignaturesCount}/3)
+                </button>
+              )}
+              {activeSignaturesCount > 1 && (
+                <button
+                  type="button"
+                  className="btn btn-sm btn-ghost"
+                  onClick={() => {
+                    setActiveSignaturesCount(prev => prev - 1);
+                    // Reset field of removed signature
+                    if (activeSignaturesCount === 3) {
+                      updateTemplateField('namaPenandatangan3', '');
+                      updateTemplateField('jabatanPenandatangan3', '');
+                    } else if (activeSignaturesCount === 2) {
+                      updateTemplateField('namaPenandatangan2', '');
+                      updateTemplateField('jabatanPenandatangan2', '');
+                    }
+                  }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--color-danger)', padding: '4px 8px', fontSize: '0.825rem' }}
+                >
+                  - Hapus Tanda Tangan Terakhir
+                </button>
+              )}
             </div>
           </div>
 
@@ -408,9 +694,11 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logo_mliwis.jpg" alt="Logo" />
               <div className="surat-preview-kop-text">
-                <h2>Pemerintah Kabupaten Kebumen</h2>
-                <h3>Pengelola Obyek Wisata Pantai Mliwis</h3>
-                <p>Kecamatan Ambal, Kabupaten Kebumen, Jawa Tengah</p>
+                <h2>PEMERINTAH DESA KENOYOJAYAN</h2>
+                <h3>KELOMPOK SADAR WISATA (POKDARWIS) “PANTAI MLIWIS”</h3>
+                <p style={{ fontWeight: 'bold', color: '#1a1a1a', margin: '2px 0 0' }}>Desa Kenoyojayan Kecamatan Ambal</p>
+                <p style={{ fontWeight: 'bold', color: '#1a1a1a', margin: '2px 0 0' }}>Kabupaten Kebumen Provinsi Jawa Tengah</p>
+                <p style={{ fontSize: '8.5pt', color: '#1a1a1a', margin: '3px 0 0' }}>Sekretariat: Kawasan Wisata Pantai Mliwis, Desa Kenoyojayan, Ambal, Kebumen 54392</p>
               </div>
             </div>
 
@@ -452,27 +740,114 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
             </div>
 
             {/* Isi Surat */}
-            <div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {templateForm.isiSurat
                 .split(/\n\s*\n/)
                 .map(p => p.trim())
                 .filter(p => p.length > 0)
-                .map((para, index) => (
-                  <div key={index} className="surat-preview-body">
-                    {para}
-                  </div>
-                ))}
+                .map((para, index) => {
+                  const blocks = parseParagraphContent(para)
+                  return (
+                    <div key={index} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      {blocks.map((block: any, bIdx: number) => {
+                        if (block.type === 'text') {
+                          return (
+                            <div 
+                              key={bIdx} 
+                              style={{ 
+                                textAlign: 'justify', 
+                                fontSize: '12pt', 
+                                lineHeight: '1.8',
+                                textIndent: bIdx === 0 ? '48px' : '0px',
+                                whiteSpace: 'pre-wrap',
+                                wordWrap: 'break-word',
+                                overflowWrap: 'break-word'
+                              }}
+                            >
+                              {block.content}
+                            </div>
+                          )
+                        } else {
+                          return (
+                            <div 
+                              key={bIdx} 
+                              style={{ 
+                                margin: '6px 0 6px 48px', 
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                gap: '2px' 
+                              }}
+                            >
+                              {block.items.map((item: any, idx: number) => (
+                                <div key={idx} style={{ display: 'flex', fontSize: '12pt', lineHeight: '1.8' }}>
+                                  <div style={{ width: '110px', flexShrink: 0 }}>{item.key}</div>
+                                  <div style={{ width: '15px', flexShrink: 0 }}>:</div>
+                                  <div style={{ flex: 1 }}>{item.value}</div>
+                                </div>
+                              ))}
+                            </div>
+                          )
+                        }
+                      })}
+                    </div>
+                  )
+                })}
             </div>
 
             {/* Tanda Tangan */}
-            <div className="surat-preview-ttd">
-              <div className="surat-preview-ttd-box">
-                <div className="ttd-tempat-tanggal">
-                  {templateForm.tempatSurat}, {formatTanggalSurat(templateForm.tanggalSurat)}
+            <div>
+              {activeSignaturesCount === 1 ? (
+                // Kasus 1: Hanya 1 Tanda Tangan (Rata Kanan)
+                <div className="surat-preview-ttd">
+                  <div className="surat-preview-ttd-box">
+                    <div className="ttd-tempat-tanggal">
+                      {templateForm.tempatSurat}, {formatTanggalSurat(templateForm.tanggalSurat)}
+                    </div>
+                    <div className="ttd-jabatan">{templateForm.jabatanPenandatangan}</div>
+                    <div className="ttd-nama">{templateForm.namaPenandatangan}</div>
+                  </div>
                 </div>
-                <div className="ttd-jabatan">{templateForm.jabatanPenandatangan}</div>
-                <div className="ttd-nama">{templateForm.namaPenandatangan}</div>
-              </div>
+              ) : activeSignaturesCount === 2 ? (
+                // Kasus 2: 2 Tanda Tangan (Sejajar Kiri & Kanan)
+                <div className="surat-preview-ttd-double">
+                  <div className="surat-preview-ttd-box">
+                    <div className="ttd-tempat-tanggal" style={{ visibility: 'hidden' }}>&nbsp;</div>
+                    <div className="ttd-jabatan">{templateForm.jabatanPenandatangan2}</div>
+                    <div className="ttd-nama">{templateForm.namaPenandatangan2}</div>
+                  </div>
+                  <div className="surat-preview-ttd-box">
+                    <div className="ttd-tempat-tanggal">
+                      {templateForm.tempatSurat}, {formatTanggalSurat(templateForm.tanggalSurat)}
+                    </div>
+                    <div className="ttd-jabatan">{templateForm.jabatanPenandatangan}</div>
+                    <div className="ttd-nama">{templateForm.namaPenandatangan}</div>
+                  </div>
+                </div>
+              ) : (
+                // Kasus 3: 3 Tanda Tangan (Baris 1: Kiri & Kanan, Baris 2: Tengah Bawah)
+                <div>
+                  <div className="surat-preview-ttd-double">
+                    <div className="surat-preview-ttd-box">
+                      <div className="ttd-tempat-tanggal" style={{ visibility: 'hidden' }}>&nbsp;</div>
+                      <div className="ttd-jabatan">{templateForm.jabatanPenandatangan2}</div>
+                      <div className="ttd-nama">{templateForm.namaPenandatangan2}</div>
+                    </div>
+                    <div className="surat-preview-ttd-box">
+                      <div className="ttd-tempat-tanggal">
+                        {templateForm.tempatSurat}, {formatTanggalSurat(templateForm.tanggalSurat)}
+                      </div>
+                      <div className="ttd-jabatan">{templateForm.jabatanPenandatangan}</div>
+                      <div className="ttd-nama">{templateForm.namaPenandatangan}</div>
+                    </div>
+                  </div>
+                  <div className="surat-preview-ttd-center">
+                    <div className="surat-preview-ttd-box">
+                      <div className="ttd-jabatan">{templateForm.jabatanPenandatangan3}</div>
+                      <div className="ttd-nama">{templateForm.namaPenandatangan3}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -487,21 +862,39 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
           >
             <ArrowLeft size={16} /> Kembali Edit
           </button>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={handleDownloadPDF}
-            disabled={isGenerating || isSaving}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-          >
-            {isGenerating ? (
-              <><Loader2 size={16} className="animate-spin" /> Membuat PDF...</>
-            ) : isSaving ? (
-              <><Loader2 size={16} className="animate-spin" /> Menyimpan Arsip...</>
-            ) : (
-              <><Download size={16} /> Download PDF</>
-            )}
-          </button>
+          
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={handleDownloadDocx}
+              style={{ borderColor: 'var(--color-border-subtle)', color: 'var(--color-primary-600)', display: 'flex', alignItems: 'center', gap: '6px' }}
+            >
+              <FileDown size={16} /> Download Word (DOCX)
+            </button>
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => handleSaveLetter(false)}
+              disabled={isGenerating || isSaving}
+              style={{ borderColor: 'var(--color-border-subtle)' }}
+            >
+              {isGenerating ? 'Memproses...' : 'Simpan saja'}
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => handleSaveLetter(true)}
+              disabled={isGenerating || isSaving}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+            >
+              {isGenerating ? (
+                <><Loader2 size={16} className="animate-spin" /> Menyimpan...</>
+              ) : (
+                <><Download size={16} /> Simpan & Buka PDF</>
+              )}
+            </button>
+          </div>
         </div>
       </Modal>
     </div>

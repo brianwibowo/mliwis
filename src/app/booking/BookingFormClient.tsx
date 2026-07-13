@@ -129,6 +129,17 @@ export default function BookingFormClient({ fasilitas }: { fasilitas: Fasilitas[
   const searchParams = useSearchParams()
   const queryKode = searchParams ? searchParams.get('kode') || '' : ''
 
+  // Slideshow background state for hero section
+  const heroImages = ['/mliwis_fotbar1.webp', '/mliwis_fotbar2.webp']
+  const [bgIndex, setBgIndex] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setBgIndex((prev) => (prev + 1) % heroImages.length)
+    }, 5000)
+    return () => clearInterval(timer)
+  }, [])
+
   const [isPending, startTransition] = useTransition()
   const [result, setResult] = useState<{ 
     kodeBooking: string
@@ -833,18 +844,36 @@ Mohon bantuan untuk melakukan verifikasi pemesanan kami. Terima kasih!`
         style={{
           position: 'relative',
           height: '100vh',
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url("/mahasiswa di mliwis.jpg")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           textAlign: 'center',
           color: 'white',
           padding: '0 24px',
+          overflow: 'hidden',
         }}
       >
-        <div style={{ maxWidth: '800px', marginTop: '60px' }}>
+        {/* Slideshow Backgrounds */}
+        {heroImages.map((img, idx) => (
+          <div
+            key={img}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.65)), url("${img}")`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              opacity: bgIndex === idx ? 1 : 0,
+              transition: 'opacity 1s ease-in-out',
+              zIndex: 0,
+            }}
+          />
+        ))}
+
+        <div style={{ maxWidth: '800px', marginTop: '60px', position: 'relative', zIndex: 1 }}>
           <span
             style={{
               display: 'inline-flex',

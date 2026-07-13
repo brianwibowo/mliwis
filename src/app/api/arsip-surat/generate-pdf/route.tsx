@@ -9,8 +9,8 @@ import path from 'path';
 // ============================================================
 const styles = StyleSheet.create({
   page: {
-    padding: 50,
-    paddingBottom: 60,
+    padding: 40,
+    paddingBottom: 40,
     fontFamily: 'Times-Roman',
     fontSize: 12,
     color: '#1a1a1a',
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#000000',
     borderBottomStyle: 'solid',
     paddingBottom: 10,
-    marginBottom: 24,
+    marginBottom: 15,
     alignItems: 'center',
   },
   logo: {
@@ -36,30 +36,42 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  titleKab: {
+  headerLine1: {
     fontSize: 13,
     fontFamily: 'Times-Bold',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    color: '#0f172a',
+    color: '#000000',
   },
-  titleObj: {
-    fontSize: 15,
+  headerLine2: {
+    fontSize: 14,
     fontFamily: 'Times-Bold',
     textTransform: 'uppercase',
-    color: '#0f172a',
+    color: '#000000',
     marginTop: 2,
   },
-  titleSub: {
-    fontSize: 10,
-    color: '#475569',
+  headerLine3: {
+    fontSize: 11,
+    fontFamily: 'Times-Bold',
+    color: '#000000',
+    marginTop: 2,
+  },
+  headerLine4: {
+    fontSize: 11,
+    fontFamily: 'Times-Bold',
+    color: '#000000',
+    marginTop: 2,
+  },
+  headerLine5: {
+    fontSize: 8.5,
+    fontFamily: 'Times-Roman',
+    color: '#000000',
     marginTop: 3,
   },
   // -- Detail Surat (Nomor, Lamp, Perihal + Tanggal) --
   metaContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 12,
   },
   metaLeft: {
     flex: 1,
@@ -88,7 +100,7 @@ const styles = StyleSheet.create({
   },
   // -- Tujuan --
   tujuanContainer: {
-    marginBottom: 20,
+    marginBottom: 8,
   },
   tujuanLabel: {
     fontSize: 12,
@@ -107,20 +119,53 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 1.8,
     textAlign: 'justify',
-    marginBottom: 12,
   },
   bodyParagraph: {
     fontSize: 12,
     lineHeight: 1.8,
     textAlign: 'justify',
+    marginBottom: 6,
+  },
+  bodyTextIndent: {
     textIndent: 48,
-    marginBottom: 8,
+  },
+  detailsBlock: {
+    marginLeft: 48,
+    marginBottom: 6,
+    flexDirection: 'column',
+    gap: 2,
+  },
+  detailsRow: {
+    flexDirection: 'row',
+    fontSize: 12,
+    lineHeight: 1.8,
+  },
+  detailsKey: {
+    width: 110,
+    flexShrink: 0,
+  },
+  detailsColon: {
+    width: 15,
+    flexShrink: 0,
+  },
+  detailsValue: {
+    flex: 1,
   },
   // -- Penutup / TTD --
   signatureContainer: {
-    marginTop: 24,
+    marginTop: 16,
     flexDirection: 'row',
     justifyContent: 'flex-end',
+  },
+  signatureContainerDouble: {
+    marginTop: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  signatureContainerCenter: {
+    marginTop: 16,
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   signatureBox: {
     width: 220,
@@ -129,10 +174,11 @@ const styles = StyleSheet.create({
   signDate: {
     fontSize: 12,
     marginBottom: 4,
+    minHeight: 18,
   },
   signRole: {
     fontSize: 12,
-    marginBottom: 60,
+    marginBottom: 45,
   },
   signName: {
     fontSize: 12,
@@ -150,6 +196,7 @@ const styles = StyleSheet.create({
 // PDF Document Component
 // ============================================================
 interface SuratData {
+  id?: number;
   nomorSurat: string;
   lampiran: string;
   perihal: string;
@@ -160,6 +207,10 @@ interface SuratData {
   isiSurat: string;
   namaPenandatangan: string;
   jabatanPenandatangan: string;
+  namaPenandatangan2?: string;
+  jabatanPenandatangan2?: string;
+  namaPenandatangan3?: string;
+  jabatanPenandatangan3?: string;
 }
 
 const NAMA_BULAN = [
@@ -172,10 +223,50 @@ function formatTanggalSurat(dateStr: string): string {
   return `${d.getDate()} ${NAMA_BULAN[d.getMonth()]} ${d.getFullYear()}`;
 }
 
+function parseParagraphContent(text: string) {
+  const lines = text.split('\n');
+  const blocks: any[] = [];
+  let currentDetails: any[] = [];
+
+  for (const line of lines) {
+    const colonIndex = line.indexOf(':');
+    let isDetail = false;
+    let key = '';
+    let val = '';
+
+    if (colonIndex > 0) {
+      key = line.substring(0, colonIndex).trim();
+      val = line.substring(colonIndex + 1).trim();
+      if (key.length > 0 && key.length <= 25 && val.length > 0) {
+        const firstWord = key.split(' ')[0].toLowerCase();
+        const commonParagraphWords = ['dengan', 'bahwa', 'sehubungan', 'kami', 'saya', 'adalah'];
+        if (!commonParagraphWords.includes(firstWord)) {
+          isDetail = true;
+        }
+      }
+    }
+
+    if (isDetail) {
+      currentDetails.push({ key, value: val });
+    } else {
+      if (currentDetails.length > 0) {
+        blocks.push({ type: 'details', items: currentDetails });
+        currentDetails = [];
+      }
+      blocks.push({ type: 'text', content: line });
+    }
+  }
+
+  if (currentDetails.length > 0) {
+    blocks.push({ type: 'details', items: currentDetails });
+  }
+
+  return blocks;
+}
+
 const SuratPDFDocument = ({ data, logoPath, hasLogo }: { data: SuratData; logoPath: string; hasLogo: boolean }) => {
   const tanggalFormatted = formatTanggalSurat(data.tanggalSurat);
 
-  // Split isi surat into paragraphs on double newline, or treat each line as a paragraph
   const paragraphs = data.isiSurat
     .split(/\n\s*\n/)
     .map(p => p.trim())
@@ -188,9 +279,11 @@ const SuratPDFDocument = ({ data, logoPath, hasLogo }: { data: SuratData; logoPa
         <View style={styles.headerContainer} fixed>
           {hasLogo && <Image src={logoPath} style={styles.logo} />}
           <View style={styles.headerText}>
-            <Text style={styles.titleKab}>Pemerintah Kabupaten Kebumen</Text>
-            <Text style={styles.titleObj}>Pengelola Obyek Wisata Pantai Mliwis</Text>
-            <Text style={styles.titleSub}>Kecamatan Ambal, Kabupaten Kebumen, Jawa Tengah</Text>
+            <Text style={styles.headerLine1}>PEMERINTAH DESA KENOYOJAYAN</Text>
+            <Text style={styles.headerLine2}>KELOMPOK SADAR WISATA (POKDARWIS) “PANTAI MLIWIS”</Text>
+            <Text style={styles.headerLine3}>Desa Kenoyojayan Kecamatan Ambal</Text>
+            <Text style={styles.headerLine4}>Kabupaten Kebumen Provinsi Jawa Tengah</Text>
+            <Text style={styles.headerLine5}>Sekretariat: Kawasan Wisata Pantai Mliwis, Desa Kenoyojayan, Ambal, Kebumen 54392</Text>
           </View>
         </View>
 
@@ -229,20 +322,87 @@ const SuratPDFDocument = ({ data, logoPath, hasLogo }: { data: SuratData; logoPa
 
         {/* Isi Surat */}
         <View>
-          {paragraphs.map((para, index) => (
-            <Text key={index} style={styles.bodyParagraph}>
-              {para}
-            </Text>
-          ))}
+          {paragraphs.map((para, index) => {
+            const blocks = parseParagraphContent(para);
+            return (
+              <View key={index} style={{ marginBottom: 8 }}>
+                {blocks.map((block, bIdx) => {
+                  if (block.type === 'text') {
+                    const textStyle = bIdx === 0
+                      ? [styles.bodyParagraph, styles.bodyTextIndent]
+                      : styles.bodyParagraph;
+                    return (
+                      <Text key={bIdx} style={textStyle}>
+                        {block.content}
+                      </Text>
+                    );
+                  } else {
+                    return (
+                      <View key={bIdx} style={styles.detailsBlock}>
+                        {block.items.map((item: any, idx: number) => (
+                          <View key={idx} style={styles.detailsRow}>
+                            <Text style={styles.detailsKey}>{item.key}</Text>
+                            <Text style={styles.detailsColon}>:</Text>
+                            <Text style={styles.detailsValue}>{item.value}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    );
+                  }
+                })}
+              </View>
+            );
+          })}
         </View>
 
         {/* Tanda Tangan */}
-        <View style={styles.signatureContainer} wrap={false}>
-          <View style={styles.signatureBox}>
-            <Text style={styles.signDate}>{data.tempatSurat}, {tanggalFormatted}</Text>
-            <Text style={styles.signRole}>{data.jabatanPenandatangan}</Text>
-            <Text style={styles.signName}>{data.namaPenandatangan}</Text>
-          </View>
+        <View wrap={false}>
+          {!data.namaPenandatangan2 && !data.namaPenandatangan3 ? (
+            // Kasus 1: Hanya 1 Tanda Tangan (Rata Kanan)
+            <View style={styles.signatureContainer}>
+              <View style={styles.signatureBox}>
+                <Text style={styles.signDate}>{data.tempatSurat}, {tanggalFormatted}</Text>
+                <Text style={styles.signRole}>{data.jabatanPenandatangan}</Text>
+                <Text style={styles.signName}>{data.namaPenandatangan}</Text>
+              </View>
+            </View>
+          ) : !data.namaPenandatangan3 ? (
+            // Kasus 2: 2 Tanda Tangan (Sejajar Kiri & Kanan)
+            <View style={styles.signatureContainerDouble}>
+              <View style={styles.signatureBox}>
+                <Text style={styles.signDate}> </Text>
+                <Text style={styles.signRole}>{data.jabatanPenandatangan2}</Text>
+                <Text style={styles.signName}>{data.namaPenandatangan2}</Text>
+              </View>
+              <View style={styles.signatureBox}>
+                <Text style={styles.signDate}>{data.tempatSurat}, {tanggalFormatted}</Text>
+                <Text style={styles.signRole}>{data.jabatanPenandatangan}</Text>
+                <Text style={styles.signName}>{data.namaPenandatangan}</Text>
+              </View>
+            </View>
+          ) : (
+            // Kasus 3: 3 Tanda Tangan (Baris 1: Kiri & Kanan, Baris 2: Tengah Bawah)
+            <View>
+              <View style={styles.signatureContainerDouble}>
+                <View style={styles.signatureBox}>
+                  <Text style={styles.signDate}> </Text>
+                  <Text style={styles.signRole}>{data.jabatanPenandatangan2}</Text>
+                  <Text style={styles.signName}>{data.namaPenandatangan2}</Text>
+                </View>
+                <View style={styles.signatureBox}>
+                  <Text style={styles.signDate}>{data.tempatSurat}, {tanggalFormatted}</Text>
+                  <Text style={styles.signRole}>{data.jabatanPenandatangan}</Text>
+                  <Text style={styles.signName}>{data.namaPenandatangan}</Text>
+                </View>
+              </View>
+              <View style={styles.signatureContainerCenter}>
+                <View style={styles.signatureBox}>
+                  <Text style={styles.signRole}>{data.jabatanPenandatangan3}</Text>
+                  <Text style={styles.signName}>{data.namaPenandatangan3}</Text>
+                </View>
+              </View>
+            </View>
+          )}
         </View>
       </Page>
     </Document>
@@ -274,6 +434,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data: SuratData = {
+      id: body.id ? Number(body.id) : undefined,
       nomorSurat: body.nomorSurat,
       lampiran: body.lampiran || '-',
       perihal: body.perihal,
@@ -284,6 +445,10 @@ export async function POST(request: NextRequest) {
       isiSurat: body.isiSurat,
       namaPenandatangan: body.namaPenandatangan,
       jabatanPenandatangan: body.jabatanPenandatangan,
+      namaPenandatangan2: body.namaPenandatangan2 || undefined,
+      jabatanPenandatangan2: body.jabatanPenandatangan2 || undefined,
+      namaPenandatangan3: body.namaPenandatangan3 || undefined,
+      jabatanPenandatangan3: body.jabatanPenandatangan3 || undefined,
     };
 
     const logoPath = path.join(process.cwd(), 'public', 'logo_mliwis.jpg');
@@ -321,24 +486,62 @@ export async function POST(request: NextRequest) {
     }
 
     // Save record to Database
-    await prisma.suratKeluar.create({
-      data: {
-        nomorSurat: data.nomorSurat,
-        tanggalSurat: new Date(data.tanggalSurat),
-        pengirim: 'Pengelola Pantai Mliwis',
-        tujuan: data.tujuan,
-        perihal: data.perihal,
-        filePath: savedFilePath,
-        namaFile: filename,
-        userId: session.userId,
-      },
-    });
+    if (data.id) {
+      await prisma.suratKeluar.update({
+        where: { id: Number(data.id) },
+        data: {
+          nomorSurat: data.nomorSurat,
+          tanggalSurat: new Date(data.tanggalSurat),
+          tujuan: data.tujuan,
+          perihal: data.perihal,
+          filePath: savedFilePath,
+          namaFile: filename,
+          isiSurat: data.isiSurat,
+          tempatSurat: data.tempatSurat,
+          tujuanAlamat: data.tujuanAlamat || null,
+          lampiran: data.lampiran || null,
+          namaPenandatangan: data.namaPenandatangan,
+          jabatanPenandatangan: data.jabatanPenandatangan,
+          namaPenandatangan2: data.namaPenandatangan2 || null,
+          jabatanPenandatangan2: data.jabatanPenandatangan2 || null,
+          namaPenandatangan3: data.namaPenandatangan3 || null,
+          jabatanPenandatangan3: data.jabatanPenandatangan3 || null,
+        },
+      });
 
-    // Write audit log
-    await logAudit(
-      'CREATE_SURAT_KELUAR',
-      `Surat keluar otomatis dibuat: No. "${data.nomorSurat}" ke "${data.tujuan}"`
-    );
+      await logAudit(
+        'UPDATE_SURAT_KELUAR',
+        `Surat keluar otomatis diperbarui: No. "${data.nomorSurat}" ke "${data.tujuan}"`
+      );
+    } else {
+      await prisma.suratKeluar.create({
+        data: {
+          nomorSurat: data.nomorSurat,
+          tanggalSurat: new Date(data.tanggalSurat),
+          pengirim: 'Pengelola Pantai Mliwis',
+          tujuan: data.tujuan,
+          perihal: data.perihal,
+          filePath: savedFilePath,
+          namaFile: filename,
+          userId: session.userId,
+          isiSurat: data.isiSurat,
+          tempatSurat: data.tempatSurat,
+          tujuanAlamat: data.tujuanAlamat || null,
+          lampiran: data.lampiran || null,
+          namaPenandatangan: data.namaPenandatangan,
+          jabatanPenandatangan: data.jabatanPenandatangan,
+          namaPenandatangan2: data.namaPenandatangan2 || null,
+          jabatanPenandatangan2: data.jabatanPenandatangan2 || null,
+          namaPenandatangan3: data.namaPenandatangan3 || null,
+          jabatanPenandatangan3: data.jabatanPenandatangan3 || null,
+        },
+      });
+
+      await logAudit(
+        'CREATE_SURAT_KELUAR',
+        `Surat keluar otomatis dibuat: No. "${data.nomorSurat}" ke "${data.tujuan}"`
+      );
+    }
 
     return NextResponse.json({ success: true, filePath: savedFilePath });
   } catch (error: any) {
