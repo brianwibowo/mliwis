@@ -254,14 +254,15 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
     if (!templateForm.tujuan.trim()) { addToast('Tujuan/Kepada wajib diisi', 'error'); return }
     if (!templateForm.isiSurat.trim()) { addToast('Isi surat wajib diisi', 'error'); return }
     if (!templateForm.namaPenandatangan.trim()) { addToast('Nama penandatangan 1 wajib diisi', 'error'); return }
+    if (!templateForm.jabatanPenandatangan.trim()) { addToast('Jabatan penandatangan 1 wajib diisi', 'error'); return }
 
-    if (activeSignaturesCount >= 2 && !templateForm.namaPenandatangan2.trim()) {
-      addToast('Nama penandatangan 2 wajib diisi', 'error');
-      return;
+    if (activeSignaturesCount >= 2) {
+      if (!templateForm.namaPenandatangan2.trim()) { addToast('Nama penandatangan 2 wajib diisi', 'error'); return }
+      if (!templateForm.jabatanPenandatangan2.trim()) { addToast('Jabatan penandatangan 2 wajib diisi', 'error'); return }
     }
-    if (activeSignaturesCount === 3 && !templateForm.namaPenandatangan3.trim()) {
-      addToast('Nama penandatangan 3 wajib diisi', 'error');
-      return;
+    if (activeSignaturesCount === 3) {
+      if (!templateForm.namaPenandatangan3.trim()) { addToast('Nama penandatangan 3 wajib diisi', 'error'); return }
+      if (!templateForm.jabatanPenandatangan3.trim()) { addToast('Jabatan penandatangan 3 wajib diisi', 'error'); return }
     }
 
     // Capitalize inputs automatically
@@ -573,7 +574,7 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
                 />
               </div>
               <div className="form-group" style={{ flex: 1 }}>
-                <label className="form-label">Jabatan Penandatangan 1</label>
+                <label className="form-label">Jabatan Penandatangan 1 <span className="required">*</span></label>
                 <input
                   className="form-input"
                   placeholder="Contoh: Ketua Pokdarwis"
@@ -598,7 +599,7 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
                   />
                 </div>
                 <div className="form-group" style={{ flex: 1 }}>
-                  <label className="form-label">Jabatan Penandatangan 2</label>
+                  <label className="form-label">Jabatan Penandatangan 2 <span className="required">*</span></label>
                   <input
                     className="form-input"
                     placeholder="Contoh: Sekretaris"
@@ -624,7 +625,7 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
                   />
                 </div>
                 <div className="form-group" style={{ flex: 1 }}>
-                  <label className="form-label">Jabatan Penandatangan 3</label>
+                  <label className="form-label">Jabatan Penandatangan 3 <span className="required">*</span></label>
                   <input
                     className="form-input"
                     placeholder="Contoh: Kepala Desa Kenoyojayan"
