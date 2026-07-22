@@ -3,12 +3,12 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Plus, Pencil, Trash2, ClipboardList, Search, Eye, Upload, X } from 'lucide-react'
+import { Plus, Pencil, Trash2, ClipboardList, Search, Eye, Upload, X, FileText, Image as ImageIcon } from 'lucide-react'
 import { createProgramKerja, updateProgramKerja, deleteProgramKerja } from './actions'
 import { formatRupiah, formatTanggal } from '@/lib/format'
 import { STATUS_PROGRAM_KERJA } from '@/lib/constants'
 import { useToast } from '@/hooks/useToast'
-import { prepareUploadFile } from '@/lib/uploadHelper'
+import { prepareUploadFile, createSafeObjectUrl } from '@/lib/uploadHelper'
 import Modal from '@/components/ui/Modal'
 
 interface Dokumentasi {
@@ -59,6 +59,7 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [deletedDocIds, setDeletedDocIds] = useState<number[]>([])
   const [danaRaw, setDanaRaw] = useState('')
+  const [isDragging, setIsDragging] = useState(false)
   const { data, totalPages } = initialData
   const [currentPage] = useState(1)
 
@@ -87,6 +88,7 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
     setSelectedFiles([])
     setDeletedDocIds([])
     setDanaRaw('')
+    setIsDragging(false)
     setShowModal(true)
   }
 
@@ -95,13 +97,11 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
     setSelectedFiles([])
     setDeletedDocIds([])
     setDanaRaw(pk.jumlahDana.toString())
+    setIsDragging(false)
     setShowModal(true)
   }
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return
-    const filesArray = Array.from(e.target.files)
-    
+  const processIncomingFiles = async (filesArray: File[]) => {
     const processed: File[] = []
     for (const f of filesArray) {
       const { file, error } = await prepareUploadFile(f, {
@@ -118,7 +118,33 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
     if (processed.length > 0) {
       setSelectedFiles(prev => [...prev, ...processed])
     }
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return
+    await processIncomingFiles(Array.from(e.target.files))
     e.target.value = ''
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+  }
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      await processIncomingFiles(Array.from(e.dataTransfer.files))
+    }
   }
 
   const removeNewFile = (index: number) => {
@@ -355,49 +381,192 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
             </select>
           </div>
 
-          {/* Existing documents (edit mode) */}
-          {existingDocs.length > 0 && (
-            <div className="form-group">
-              <label className="form-label">Dokumentasi Saat Ini</label>
-              <div className="file-list">
-                {existingDocs.map((doc) => (
-                  <div key={doc.id} className="file-item">
-                    <span className="file-item-name">{doc.namaFile}</span>
-                    <button type="button" className="file-item-remove" onClick={() => markDocForDeletion(doc.id)} title="Hapus">
-                      <X size={14} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* New file uploads */}
+          {/* Existing & New Dokumentasi Upload (Grid + Drag & Drop) */}
           <div className="form-group">
-            <label className="form-label">{editData ? 'Tambah Dokumentasi' : 'Upload Dokumentasi'}</label>
-            <div className="file-upload-area">
-              <label className="file-upload-trigger">
-                <Upload size={20} />
-                <span>Pilih file gambar...</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 8 }}>
+              <label className="form-label" style={{ marginBottom: 0 }}>
+                Upload Dokumentasi <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-primary-600)' }}>(Bisa Pilih Banyak Foto / Drag & Drop)</span>
+              </label>
+              <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                Tarik (drag & drop) beberapa foto sekaligus ke dalam kotak di bawah, atau klik untuk memilih foto dari HP/perangkat Anda.
+              </span>
+            </div>
+
+            {/* Drag & Drop Dropzone Box */}
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              style={{
+                border: isDragging ? '2px dashed var(--color-primary-600)' : '2px dashed var(--color-border)',
+                backgroundColor: isDragging ? 'rgba(20, 162, 186, 0.08)' : 'var(--color-surface-alt)',
+                borderRadius: '16px',
+                padding: '24px',
+                textAlign: 'center',
+                transition: 'all 0.2s ease',
+                cursor: 'pointer',
+                marginBottom: '16px',
+              }}
+            >
+              <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', cursor: 'pointer', margin: 0 }}>
+                <div
+                  style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '50%',
+                    backgroundColor: isDragging ? 'var(--color-primary-600)' : 'white',
+                    color: isDragging ? 'white' : 'var(--color-primary-600)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: 'var(--shadow-sm)',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <Upload size={22} />
+                </div>
+                <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--color-primary-900)' }}>
+                  {isDragging ? 'Lepaskan Berkas di Sini...' : 'Pilih Foto Dokumentasi (Lebih dari 1)'}
+                </span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                  Format: JPG, PNG, WEBP, HEIC (iPhone) atau PDF (Maks 10MB per file)
+                </span>
                 <input
                   type="file"
-                  accept="image/*,.pdf"
+                  accept="image/*,.pdf,.heic,.heif"
                   multiple
                   onChange={handleFileChange}
                   style={{ display: 'none' }}
                 />
               </label>
             </div>
+
+            {/* Existing Documents Grid */}
+            {existingDocs.length > 0 && (
+              <div style={{ marginBottom: '16px' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-primary-800)', display: 'block', marginBottom: 8 }}>
+                  Dokumentasi Tersimpan Saat Ini ({existingDocs.length}):
+                </span>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: '12px' }}>
+                  {existingDocs.map((doc) => {
+                    const isPdf = doc.filePath.endsWith('.pdf') || doc.namaFile.endsWith('.pdf')
+                    return (
+                      <div
+                        key={doc.id}
+                        style={{
+                          position: 'relative',
+                          borderRadius: '12px',
+                          overflow: 'hidden',
+                          border: '1px solid var(--color-border-subtle)',
+                          backgroundColor: 'white',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          boxShadow: 'var(--shadow-sm)',
+                        }}
+                      >
+                        <div style={{ height: '80px', width: '100%', overflow: 'hidden', backgroundColor: 'var(--color-surface-alt)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {isPdf ? (
+                            <FileText size={32} style={{ color: '#ef4444' }} />
+                          ) : (
+                            <img src={doc.filePath} alt={doc.namaFile} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          )}
+                        </div>
+                        <div style={{ padding: '6px 8px', fontSize: '0.7rem', fontWeight: 600, color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {doc.namaFile}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => markDocForDeletion(doc.id)}
+                          title="Hapus dokumentasi ini"
+                          style={{
+                            position: 'absolute',
+                            top: 4,
+                            right: 4,
+                            width: '22px',
+                            height: '22px',
+                            borderRadius: '50%',
+                            backgroundColor: 'rgba(239, 68, 68, 0.9)',
+                            color: 'white',
+                            border: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            boxShadow: 'var(--shadow-sm)',
+                          }}
+                        >
+                          <X size={13} />
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* New Selected Files Grid */}
             {selectedFiles.length > 0 && (
-              <div className="file-list" style={{ marginTop: 8 }}>
-                {selectedFiles.map((f, i) => (
-                  <div key={i} className="file-item">
-                    <span className="file-item-name">{f.name}</span>
-                    <button type="button" className="file-item-remove" onClick={() => removeNewFile(i)} title="Hapus">
-                      <X size={14} />
-                    </button>
-                  </div>
-                ))}
+              <div>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-primary-800)', display: 'block', marginBottom: 8 }}>
+                  Foto Baru Siap Diunggah ({selectedFiles.length}):
+                </span>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: '12px' }}>
+                  {selectedFiles.map((f, i) => {
+                    const isPdf = f.name.endsWith('.pdf') || f.type === 'application/pdf'
+                    const previewUrl = isPdf ? null : createSafeObjectUrl(f)
+                    return (
+                      <div
+                        key={i}
+                        style={{
+                          position: 'relative',
+                          borderRadius: '12px',
+                          overflow: 'hidden',
+                          border: '2px solid var(--color-primary-400)',
+                          backgroundColor: 'white',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          boxShadow: 'var(--shadow-sm)',
+                        }}
+                      >
+                        <div style={{ height: '80px', width: '100%', overflow: 'hidden', backgroundColor: 'var(--color-surface-alt)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {isPdf ? (
+                            <FileText size={32} style={{ color: '#ef4444' }} />
+                          ) : previewUrl ? (
+                            <img src={previewUrl} alt={f.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            <ImageIcon size={32} style={{ color: 'var(--color-primary-500)' }} />
+                          )}
+                        </div>
+                        <div style={{ padding: '6px 8px', fontSize: '0.7rem', fontWeight: 600, color: 'var(--color-primary-900)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {f.name}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeNewFile(i)}
+                          title="Hapus foto ini"
+                          style={{
+                            position: 'absolute',
+                            top: 4,
+                            right: 4,
+                            width: '22px',
+                            height: '22px',
+                            borderRadius: '50%',
+                            backgroundColor: 'rgba(239, 68, 68, 0.9)',
+                            color: 'white',
+                            border: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            boxShadow: 'var(--shadow-sm)',
+                          }}
+                        >
+                          <X size={13} />
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             )}
           </div>

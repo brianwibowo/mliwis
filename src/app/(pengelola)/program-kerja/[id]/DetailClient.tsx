@@ -101,17 +101,15 @@ export default function DetailClient({ data }: Props) {
     <div>
       <div className="page-header">
         <div className="page-header-left">
-          <Link href="/program-kerja" className="btn btn-ghost btn-sm" style={{ marginRight: 8 }}>
-            <ArrowLeft size={18} />
-          </Link>
           <div>
             <h1>{data.namaKegiatan}</h1>
             <p>Detail Program Kerja Pokdarwis</p>
           </div>
         </div>
         <div className="flex gap-2">
-          <Link href={`/program-kerja`} className="btn btn-ghost">
-            Kembali
+          <Link href="/program-kerja" className="btn btn-outline" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <ArrowLeft size={16} />
+            <span>Kembali</span>
           </Link>
           <button className="btn btn-danger" onClick={() => setShowDeleteModal(true)}>
             <Trash2 size={16} /> Hapus
