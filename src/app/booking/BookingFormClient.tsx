@@ -919,12 +919,12 @@ Mohon bantuan untuk melakukan verifikasi pemesanan kami. Terima kasih!`
 
           <div style={{ marginTop: '32px', display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button 
-              onClick={() => scrollToId('calendar-section')}
+              onClick={() => scrollToId('form-section')}
               className="btn btn-primary"
               style={{ padding: '14px 28px', fontSize: '0.95rem' }}
             >
-              <Calendar size={18} />
-              <span>Lihat Kalender & Form</span>
+              <Send size={18} />
+              <span>Isi Formulir Booking</span>
             </button>
             <button 
               onClick={() => scrollToId('cek-status-section')}
@@ -938,27 +938,8 @@ Mohon bantuan untuk melakukan verifikasi pemesanan kami. Terima kasih!`
         </div>
       </section>
 
-      {/* Calendar Section */}
-      <section id="calendar-section" style={{ padding: '80px 0 40px', backgroundColor: 'var(--color-surface)' }}>
-        <div className="landing-container">
-          <div className="landing-section-header" style={{ textAlign: 'center', marginBottom: '48px' }}>
-            <span className="landing-tagline" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: '30px', backgroundColor: 'var(--color-primary-50)', color: 'var(--color-primary-600)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '12px' }}>
-              <Calendar size={14} />
-              <span>Tanggal Ketersediaan</span>
-            </span>
-            <h2 style={{ fontSize: '2.25rem', color: '#0f2556', fontWeight: 800 }}>Jadwal Ketersediaan Tempat</h2>
-            <p style={{ color: 'var(--color-text-muted)', fontSize: '1rem', maxWidth: '600px', margin: '12px auto 0', lineHeight: 1.5 }}>
-              Sebelum mengisi formulir pemesanan, silakan periksa kalender di bawah untuk memastikan tanggal acara Anda belum dipesan oleh pihak lain.
-            </p>
-          </div>
-          <div style={{ backgroundColor: 'white', padding: '32px', borderRadius: '24px', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--color-border-subtle)' }}>
-            <BookingCalendar />
-          </div>
-        </div>
-      </section>
-
       {/* Main Form Section */}
-      <section id="form-section" style={{ padding: '40px 0 80px', backgroundColor: 'var(--color-surface-alt)' }}>
+      <section id="form-section" style={{ padding: '80px 0 80px', backgroundColor: 'var(--color-surface-alt)' }}>
         <div className="landing-container">
           <div className="landing-section-header" style={{ textAlign: 'center', marginBottom: '48px' }}>
             <span className="landing-tagline" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: '30px', backgroundColor: 'var(--color-primary-50)', color: 'var(--color-primary-600)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '12px' }}>
@@ -967,71 +948,97 @@ Mohon bantuan untuk melakukan verifikasi pemesanan kami. Terima kasih!`
             </span>
             <h2 style={{ fontSize: '2.25rem', color: '#0f2556', fontWeight: 800 }}>Formulir Pengajuan Sewa Area</h2>
             <p style={{ color: 'var(--color-text-muted)', fontSize: '1rem', maxWidth: '600px', margin: '12px auto 0', lineHeight: 1.5 }}>
-              Isi data penanggung jawab, tanggal sewa, deskripsi acara, serta pilih fasilitas yang akan digunakan.
+              Isi data penanggung jawab, tanggal sewa, deskripsi acara, serta periksa ketersediaan tempat di kalender secara langsung.
             </p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px', alignItems: 'start' }}>
             
-            {/* Guidelines Card */}
-            <aside style={{ backgroundColor: 'white', padding: '32px', borderRadius: '24px', border: '1px solid var(--color-border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
-              <h4 style={{ color: '#0f2556', borderBottom: '2px solid var(--color-border-light)', paddingBottom: 12, marginBottom: 20, fontSize: '1.15rem', fontWeight: 800 }}>
-                Panduan Pemesanan
-              </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-                <div style={{ display: 'flex', gap: 14 }}>
-                  <span style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 13, flexShrink: 0 }}>1</span>
-                  <div>
-                    <h5 style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: 4, color: '#0f2556' }}>Lengkapi Kredensial</h5>
-                    <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: 1.4 }}>Masukkan nama penanggung jawab / instansi dan nomor WhatsApp aktif Anda.</p>
+            {/* Guidelines & Calendar Column */}
+            <aside style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              {/* Panduan Pemesanan Card */}
+              <div style={{ backgroundColor: 'white', padding: '32px', borderRadius: '24px', border: '1px solid var(--color-border-subtle)', boxShadow: 'var(--shadow-sm)' }}>
+                <h4 style={{ color: '#0f2556', borderBottom: '2px solid var(--color-border-light)', paddingBottom: 12, marginBottom: 20, fontSize: '1.15rem', fontWeight: 800 }}>
+                  Panduan Pemesanan
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                  <div style={{ display: 'flex', gap: 14 }}>
+                    <span style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 13, flexShrink: 0 }}>1</span>
+                    <div>
+                      <h5 style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: 4, color: '#0f2556' }}>Lengkapi Kredensial</h5>
+                      <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: 1.4 }}>Masukkan nama penanggung jawab / instansi dan nomor WhatsApp aktif Anda.</p>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 14 }}>
+                    <span style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 13, flexShrink: 0 }}>2</span>
+                    <div>
+                      <h5 style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: 4, color: '#0f2556' }}>Pilih Tanggal Acara</h5>
+                      <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: 1.4 }}>Tentukan tanggal mulai dan selesai acara sesuai ketersediaan di kalender jadwal.</p>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 14 }}>
+                    <span style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 13, flexShrink: 0 }}>3</span>
+                    <div>
+                      <h5 style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: 4, color: '#0f2556' }}>Pilih Fasilitas Sewa</h5>
+                      <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: 1.4 }}>Centang minimal 1 area fasilitas Pantai Mliwis yang ingin Anda reservasi.</p>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 14 }}>
+                    <span style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 13, flexShrink: 0 }}>4</span>
+                    <div>
+                      <h5 style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: 4, color: '#0f2556' }}>Simpan Kode Booking</h5>
+                      <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: 1.4 }}>Setelah berhasil submit, catat kode unik Anda untuk cek persetujuan admin secara berkala.</p>
+                    </div>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: 14 }}>
-                  <span style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 13, flexShrink: 0 }}>2</span>
-                  <div>
-                    <h5 style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: 4, color: '#0f2556' }}>Pilih Tanggal Acara</h5>
-                    <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: 1.4 }}>Tentukan tanggal mulai dan selesai acara sesuai ketersediaan di kalender jadwal.</p>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', gap: 14 }}>
-                  <span style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 13, flexShrink: 0 }}>3</span>
-                  <div>
-                    <h5 style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: 4, color: '#0f2556' }}>Pilih Fasilitas Sewa</h5>
-                    <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: 1.4 }}>Centang minimal 1 area fasilitas Pantai Mliwis yang ingin Anda reservasi.</p>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', gap: 14 }}>
-                  <span style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--color-primary-50)', color: 'var(--color-primary-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 13, flexShrink: 0 }}>4</span>
-                  <div>
-                    <h5 style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: 4, color: '#0f2556' }}>Simpan Kode Booking</h5>
-                    <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: 1.4 }}>Setelah berhasil submit, catat kode unik Anda untuk cek persetujuan admin secara berkala.</p>
+
+                <div style={{ marginTop: 32, padding: 20, background: 'var(--color-surface-alt)', borderRadius: '18px', border: '1px solid var(--color-border-subtle)' }}>
+                  <h5 style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700, fontSize: '0.875rem', color: '#0f2556', marginBottom: 10 }}>
+                    <Info size={16} style={{ color: '#14a2ba' }} />
+                    <span>Butuh Bantuan Koordinasi?</span>
+                  </h5>
+                  <p style={{ color: 'var(--color-text-muted)', fontSize: '0.775rem', lineHeight: 1.45, marginBottom: 14 }}>
+                    Silakan hubungi kontak pengelola untuk menanyakan harga paket khusus, koordinasi kebersihan, maupun kebutuhan listrik/air acara berskala besar.
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <a 
+                      href="https://wa.me/6285643309636" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-primary-800)', textDecoration: 'none' }}
+                    >
+                      <Phone size={14} style={{ color: '#14a2ba' }} />
+                      <span>WhatsApp: +62 856-4330-9636</span>
+                    </a>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
+                      <MapPin size={14} style={{ color: '#14a2ba' }} />
+                      <span>Ambal, Kebumen, Jawa Tengah</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div style={{ marginTop: 32, padding: 20, background: 'var(--color-surface-alt)', borderRadius: '18px', border: '1px solid var(--color-border-subtle)' }}>
-                <h5 style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700, fontSize: '0.875rem', color: '#0f2556', marginBottom: 10 }}>
-                  <Info size={16} style={{ color: '#14a2ba' }} />
-                  <span>Butuh Bantuan Koordinasi?</span>
-                </h5>
-                <p style={{ color: 'var(--color-text-muted)', fontSize: '0.775rem', lineHeight: 1.45, marginBottom: 14 }}>
-                  Silakan hubungi kontak pengelola untuk menanyakan harga paket khusus, koordinasi kebersihan, maupun kebutuhan listrik/air acara berskala besar.
-                </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <a 
-                    href="https://wa.me/6285643309636" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-primary-800)', textDecoration: 'none' }}
-                  >
-                    <Phone size={14} style={{ color: '#14a2ba' }} />
-                    <span>WhatsApp: +62 856-4330-9636</span>
-                  </a>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-                    <MapPin size={14} style={{ color: '#14a2ba' }} />
-                    <span>Ambal, Kebumen, Jawa Tengah</span>
-                  </div>
+              {/* Jadwal Ketersediaan Tempat (Kalender) Card */}
+              <div 
+                id="calendar-section"
+                style={{ 
+                  backgroundColor: 'white', 
+                  padding: '28px 24px', 
+                  borderRadius: '24px', 
+                  border: '1px solid var(--color-border-subtle)', 
+                  boxShadow: 'var(--shadow-sm)' 
+                }}
+              >
+                <div style={{ marginBottom: '20px' }}>
+                  <h4 style={{ color: '#0f2556', borderBottom: '2px solid var(--color-border-light)', paddingBottom: 12, marginBottom: 8, fontSize: '1.15rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Calendar size={18} style={{ color: '#14a2ba' }} />
+                    <span>Jadwal Ketersediaan Tempat</span>
+                  </h4>
+                  <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem', margin: 0, lineHeight: 1.4 }}>
+                    Periksa tanggal acara yang sudah terisi di bawah sebelum mengisi formulir pemesanan.
+                  </p>
                 </div>
+                <BookingCalendar />
               </div>
             </aside>
 
