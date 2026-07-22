@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { User, Lock, Upload, KeyRound } from 'lucide-react'
 import { updateProfile } from './actions'
 import { useToast } from '@/hooks/useToast'
-import { compressImageIfNeeded, convertHeicToJpeg } from '@/lib/utils'
+import { prepareUploadFile, createSafeObjectUrl } from '@/lib/uploadHelper'
 
 interface UserData {
   id: number
@@ -19,15 +19,28 @@ export default function ProfilClient({ user }: { user: UserData }) {
   const router = useRouter()
   const { addToast, removeToast } = useToast()
   const [isPending, startTransition] = useTransition()
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(user.foto)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const rawFile = e.target.files?.[0]
+    if (!rawFile) return
+
+    const { file, error } = await prepareUploadFile(rawFile, {
+      notifyFn: (msg, type) => addToast(msg, type),
+      removeNotifyFn: (id) => id && removeToast(id),
+    })
+
+    if (error) {
+      addToast(error, 'error')
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      return
+    }
+
     if (file) {
-      const converted = await convertHeicToJpeg(file)
-      const url = URL.createObjectURL(converted)
-      setPreviewUrl(url)
+      setSelectedFile(file)
+      setPreviewUrl((prev) => createSafeObjectUrl(file, prev))
     }
   }
 
@@ -54,10 +67,8 @@ export default function ProfilClient({ user }: { user: UserData }) {
 
     startTransition(async () => {
       try {
-        // Compress profile photo if it is an image
-        if (file && file.size > 0) {
-          const compressedFile = await compressImageIfNeeded(file, 1 * 1024 * 1024)
-          formData.set('foto', compressedFile)
+        if (selectedFile) {
+          formData.set('foto', selectedFile)
         }
 
         const r = await updateProfile(formData)

@@ -13,6 +13,7 @@ import { formatTanggal } from '@/lib/format'
 import PublicHeader from '@/components/layout/PublicHeader'
 import PublicFooter from '@/components/layout/PublicFooter'
 import BookingCalendar from '@/components/booking/BookingCalendar'
+import { prepareUploadFile } from '@/lib/uploadHelper'
 import { LIST_FASILITAS } from '@/lib/data-landing'
 
 const facilityIcons: Record<string, React.ReactNode> = {
@@ -640,12 +641,28 @@ Mohon bantuan untuk melakukan verifikasi pemesanan kami. Terima kasih!`
                           <form onSubmit={handleUploadBukti} style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                             <input 
                               type="file" 
-                              accept="image/*"
-                              onChange={(e) => {
-                                if (e.target.files && e.target.files[0]) {
-                                  setUploadFile(e.target.files[0])
+                              accept="image/*,.pdf,.heic,.heif"
+                              onChange={async (e) => {
+                                const rawFile = e.target.files?.[0]
+                                if (!rawFile) return
+
+                                const { file, error } = await prepareUploadFile(rawFile, {
+                                  notifyFn: (msg, type) => {
+                                    if (type === 'error') setUploadError(msg)
+                                    else if (type === 'info') setUploadSuccess(msg)
+                                  }
+                                })
+
+                                if (error) {
+                                  setUploadError(error)
+                                  setUploadFile(null)
+                                  return
+                                }
+
+                                if (file) {
+                                  setUploadFile(file)
                                   setUploadError('')
-                                  setUploadSuccess('')
+                                  setUploadSuccess(`File "${file.name}" siap dikirim`)
                                 }
                               }}
                               style={{ fontSize: '0.8rem' }}

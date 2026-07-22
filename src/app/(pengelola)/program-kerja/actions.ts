@@ -31,23 +31,27 @@ async function uploadFile(file: File) {
   }
 
   // Fallback to local file system
-  const { writeFile, mkdir } = await import('fs/promises')
-  const path = await import('path')
-  const cwd = process.cwd()
-  const uploadsDir = (cwd.endsWith('.next/standalone') || cwd.includes('.next/standalone'))
-    ? path.join(cwd, '..', '..', 'public', 'uploads')
-    : path.join(cwd, 'public', 'uploads')
-  await mkdir(uploadsDir, { recursive: true })
+  try {
+    const { writeFile, mkdir } = await import('fs/promises')
+    const path = await import('path')
+    const cwd = process.cwd()
+    const uploadsDir = (cwd.endsWith('.next/standalone') || cwd.includes('.next/standalone'))
+      ? path.join(cwd, '..', '..', 'public', 'uploads')
+      : path.join(cwd, 'public', 'uploads')
+    await mkdir(uploadsDir, { recursive: true })
 
-  const ext = path.extname(file.name)
-  const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}${ext}`
-  const filePath = `/uploads/${uniqueName}`
-  const fullPath = path.join(uploadsDir, uniqueName)
+    const ext = path.extname(file.name)
+    const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}${ext}`
+    const filePath = `/uploads/${uniqueName}`
+    const fullPath = path.join(uploadsDir, uniqueName)
 
-  const buffer = Buffer.from(await file.arrayBuffer())
-  await writeFile(fullPath, buffer)
+    const buffer = Buffer.from(await file.arrayBuffer())
+    await writeFile(fullPath, buffer)
 
-  return { filePath, namaFile: file.name }
+    return { filePath, namaFile: file.name }
+  } catch (e: any) {
+    return { error: `Gagal menyimpan file ke server: ${e.message || String(e)}` }
+  }
 }
 
 async function deleteFile(filePath: string) {

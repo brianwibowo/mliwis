@@ -6,7 +6,7 @@ import { Plus, Pencil, Trash2, Download, Search, FileText, FilePlus2, ArrowLeft,
 import { createSuratKeluar, updateSuratKeluar, deleteSuratKeluar } from '../actions'
 import { formatTanggal } from '@/lib/format'
 import { useToast } from '@/hooks/useToast'
-import { compressImageIfNeeded } from '@/lib/utils'
+import { prepareUploadFile } from '@/lib/uploadHelper'
 import Modal from '@/components/ui/Modal'
 
 interface SuratData {
@@ -190,10 +190,19 @@ export default function SuratKeluarClient({ initialData, currentSearch, currentP
 
     startTransition(async () => {
       try {
-        // Compress file if it is an image
         if (file && file.size > 0) {
-          const compressedFile = await compressImageIfNeeded(file, 1 * 1024 * 1024)
-          formData.set('file', compressedFile)
+          const { file: processed, error } = await prepareUploadFile(file, {
+            notifyFn: (msg, type) => addToast(msg, type),
+            removeNotifyFn: (id) => id && removeToast(id),
+          })
+          if (error) {
+            removeToast(toastId)
+            addToast(error, 'error')
+            return
+          }
+          if (processed) {
+            formData.set('file', processed)
+          }
         }
 
         const result = editData ? await updateSuratKeluar(editData.id, formData) : await createSuratKeluar(formData)

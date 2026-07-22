@@ -77,10 +77,22 @@ export default function BeritaFormClient({ initialBerita }: Props) {
   const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
-      const converted = await convertHeicToJpeg(file)
-      setCoverFile(converted)
-      setCoverPreview(URL.createObjectURL(converted))
-      setKeepCover(true)
+      const ext = file.name.split('.').pop()?.toLowerCase()
+      const isHeic = ext === 'heic' || ext === 'heif' || file.size > 3 * 1024 * 1024
+      let toastId: string | undefined
+      if (isHeic) {
+        toastId = addToast('Memproses & mengompresi foto dari HP...', 'info')
+      }
+      try {
+        const converted = await convertHeicToJpeg(file)
+        setCoverFile(converted)
+        setCoverPreview(URL.createObjectURL(converted))
+        setKeepCover(true)
+        if (toastId) removeToast(toastId)
+      } catch {
+        if (toastId) removeToast(toastId)
+        addToast('Gagal memproses gambar, silakan pilih foto lain', 'error')
+      }
     }
   }
 
@@ -114,15 +126,27 @@ export default function BeritaFormClient({ initialBerita }: Props) {
   const handleBlockImageChange = async (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
-      const converted = await convertHeicToJpeg(file)
-      const preview = URL.createObjectURL(converted)
-      setBlocks((prev) =>
-        prev.map((b) =>
-          b.id === id
-            ? { ...b, file: converted, previewUrl: preview, value: converted.name }
-            : b
+      const ext = file.name.split('.').pop()?.toLowerCase()
+      const isHeic = ext === 'heic' || ext === 'heif' || file.size > 3 * 1024 * 1024
+      let toastId: string | undefined
+      if (isHeic) {
+        toastId = addToast('Memproses foto dari HP...', 'info')
+      }
+      try {
+        const converted = await convertHeicToJpeg(file)
+        const preview = URL.createObjectURL(converted)
+        setBlocks((prev) =>
+          prev.map((b) =>
+            b.id === id
+              ? { ...b, file: converted, previewUrl: preview, value: converted.name }
+              : b
+          )
         )
-      )
+        if (toastId) removeToast(toastId)
+      } catch {
+        if (toastId) removeToast(toastId)
+        addToast('Gagal memproses gambar blok', 'error')
+      }
     }
   }
 

@@ -79,7 +79,7 @@ export async function convertHeicToJpeg(file: File): Promise<File> {
     const blob = await heic2any({
       blob: file,
       toType: 'image/jpeg',
-      quality: 0.8,
+      quality: 0.75, // Lower CPU load for faster conversion
     });
 
     const convertedBlob = Array.isArray(blob) ? blob[0] : blob;
@@ -95,8 +95,8 @@ export async function convertHeicToJpeg(file: File): Promise<File> {
 }
 
 /**
- * Kompres file gambar jika ukurannya melebihi batas (default 5MB).
- * Hanya berjalan di lingkungan browser.
+ * Kompres file gambar jika ukurannya melebihi batas (default 1MB).
+ * Hanya berjalan di lingkungan browser dengan kompresi cepat (max 1600px).
  */
 export async function compressImageIfNeeded(
   file: File,
@@ -128,8 +128,8 @@ export async function compressImageIfNeeded(
         let width = img.width;
         let height = img.height;
 
-        // Batasi resolusi maksimal 2048px untuk efisiensi
-        const maxDimension = 2048;
+        // Batasi resolusi maksimal 1600px untuk pengunggahan super cepat
+        const maxDimension = 1600;
         if (width > maxDimension || height > maxDimension) {
           if (width > height) {
             height = Math.round((height * maxDimension) / width);
@@ -151,14 +151,14 @@ export async function compressImageIfNeeded(
 
         ctx.drawImage(img, 0, 0, width, height);
 
-        let quality = 0.8;
-        const step = 0.1;
+        let quality = 0.75;
+        const step = 0.15;
 
         const checkAndResolve = (q: number) => {
           canvas.toBlob(
             (blob) => {
               if (blob) {
-                if (blob.size > maxSizeBytes && q > 0.1) {
+                if (blob.size > maxSizeBytes && q > 0.3) {
                   checkAndResolve(q - step);
                 } else {
                   const compressedFile = new File([blob], convertedFile.name, {

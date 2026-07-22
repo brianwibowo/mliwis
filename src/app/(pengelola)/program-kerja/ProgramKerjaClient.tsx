@@ -8,7 +8,7 @@ import { createProgramKerja, updateProgramKerja, deleteProgramKerja } from './ac
 import { formatRupiah, formatTanggal } from '@/lib/format'
 import { STATUS_PROGRAM_KERJA } from '@/lib/constants'
 import { useToast } from '@/hooks/useToast'
-import { compressImageIfNeeded, convertHeicToJpeg } from '@/lib/utils'
+import { prepareUploadFile } from '@/lib/uploadHelper'
 import Modal from '@/components/ui/Modal'
 
 interface Dokumentasi {
@@ -99,13 +99,26 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
   }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const filesArray = Array.from(e.target.files)
-      const convertedFiles = await Promise.all(
-        filesArray.map(f => convertHeicToJpeg(f))
-      )
-      setSelectedFiles(prev => [...prev, ...convertedFiles])
+    if (!e.target.files || e.target.files.length === 0) return
+    const filesArray = Array.from(e.target.files)
+    
+    const processed: File[] = []
+    for (const f of filesArray) {
+      const { file, error } = await prepareUploadFile(f, {
+        notifyFn: (msg, type) => addToast(msg, type),
+        removeNotifyFn: (id) => id && removeToast(id),
+      })
+      if (error) {
+        addToast(error, 'error')
+      } else if (file) {
+        processed.push(file)
+      }
     }
+
+    if (processed.length > 0) {
+      setSelectedFiles(prev => [...prev, ...processed])
+    }
+    e.target.value = ''
   }
 
   const removeNewFile = (index: number) => {
@@ -135,16 +148,9 @@ export default function ProgramKerjaClient({ initialData, initialSearch, initial
 
     startTransition(async () => {
       try {
-        // Compress selected files if needed (target 5MB limit)
-        const compressedFiles = await Promise.all(
-          selectedFiles.map(async (file) => {
-            return await compressImageIfNeeded(file, 1 * 1024 * 1024)
-          })
-        )
-
-        // Remove the default file input entries and add our tracked compressed files
+        // Remove default file input entries and append pre-processed files
         formData.delete('dokumentasi')
-        compressedFiles.forEach(f => formData.append('dokumentasi', f))
+        selectedFiles.forEach((f: File) => formData.append('dokumentasi', f))
 
         if (editData && deletedDocIds.length > 0) {
           formData.set('deletedDokumentasiIds', JSON.stringify(deletedDocIds))

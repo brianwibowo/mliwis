@@ -6,7 +6,7 @@ import { Plus, Pencil, Trash2, Download, Search, X, FileText } from 'lucide-reac
 import { createSuratMasuk, updateSuratMasuk, deleteSuratMasuk } from '../actions'
 import { formatTanggal } from '@/lib/format'
 import { useToast } from '@/hooks/useToast'
-import { compressImageIfNeeded } from '@/lib/utils'
+import { prepareUploadFile } from '@/lib/uploadHelper'
 import Modal from '@/components/ui/Modal'
 
 interface SuratData {
@@ -62,10 +62,20 @@ export default function SuratMasukClient({ initialData, currentSearch, currentPa
 
     startTransition(async () => {
       try {
-        // Compress file if it is an image
-        if (file && file.size > 0) {
-          const compressedFile = await compressImageIfNeeded(file, 1 * 1024 * 1024)
-          formData.set('file', compressedFile)
+        const rawFile = formData.get('file') as File | null
+        if (rawFile && rawFile.size > 0) {
+          const { file: processed, error } = await prepareUploadFile(rawFile, {
+            notifyFn: (msg, type) => addToast(msg, type),
+            removeNotifyFn: (id) => id && removeToast(id),
+          })
+          if (error) {
+            removeToast(toastId)
+            addToast(error, 'error')
+            return
+          }
+          if (processed) {
+            formData.set('file', processed)
+          }
         }
 
         const result = editData
